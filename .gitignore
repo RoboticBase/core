@@ -1,2 +1,3 @@
 secrets/*
 !secrets/DST_Root_CA_X3.pem
+idas/iotagent-ul/config.js

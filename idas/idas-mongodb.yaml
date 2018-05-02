@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: idas-mongodb
+  labels:
+    app: idas-mongodb
+spec:
+  clusterIP: None
+  selector:
+    app: idas-mongodb
+  ports:
+  - port: 27017
+    name: idas-mongodb
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: idas-mongodb
+spec:
+  serviceName: "idas-mongodb"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: idas-mongodb
+  template:
+    metadata:
+      labels:
+        app: idas-mongodb
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: idas-mongodb
+        image: mongo:3.6
+        command: ["mongod", "--bind_ip", "0.0.0.0", "--replSet", "rs0", "--journal", "--smallfiles"]
+        ports:
+        - containerPort: 27017
+          name: idas-mongodb
+        volumeMounts:
+        - mountPath: /data/db
+          name: idas-mongodb-storage-claim
+      - name: idas-mongo-sidecar
+        image: cvallance/mongo-k8s-sidecar
+        env:
+        - name: MONGO_SIDECAR_POD_LABELS
+          value: "app=idas-mongodb"
+        - name: KUBERNETES_MONGO_SERVICE_NAME
+          value: "idas-mongodb"
+  volumeClaimTemplates:
+  - metadata:
+      name: idas-mongodb-storage-claim
+      annotations:
+        volume.beta.kubernetes.io/storage-class: managed-premium
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
