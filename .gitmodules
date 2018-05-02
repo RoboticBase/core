@@ -1,0 +1,3 @@
+[submodule "ambassador/fiware-bearer-auth"]
+	path = ambassador/fiware-bearer-auth
+	url = https://github.com/tech-sketch/fiware-bearer-auth.git
