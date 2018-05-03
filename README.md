@@ -426,17 +426,17 @@ server: envoy
 {"count":0,"devices":[]}
 ```
 
-## register "gamepad" as an IoT device of "demo1" service
+## register "demo1" service
 
 ```bash
 mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/services/ -X POST -d @- <<__EOS__
 {
   "services": [
     {
-      "apikey": "gamepad",
+      "apikey": "demo1",
       "cbroker": "http://orion:1026",
       "resource": "/iot/d",
-      "entity_type": "gamepad"
+      "entity_type": "demo1"
     }
   ]
 }
@@ -449,16 +449,16 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
   "count": 1,
   "services": [
     {
-      "_id": "5ae95ec67e6ec400019acd28",
+      "_id": "5aea5264d95cfc000124890b",
       "subservice": "/",
       "service": "demo1",
-      "apikey": "gamepad",
+      "apikey": "demo1",
       "resource": "/iot/d",
       "__v": 0,
       "attributes": [],
       "lazy": [],
       "commands": [],
-      "entity_type": "gamepad",
+      "entity_type": "demo1",
       "internal_attributes": [],
       "static_attributes": []
     }
@@ -466,14 +466,16 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
 }
 ```
 
+## register "gamepad" device
+
 ```bash
 mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
 {
   "devices": [
     {
-      "device_id": "gamepad-1",
-      "entity_name": "gamepad-1",
-      "entity_type": "gamepad",
+      "device_id": "gamepad",
+      "entity_name": "gamepad",
+      "entity_type": "demo1",
       "timezone": "Asia/Tokyo",
       "protocol": "UL20",
       "attributes": [
@@ -494,43 +496,38 @@ __EOS__
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ | jq .
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/gamepad/ | jq .
 {
-  "count": 1,
-  "devices": [
+  "device_id": "gamepad",
+  "service": "demo1",
+  "service_path": "/",
+  "entity_name": "gamepad",
+  "entity_type": "demo1",
+  "transport": "MQTT",
+  "attributes": [
     {
-      "device_id": "gamepad-1",
-      "service": "demo1",
-      "service_path": "/",
-      "entity_name": "gamepad-1",
-      "entity_type": "gamepad",
-      "transport": "MQTT",
-      "attributes": [
-        {
-          "object_id": "button",
-          "name": "button",
-          "type": "string"
-        },
-        {
-          "object_id": "hat",
-          "name": "hat",
-          "type": "string"
-        }
-      ],
-      "lazy": [],
-      "commands": [],
-      "static_attributes": [],
-      "protocol": "UL20"
+      "object_id": "button",
+      "name": "button",
+      "type": "string"
+    },
+    {
+      "object_id": "hat",
+      "name": "hat",
+      "type": "string"
     }
-  ]
+  ],
+  "lazy": [],
+  "commands": [],
+  "static_attributes": [],
+  "protocol": "UL20"
 }
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad-1/ | jq .
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
 {
-  "id": "gamepad-1",
-  "type": "gamepad",
+  "id": "gamepad",
+  "type": "demo1",
   "TimeInstant": {
     "type": "ISO8601",
     "value": " ",
@@ -549,59 +546,67 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
 }
 ```
 
-## register "ros" as an IoT device of "demo1" service
+## test publishing an attribute from gamepad to orion through MQTT and idas
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/services/ -X POST -d @- <<__EOS__
-{
-  "services": [
-    {
-      "apikey": "ros",
-      "cbroker": "http://orion:1026",
-      "resource": "/iot/d",
-      "entity_type": "ros"
-    }
-  ]
-}
-__EOS__
+mac:$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
+...
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /*" https://api.nmatsui.work/idas/ul20/manage/iot/services/ | jq .
+raspberrypi:$ ./main.py
+2018/05/03 09:28:18 [   INFO] __main__ - run script using pxkwcr.yaml
+2018/05/03 09:28:18 [   INFO] src.controller - initialized FUJIWORK PXKWCR Controller
+2018/05/03 09:28:18 [   INFO] src.controller - start publishing...
+```
+
+* press 'circle' button of gamepad
+```bash
+raspberrypi:$ ./main.py
+...
+2018/05/03 09:28:27 [   INFO] src.controller - published "button|circle" to "/demo1/gamepad/attrs"
+2018/05/03 09:28:27 [   INFO] src.controller - connected mqtt broker[mqtt.nmatsui.work:8883], response_code=0
+...
+```
+
+```bash
+mac:$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
+...
+...
+Client mosqsub|76808-Nobuyukin received PUBLISH (d0, q0, r0, m0, '/demo1/gamepad/attrs', ... (13 bytes))
+button|circle
+...
+```
+
+```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
 {
-  "count": 2,
-  "services": [
-    {
-      "_id": "5ae95ec67e6ec400019acd28",
-      "subservice": "/",
-      "service": "demo1",
-      "apikey": "gamepad",
-      "resource": "/iot/d",
-      "__v": 0,
-      "attributes": [],
-      "lazy": [],
-      "commands": [],
-      "entity_type": "gamepad",
-      "internal_attributes": [],
-      "static_attributes": []
-    },
-    {
-      "_id": "5ae969ba7e6ec400019acd2a",
-      "subservice": "/",
-      "service": "demo1",
-      "apikey": "ros",
-      "resource": "/iot/d",
-      "__v": 0,
-      "attributes": [],
-      "lazy": [],
-      "commands": [],
-      "entity_type": "ros",
-      "internal_attributes": [],
-      "static_attributes": []
+  "id": "gamepad",
+  "type": "demo1",
+  "TimeInstant": {
+    "type": "ISO8601",
+    "value": "2018-05-03T00:28:27.00Z",
+    "metadata": {}
+  },
+  "button": {
+    "type": "string",
+    "value": "circle",
+    "metadata": {
+      "TimeInstant": {
+        "type": "ISO8601",
+        "value": "2018-05-03T00:28:27.463Z"
+      }
     }
-  ]
+  },
+  "hat": {
+    "type": "string",
+    "value": " ",
+    "metadata": {}
+  }
 }
 ```
+
+## register "turtlesim" device
 
 ```bash
 mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
@@ -610,7 +615,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authori
     {
       "device_id": "turtlesim",
       "entity_name": "turtlesim",
-      "entity_type": "ros",
+      "entity_type": "demo1",
       "timezone": "Asia/Tokyo",
       "protocol": "UL20",
       "commands": [
@@ -627,54 +632,25 @@ __EOS__
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ | jq .
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/turtlesim/ | jq .
 {
-  "count": 2,
-  "devices": [
+  "device_id": "turtlesim",
+  "service": "demo1",
+  "service_path": "/",
+  "entity_name": "turtlesim",
+  "entity_type": "demo1",
+  "transport": "MQTT",
+  "attributes": [],
+  "lazy": [],
+  "commands": [
     {
-      "device_id": "gamepad-1",
-      "service": "demo1",
-      "service_path": "/",
-      "entity_name": "gamepad-1",
-      "entity_type": "gamepad",
-      "transport": "MQTT",
-      "attributes": [
-        {
-          "object_id": "button",
-          "name": "button",
-          "type": "string"
-        },
-        {
-          "object_id": "hat",
-          "name": "hat",
-          "type": "string"
-        }
-      ],
-      "lazy": [],
-      "commands": [],
-      "static_attributes": [],
-      "protocol": "UL20"
-    },
-    {
-      "device_id": "turtlesim",
-      "service": "demo1",
-      "service_path": "/",
-      "entity_name": "turtlesim",
-      "entity_type": "ros",
-      "transport": "MQTT",
-      "attributes": [],
-      "lazy": [],
-      "commands": [
-        {
-          "object_id": "move",
-          "name": "move",
-          "type": "string"
-        }
-      ],
-      "static_attributes": [],
-      "protocol": "UL20"
+      "object_id": "move",
+      "name": "move",
+      "type": "string"
     }
-  ]
+  ],
+  "static_attributes": [],
+  "protocol": "UL20"
 }
 ```
 
@@ -682,7 +658,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
 $ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
 {
   "id": "turtlesim",
-  "type": "ros",
+  "type": "demo1",
   "TimeInstant": {
     "type": "ISO8601",
     "value": " ",
@@ -697,6 +673,113 @@ $ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authori
     "type": "commandStatus",
     "value": "UNKNOWN",
     "metadata": {}
+  },
+  "move": {
+    "type": "string",
+    "value": "",
+    "metadata": {}
+  }
+}
+```
+
+## test subscribing a cmd from orion to ros and publishing a cmdexe from ros to orion through MQTT and idas
+
+```bash
+mac:$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
+...
+```
+
+```bash
+ros-terminal1:$ source devel/setup.bash
+ros-terminal1:$ roscore
+...
+```
+
+```bash
+ros-terminal2:$ source devel/setup.bash
+ros-terminal2:$ rosrun turtlesim turtlesim_node
+...
+```
+
+```bash
+ros-terminal3:$ source devel/setup.bash
+ros-terminal3:$ roslaunch turtlesim_operator turtlesim_operator.launch
+...
+[INFO] [1525308700.174050]: [turtlesim_operator.command_sender:CommandSender._on_connect] mqtt connect status=0
+[INFO] [1525308700.174342]: [turtlesim_operator.attribute_receiver:AttributeReceiver._on_connect] mqtt connect status=0
+...
+```
+
+* send 'circle' cmd to 'turtlesim' entity
+```bash
+mac:TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v1/updateContext -d @-<<EOL | jq .
+{
+  "contextElements": [
+    {
+      "id": "turtlesim",
+      "isPattern": "false",
+      "type": "demo1",
+      "attributes": [
+        {
+          "name": "move",
+          "type": "string",
+          "value": "circle"
+        }
+      ]
+    }
+  ],
+  "updateAction": "UPDATE"
+}
+EOL
+```
+
+```bash
+mac:$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
+...
+Client mosqsub|77956-Nobuyukin received PUBLISH (d0, q0, r0, m0, '/demo1/turtlesim/cmd', ... (21 bytes))
+turtlesim@move|circle
+Client mosqsub|77956-Nobuyukin received PUBLISH (d0, q0, r0, m0, '/demo1/turtlesim/cmdexe', ... (28 bytes))
+turtlesim@move|MOVED: circle
+...
+```
+
+```bash
+ros-terminal3:$ roslaunch turtlesim_operator turtlesim_operator.launch
+...
+[INFO] [1525308845.271134]: [turtlesim_operator.command_sender:CommandSender._on_message] received message from mqtt: turtlesim@move|circle
+[INFO] [1525308845.272738]: [turtlesim_operator.command_sender:CommandSender._do_circle] do circle
+...
+```
+
+```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
+{
+  "id": "turtlesim",
+  "type": "demo1",
+  "TimeInstant": {
+    "type": "ISO8601",
+    "value": "2018-05-03T00:54:05.00Z",
+    "metadata": {}
+  },
+  "move_info": {
+    "type": "commandResult",
+    "value": "MOVED: circle",
+    "metadata": {
+      "TimeInstant": {
+        "type": "ISO8601",
+        "value": "2018-05-03T00:54:05.363Z"
+      }
+    }
+  },
+  "move_status": {
+    "type": "commandStatus",
+    "value": "OK",
+    "metadata": {
+      "TimeInstant": {
+        "type": "ISO8601",
+        "value": "2018-05-03T00:54:05.363Z"
+      }
+    }
   },
   "move": {
     "type": "string",
