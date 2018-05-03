@@ -482,10 +482,6 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authori
         {
           "name": "button",
           "type": "string"
-        },
-        {
-          "name": "hat",
-          "type": "string"
         }
       ],
       "transport": "MQTT"
@@ -509,11 +505,6 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
       "object_id": "button",
       "name": "button",
       "type": "string"
-    },
-    {
-      "object_id": "hat",
-      "name": "hat",
-      "type": "string"
     }
   ],
   "lazy": [],
@@ -534,11 +525,6 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
     "metadata": {}
   },
   "button": {
-    "type": "string",
-    "value": " ",
-    "metadata": {}
-  },
-  "hat": {
     "type": "string",
     "value": " ",
     "metadata": {}
@@ -585,7 +571,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
   "type": "demo1",
   "TimeInstant": {
     "type": "ISO8601",
-    "value": "2018-05-03T00:28:27.00Z",
+    "value": "2018-05-03T06:07:55.00Z",
     "metadata": {}
   },
   "button": {
@@ -594,14 +580,9 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
     "metadata": {
       "TimeInstant": {
         "type": "ISO8601",
-        "value": "2018-05-03T00:28:27.463Z"
+        "value": "2018-05-03T06:07:55.499Z"
       }
     }
-  },
-  "hat": {
-    "type": "string",
-    "value": " ",
-    "metadata": {}
   }
 }
 ```
@@ -712,7 +693,7 @@ ros-terminal3:$ roslaunch turtlesim_operator turtlesim_operator.launch
 
 * send 'circle' cmd to 'turtlesim' entity
 ```bash
-mac:TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v1/updateContext -d @-<<EOL | jq .
+mac:TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v1/updateContext -d @-<<__EOS__ | jq .
 {
   "contextElements": [
     {
@@ -730,7 +711,7 @@ mac:TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Autho
   ],
   "updateAction": "UPDATE"
 }
-EOL
+__EOS__
 ```
 
 ```bash
@@ -788,3 +769,95 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
   }
 }
 ```
+
+## register fiware-cmd-proxy
+
+```bash
+mac:$ az acr login --name fiwareacr
+```
+
+```bash
+mac:$ CMD_PROXY_PORT="8888"
+mac:$ docker build --build-arg PORT=${CMD_PROXY_PORT} -t fiwareacr.azurecr.io/tech-sketch/fiware-cmd-proxy:0.1.0 ./controller/fiware-cmd-proxy/
+mac:$ docker push fiwareacr.azurecr.io/tech-sketch/fiware-cmd-proxy:0.1.0
+```
+
+```bash
+mac:$ az acr repository list --name fiwareacr --output table
+Result
+------------------------------
+tech-sketch/fiware-bearer-auth
+tech-sketch/fiware-cmd-proxy
+tech-sketch/iotagent-ul
+```
+
+```bash
+mac:$ kubectl apply -f controller/fiware-cmd-proxy.yaml
+```
+
+```bash
+mac:$ kubectl get pods -l pod=cmd-proxy
+NAME                         READY     STATUS    RESTARTS   AGE
+cmd-proxy-58c756cbcd-q7jzz   1/1       Running   0          5s
+cmd-proxy-58c756cbcd-rs75j   1/1       Running   0          5s
+cmd-proxy-58c756cbcd-v9ptr   1/1       Running   0          5s
+```
+
+```bash
+mac:$ kubectl get services -l service=cmd-proxy
+NAME        TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+cmd-proxy   ClusterIP   10.0.208.226   <none>        8888/TCP   34s
+```
+
+```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v2/subscriptions/ -X POST -d @- <<__EOS__
+{
+  "subject": {
+    "entities": [{
+      "idPattern": "gamepad.*",
+      "type": "demo1"
+    }]
+  },
+  "notification": {
+    "http": {
+      "url": "http://cmd-proxy:8888/gamepad/"
+    },
+    "attrs": ["button"]
+  }
+}
+__EOS__
+```
+
+```bash
+$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" https://api.nmatsui.work/orion/v2/subscriptions/ | jq .
+[
+  {
+    "id": "5aeac0c73c67e1d449c3dc85",
+    "status": "active",
+    "subject": {
+      "entities": [
+        {
+          "idPattern": "gamepad.*",
+          "type": "demo1"
+        }
+      ],
+      "condition": {
+        "attrs": []
+      }
+    },
+    "notification": {
+      "timesSent": 1,
+      "lastNotification": "2018-05-03T07:56:55.00Z",
+      "attrs": [
+        "button"
+      ],
+      "attrsFormat": "normalized",
+      "http": {
+        "url": "http://cmd-proxy:8888/gamepad/"
+      },
+      "lastSuccess": "2018-05-03T07:56:55.00Z"
+    }
+  }
+]
+```
+
