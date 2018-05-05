@@ -4,3 +4,9 @@
 [submodule "controller/fiware-cmd-proxy"]
 	path = controller/fiware-cmd-proxy
 	url = https://github.com/tech-sketch/fiware-cmd-proxy.git
+[submodule "idas/iotagent-ul"]
+	path = idas/iotagent-ul
+	url = https://github.com/tech-sketch/iotagent-ul.git
+[submodule "idas/fiware-mqtt-msgfilter"]
+	path = idas/fiware-mqtt-msgfilter
+	url = https://github.com/tech-sketch/fiware-mqtt-msgfilter.git
