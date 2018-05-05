@@ -7,13 +7,13 @@ This repository construct a [FIWARE](http://www.fiware.org/) platform on [Kubern
 |:--|:--|
 |azure cli|2.0.31|
 |kubectl|1.10.1|
+|helm|2.8.2|
 
 ||version|
 |:--|:--|
 |kubernetes|1.8.11|
 
 ## start private registry on Azure Container Registry
-
 
 ```bash
 mac:fiware-demo1$ az login
@@ -54,6 +54,62 @@ aks-nodepool1-27506152-3   Ready     agent     5m        v1.8.11
 mac:$ CLIENT_ID=$(az aks show --resource-group fiware-demo --name fiwareaks --query "servicePrincipalProfile.clientId" --output tsv);echo ${CLIENT_ID}
 mac:$ ACR_ID=$(az acr show --name fiwareacr --resource-group fiware-demo --query "id" --output tsv); echo ${ACR_ID}
 mac:$ az role assignment create --assignee ${CLIENT_ID} --role Reader --scope ${ACR_ID}
+```
+
+## install helm
+```bash
+mac:$ curl --output ~/Downloads/helm-v2.8.2-darwin-amd64.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.8.2-darwin-amd64.tar.gz
+mac:$ tar xfz ~/Downloads/helm-v2.8.2-darwin-amd64.tar.gz -C /tmp
+mac:$ sudo mv /tmp/darwin-amd64/helm /usr/local/bin
+```
+
+```bash
+$ helm init
+```
+
+```bash
+mac:$ helm version
+Client: &version.Version{SemVer:"v2.8.2", GitCommit:"a80231648a1473929271764b920a8e346f6de844", GitTreeState:"clean"}
+Server: &version.Version{SemVer:"v2.8.2", GitCommit:"a80231648a1473929271764b920a8e346f6de844", GitTreeState:"clean"}
+```
+
+## start etcd cluster on AKS
+
+```bash
+mac:$ helm install stable/etcd-operator --name fiware-etcd --set rbac.create=false
+```
+
+```bash
+mac:$ kubectl get pods -l app=fiware-etcd-etcd-operator-etcd-operator
+NAME                                                      READY     STATUS    RESTARTS   AGE
+fiware-etcd-etcd-operator-etcd-operator-d69bdfb64-pdttf   1/1       Running   0          2m
+```
+
+```bash
+mac:$ kubectl apply -f etcd/etcd-cluster.yaml
+```
+
+```bash
+mac:$ kubectl get pods -l app=etcd
+NAME                READY     STATUS    RESTARTS   AGE
+etcd-cluster-0000   1/1       Running   0          2m
+etcd-cluster-0001   1/1       Running   0          2m
+etcd-cluster-0002   1/1       Running   0          2m
+```
+
+```bash
+mac:$ kubectl get services -l app=etcd
+NAME                  TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
+etcd-cluster          ClusterIP   None           <none>        2379/TCP,2380/TCP   3m
+etcd-cluster-client   ClusterIP   10.0.228.101   <none>        2379/TCP            3m
+```
+
+```text
+mac:$ kubectl run --rm -i --tty fun --image quay.io/coreos/etcd --restart=Never -- /bin/sh
+/ # etcdctl --peers http://etcd-cluster-client:2379 member list
+217daa653b4d7b56: name=etcd-cluster-0002 peerURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2379 isLeader=true
+41066d74e036e064: name=etcd-cluster-0001 peerURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2379 isLeader=false
+4e063fdd65c779b5: name=etcd-cluster-0000 peerURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2379 isLeader=false
 ```
 
 ## start vernemq cluster on AKS
@@ -423,6 +479,30 @@ x-envoy-upstream-service-time: 8
 server: envoy
 
 {"count":0,"devices":[]}
+```
+
+```bash
+mac:$ az acr login --name fiwareacr
+mac:$ docker build -t fiwareacr.azurecr.io/tech-etch/fiware-mqtt-msgfilter:0.1.0 idas/fiware-mqtt-msgfilter/
+mac:$ docker push fiwareacr.azurecr.io/tech-sketch/fiware-mqtt-msgfilter:0.1.0
+```
+
+```bash
+mac:$ kubectl apply -f idas/mqtt-msgfilter.yaml
+```
+
+```bash
+mac:$ kubectl get pods -l pod=mqtt-msgfilter
+NAME                              READY     STATUS    RESTARTS   AGE
+mqtt-msgfilter-6f76445596-cmbqz   1/1       Running   0          26s
+mqtt-msgfilter-6f76445596-wrhzb   1/1       Running   0          26s
+mqtt-msgfilter-6f76445596-znnvg   1/1       Running   0          26s
+```
+
+```bash
+mac:$ kubectl get services -l service=mqtt-msgfilter
+NAME             TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
+mqtt-msgfilter   ClusterIP   10.0.133.42   <none>        5001/TCP   43s
 ```
 
 ## register "demo1" service
