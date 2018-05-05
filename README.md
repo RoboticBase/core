@@ -365,9 +365,8 @@ mac:$ az acr login --name fiwareacr
 ```
 
 ```bash
-mac:$ GIT_REV_IOTA_UL="1.6.0"
-mac:$ docker build --build-arg GIT_REV_IOTA=${GIT_REV_IOTA_UL} -t fiwareacr.azurecr.io/tech-sketch/iotagent-ul:${GIT_REV_IOTA_UL} idas/iotagent-ul/
-mac:$ docker push fiwareacr.azurecr.io/tech-sketch/iotagent-ul:${GIT_REV_IOTA_UL}
+mac:$ docker build -t fiwareacr.azurecr.io/tech-sketch/iotagent-ul:1.6.0 idas/iotagent-ul/
+mac:$ docker push fiwareacr.azurecr.io/tech-sketch/iotagent-ul:1.6.0
 ```
 
 ```bash
@@ -379,7 +378,7 @@ tech-sketch/iotagent-ul
 ```
 
 ```bash
-mac:$ cat idas/iotagent-ul.yaml | sed -e "s/<<GIT_REV_IOTA>>/${GIT_REV_IOTA_UL}/g" | kubectl apply -f -
+mac:$ kubectl apply -f idas/iotagent-ul.yaml
 ```
 
 ```bash
