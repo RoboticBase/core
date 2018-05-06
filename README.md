@@ -44,31 +44,37 @@ mac:fiware-demo1$ az aks get-credentials --resource-group fiware-demo --name fiw
 ```bash
 mac:fiware-demo1$ kubectl get nodes
 NAME                       STATUS    ROLES     AGE       VERSION
-aks-nodepool1-27506152-0   Ready     agent     5m        v1.8.11
-aks-nodepool1-27506152-1   Ready     agent     5m        v1.8.11
-aks-nodepool1-27506152-2   Ready     agent     5m        v1.8.11
-aks-nodepool1-27506152-3   Ready     agent     5m        v1.8.11
+aks-nodepool1-27506152-0   Ready     agent     2m        v1.9.6
+aks-nodepool1-27506152-1   Ready     agent     2m        v1.9.6
+aks-nodepool1-27506152-2   Ready     agent     2m        v1.9.6
+aks-nodepool1-27506152-3   Ready     agent     2m        v1.9.6
 ```
 
 ```bash
-mac:$ CLIENT_ID=$(az aks show --resource-group fiware-demo --name fiwareaks --query "servicePrincipalProfile.clientId" --output tsv);echo ${CLIENT_ID}
-mac:$ ACR_ID=$(az acr show --name fiwareacr --resource-group fiware-demo --query "id" --output tsv); echo ${ACR_ID}
-mac:$ az role assignment create --assignee ${CLIENT_ID} --role Reader --scope ${ACR_ID}
+mac:fiware-demo1$ CLIENT_ID=$(az aks show --resource-group fiware-demo --name fiwareaks --query "servicePrincipalProfile.clientId" --output tsv);echo ${CLIENT_ID}
+mac:fiware-demo1$ ACR_ID=$(az acr show --name fiwareacr --resource-group fiware-demo --query "id" --output tsv); echo ${ACR_ID}
+mac:fiware-demo1$ az role assignment create --assignee ${CLIENT_ID} --role Reader --scope ${ACR_ID}
 ```
 
 ## install helm
 ```bash
-mac:$ curl --output ~/Downloads/helm-v2.8.2-darwin-amd64.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.8.2-darwin-amd64.tar.gz
-mac:$ tar xfz ~/Downloads/helm-v2.8.2-darwin-amd64.tar.gz -C /tmp
-mac:$ sudo mv /tmp/darwin-amd64/helm /usr/local/bin
+mac:fiware-demo1$ curl --output ~/Downloads/helm-v2.8.2-darwin-amd64.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.8.2-darwin-amd64.tar.gz
+mac:fiware-demo1$ tar xfz ~/Downloads/helm-v2.8.2-darwin-amd64.tar.gz -C /tmp
+mac:fiware-demo1$ sudo mv /tmp/darwin-amd64/helm /usr/local/bin
 ```
 
 ```bash
-$ helm init
+mac:fiware-demo1$ helm update
+mac:fiware-demo1$ helm init
 ```
 
 ```bash
-mac:$ helm version
+mac:fiware-demo1$ kubectl get pods --all-namespaces | grep tiller
+kube-system   tiller-deploy-865dd6c794-cdzd9          1/1       Running   0          6m
+```
+
+```bash
+mac:fiware-demo1$ helm version
 Client: &version.Version{SemVer:"v2.8.2", GitCommit:"a80231648a1473929271764b920a8e346f6de844", GitTreeState:"clean"}
 Server: &version.Version{SemVer:"v2.8.2", GitCommit:"a80231648a1473929271764b920a8e346f6de844", GitTreeState:"clean"}
 ```
@@ -76,13 +82,14 @@ Server: &version.Version{SemVer:"v2.8.2", GitCommit:"a80231648a1473929271764b920
 ## start etcd cluster on AKS
 
 ```bash
-mac:$ helm install stable/etcd-operator --name fiware-etcd --set rbac.create=false
+mac:fiware-demo1$ helm install stable/etcd-operator --name fiware-etcd --set rbac.create=false
 ```
 
 ```bash
-mac:$ kubectl get pods -l app=fiware-etcd-etcd-operator-etcd-operator
-NAME                                                      READY     STATUS    RESTARTS   AGE
-fiware-etcd-etcd-operator-etcd-operator-d69bdfb64-pdttf   1/1       Running   0          2m
+mac:fiware-demo1$ kubectl get pods | grep fiware-etcd
+fiware-etcd-etcd-operator-etcd-backup-operator-d49598cb6-v92zl    1/1       Running   0          51s
+fiware-etcd-etcd-operator-etcd-operator-d69bdfb64-m6bjz           1/1       Running   0          51s
+fiware-etcd-etcd-operator-etcd-restore-operator-5c65cd4469t9xrp   1/1       Running   0          51s
 ```
 
 ```bash
@@ -90,7 +97,7 @@ mac:$ kubectl apply -f etcd/etcd-cluster.yaml
 ```
 
 ```bash
-mac:$ kubectl get pods -l app=etcd
+mac:fiware-demo1$ kubectl get pods -l app=etcd
 NAME                READY     STATUS    RESTARTS   AGE
 etcd-cluster-0000   1/1       Running   0          2m
 etcd-cluster-0001   1/1       Running   0          2m
@@ -98,33 +105,34 @@ etcd-cluster-0002   1/1       Running   0          2m
 ```
 
 ```bash
-mac:$ kubectl get services -l app=etcd
+mac:fiware-demo1$ kubectl get services -l app=etcd
 NAME                  TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
 etcd-cluster          ClusterIP   None           <none>        2379/TCP,2380/TCP   3m
 etcd-cluster-client   ClusterIP   10.0.228.101   <none>        2379/TCP            3m
 ```
 
 ```text
-mac:$ kubectl run --rm -i --tty fun --image quay.io/coreos/etcd --restart=Never -- /bin/sh
+mac:fiware-demo1$ kubectl run --rm -i --tty fun --image quay.io/coreos/etcd --restart=Never -- /bin/sh
 / # etcdctl --peers http://etcd-cluster-client:2379 member list
 217daa653b4d7b56: name=etcd-cluster-0002 peerURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2379 isLeader=true
 41066d74e036e064: name=etcd-cluster-0001 peerURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2379 isLeader=false
 4e063fdd65c779b5: name=etcd-cluster-0000 peerURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2379 isLeader=false
+/ # exit
 ```
 
 ## start vernemq cluster on AKS
 
 * create usernames & passwords of vernemq
 ```bash
-mac:$ mkdir -p secrets
-mac:$ touch secrets/vmq.passwd
-mac:$ docker run --rm -v $(PWD)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd iotagent
-mac:$ docker run --rm -v $(PWD)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd raspberrypi
-mac:$ docker run --rm -v $(PWD)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd turtlesim
+mac:fiware-demo1$ mkdir -p secrets
+mac:fiware-demo1$ touch secrets/vmq.passwd
+mac:fiware-demo1$ docker run --rm -v $(PWD)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd iotagent
+mac:fiware-demo1$ docker run --rm -v $(PWD)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd raspberrypi
+mac:fiware-demo1$ docker run --rm -v $(PWD)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd turtlesim
 ```
 
 ```bash
-mac:$ docker run -it -v $(PWD)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain mqtt.nmatsui.work --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
+mac:fiware-demo1$ docker run -it -v $(PWD)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain mqtt.nmatsui.work --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
 ```
 
 * Another terminal
@@ -138,30 +146,33 @@ mac-another:$ az network dns record-set txt remove-record --resource-group nmats
 ```
 
 ```bash
-mac:$ cat secrets/DST_Root_CA_X3.pem secrets/archive/mqtt.nmatsui.work/chain1.pem > secrets/ca.crt
-mac:$ cp secrets/archive/mqtt.nmatsui.work/fullchain1.pem secrets/server.crt
-mac:$ cp secrets/archive/mqtt.nmatsui.work/privkey1.pem secrets/server.key
+mac:fiware-demo1$ cat secrets/DST_Root_CA_X3.pem secrets/archive/mqtt.nmatsui.work/chain1.pem > secrets/ca.crt
+mac:fiware-demo1$ cp secrets/archive/mqtt.nmatsui.work/fullchain1.pem secrets/server.crt
+mac:fiware-demo1$ cp secrets/archive/mqtt.nmatsui.work/privkey1.pem secrets/server.key
 ```
 
 ```bash
-mac:$ kubectl create secret generic vernemq-passwd --from-file=./secrets/vmq.passwd
-mac:$ kubectl create secret generic vernemq-certifications --from-file=./secrets/ca.crt --from-file=./secrets/server.crt --from-file=./secrets/server.key
+mac:fiware-demo1$ kubectl create secret generic vernemq-passwd --from-file=./secrets/vmq.passwd
+mac:fiware-demo1$ kubectl create secret generic vernemq-certifications --from-file=./secrets/ca.crt --from-file=./secrets/server.crt --from-file=./secrets/server.key
 ```
 
 ```bash
-mac:$ kubectl get secrets
-NAME                     TYPE                                  DATA      AGE
-default-token-klh8w      kubernetes.io/service-account-token   3         14m
-vernemq-certifications   Opaque                                3         48s
-vernemq-passwd           Opaque                                1         1m
+mac:fiware-demo1$ kubectl get secrets
+NAME                                                          TYPE                                  DATA      AGE
+default-token-2klq6                                           kubernetes.io/service-account-token   3         19m
+fiware-etcd-etcd-operator-etcd-backup-operator-token-ghsq2    kubernetes.io/service-account-token   3         5m
+fiware-etcd-etcd-operator-etcd-operator-token-qm2xp           kubernetes.io/service-account-token   3         5m
+fiware-etcd-etcd-operator-etcd-restore-operator-token-4wzkm   kubernetes.io/service-account-token   3         5m
+vernemq-certifications                                        Opaque                                3         3s
+vernemq-passwd                                                Opaque                                1         11s
 ```
 
 ```bash
-mac:$ kubectl apply -f vernemq/vernemq-cluster.yaml
+mac:fiware-demo1$ kubectl apply -f vernemq/vernemq-cluster.yaml
 ```
 
 ```bash
-mac:$ kubectl get pods -l app=vernemq
+mac:fiware-demo1$ kubectl get pods -l app=vernemq
 NAME        READY     STATUS    RESTARTS   AGE
 vernemq-0   1/1       Running   0          1m
 vernemq-1   1/1       Running   0          1m
@@ -169,7 +180,7 @@ vernemq-2   1/1       Running   0          33s
 ```
 
 ```bash
-mac:$ kubectl exec vernemq-0 -- vmq-admin cluster show
+mac:fiware-demo1$ kubectl exec vernemq-0 -- vmq-admin cluster show
 +---------------------------------------------------+-------+
 |                       Node                        |Running|
 +---------------------------------------------------+-------+
@@ -180,19 +191,19 @@ mac:$ kubectl exec vernemq-0 -- vmq-admin cluster show
 ```
 
 ```bash
-mac:$ kubectl get services -l app=mqtts
+mac:fiware-demo1$ kubectl get services -l app=mqtts
 NAME      TYPE           CLUSTER-IP     EXTERNAL-IP       PORT(S)          AGE
 mqtts     LoadBalancer   10.0.170.212   WWW.XXX.YYY.ZZZ   8883:30187/TCP   3m
 ```
 
 ```bash
-mac:$ az network dns record-set a add-record --resource-group nmatsui_dns --zone-name nmatsui.work --record-set-name "mqtt" --ipv4-address "WWW.XXX.YYY.ZZZ"
+mac:fiware-demo1$ az network dns record-set a add-record --resource-group nmatsui_dns --zone-name nmatsui.work --record-set-name "mqtt" --ipv4-address "WWW.XXX.YYY.ZZZ"
 ```
 
 ## start ambassador on AKS
 
 ```bash
-mac:$ docker run -it -v $(PWD)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain api.nmatsui.work --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
+mac:fiware-demo1$ docker run -it -v $(PWD)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain api.nmatsui.work --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
 ```
 
 * Another terminal
@@ -206,15 +217,15 @@ mac-another:$ az network dns record-set txt remove-record --resource-group nmats
 ```
 
 ```bash
-mac:$ kubectl create secret tls ambassador-certs --cert=$(PWD)/secrets/live/api.nmatsui.work/fullchain.pem --key=$(PWD)/secrets/live/api.nmatsui.work/privkey.pem
+mac:fiware-demo1$ kubectl create secret tls ambassador-certs --cert=$(PWD)/secrets/live/api.nmatsui.work/fullchain.pem --key=$(PWD)/secrets/live/api.nmatsui.work/privkey.pem
 ```
 
 ```bash
-mac:$ kubectl apply -f ambassador/ambassador.yaml
+mac:fiware-demo1$ kubectl apply -f ambassador/ambassador.yaml
 ```
 
 ```bash
-mac:$ kubectl get pods -l service=ambassador
+mac:fiware-demo1$ kubectl get pods -l service=ambassador
 NAME                          READY     STATUS    RESTARTS   AGE
 ambassador-79768bd968-7n4vl   2/2       Running   0          50s
 ambassador-79768bd968-cpl5j   2/2       Running   0          50s
@@ -222,57 +233,61 @@ ambassador-79768bd968-h2ct2   2/2       Running   0          50s
 ```
 
 ```bash
-mac:$ kubectl get services -l service=ambassador
+mac:fiware-demo1$ kubectl get services -l service=ambassador
 NAME         TYPE           CLUSTER-IP    EXTERNAL-IP       PORT(S)                      AGE
 ambassador   LoadBalancer   10.0.191.59   www.xxx.yyy.zzz   443:30357/TCP,80:32755/TCP   4m
 ```
 
 ```bash
-mac:$ az network dns record-set a add-record --resource-group nmatsui_dns --zone-name nmatsui.work --record-set-name "api" --ipv4-address "www.xxx.yyy.zzz"
+mac:fiware-demo1$ az network dns record-set a add-record --resource-group nmatsui_dns --zone-name nmatsui.work --record-set-name "api" --ipv4-address "www.xxx.yyy.zzz"
 ```
 
 ```bash
-mac:$ STR=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32); cat << __EOS__ > secrets/auth-tokens.json
+mac:fiware-demo1$ STR=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32); cat << __EOS__ > secrets/auth-tokens.json
 {"${STR}": ["^/orion/.*$", "^/idas/.*$"]}
 __EOS__
 ```
 
 ```bash
-mac:$ kubectl create secret generic auth-tokens --from-file=./secrets/auth-tokens.json
+mac:fiware-demo1$ kubectl create secret generic auth-tokens --from-file=./secrets/auth-tokens.json
 ```
 
 ```bash
-mac:$ kubectl get secrets
-NAME                     TYPE                                  DATA      AGE
-ambassador-certs         kubernetes.io/tls                     2         1h
-auth-tokens              Opaque                                1         21s
-default-token-klh8w      kubernetes.io/service-account-token   3         2h
-vernemq-certifications   Opaque                                3         2h
-vernemq-passwd           Opaque                                1         2h
+mac:fiware-demo1$ kubectl get secrets
+NAME                                                          TYPE                                  DATA      AGE
+ambassador-certs                                              kubernetes.io/tls                     2         4m
+auth-tokens                                                   Opaque                                1         1s
+default-token-2klq6                                           kubernetes.io/service-account-token   3         28m
+fiware-etcd-etcd-operator-etcd-backup-operator-token-ghsq2    kubernetes.io/service-account-token   3         14m
+fiware-etcd-etcd-operator-etcd-operator-token-qm2xp           kubernetes.io/service-account-token   3         14m
+fiware-etcd-etcd-operator-etcd-restore-operator-token-4wzkm   kubernetes.io/service-account-token   3         14m
+vernemq-certifications                                        Opaque                                3         8m
+vernemq-passwd                                                Opaque                                1         8m
+```
+
+* confirm that local docker dameon has already started
+```bash
+mac:fiware-demo1$ az acr login --name fiwareacr
 ```
 
 ```bash
-mac:$ az acr login --name fiwareacr
+mac:fiware-demo1$ docker build -t fiwareacr.azurecr.io/tech-sketch/fiware-bearer-auth:0.1.0 ./ambassador/fiware-bearer-auth
+mac:fiware-demo1$ docker push fiwareacr.azurecr.io/tech-sketch/fiware-bearer-auth:0.1.0
 ```
 
 ```bash
-mac:$ docker build -t fiwareacr.azurecr.io/tech-sketch/fiware-bearer-auth:0.1.0 ./ambassador/fiware-bearer-auth
-mac:$ docker push fiwareacr.azurecr.io/tech-sketch/fiware-bearer-auth:0.1.0
-```
-
-```bash
-mac:$ az acr repository list --name fiwareacr --output table
+mac:fiware-demo1$ az acr repository list --name fiwareacr --output table
 Result
 ------------------------------
 tech-sketch/fiware-bearer-auth
 ```
 
 ```bash
-mac:$ kubectl apply -f ambassador/bearer-auth.yaml
+mac:fiware-demo1$ kubectl apply -f ambassador/bearer-auth.yaml
 ```
 
 ```bash
-mac:$ kubectl get pods -l pod=bearer-auth
+mac:fiware-demo1$ kubectl get pods -l pod=bearer-auth
 NAME                           READY     STATUS    RESTARTS   AGE
 bearer-auth-6fffdbd9c9-7kkpr   1/1       Running   0          56s
 bearer-auth-6fffdbd9c9-qxw6m   1/1       Running   0          56s
@@ -280,7 +295,7 @@ bearer-auth-6fffdbd9c9-sdn5b   1/1       Running   0          56s
 ```
 
 ```bash
-mac:$ kubectl get services -l service=bearer-auth
+mac:fiware-demo1$ kubectl get services -l service=bearer-auth
 NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
 bearer-auth   ClusterIP   10.0.129.102   <none>        3000/TCP   2m
 ```
@@ -288,11 +303,11 @@ bearer-auth   ClusterIP   10.0.129.102   <none>        3000/TCP   2m
 ## start orion on AKS
 
 ```bash
-mac:$ kubectl apply -f orion/orion-mongodb.yaml
+mac:fiware-demo1$ kubectl apply -f orion/orion-mongodb.yaml
 ```
 
 ```bash
-mac:$ kubectl get pods -l app=orion-mongodb
+mac:fiware-demo1$ kubectl get pods -l app=orion-mongodb
 NAME              READY     STATUS    RESTARTS   AGE
 orion-mongodb-0   2/2       Running   0          10m
 orion-mongodb-1   2/2       Running   0          7m
@@ -300,13 +315,13 @@ orion-mongodb-2   2/2       Running   0          5m
 ```
 
 ```bash
-mac:$ kubectl get services -l app=orion-mongodb
+mac:fiware-demo1$ kubectl get services -l app=orion-mongodb
 NAME            TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)     AGE
 orion-mongodb   ClusterIP   None         <none>        27017/TCP   10m
 ```
 
 ```bash
-mac:$ kubectl exec orion-mongodb-0 -c orion-mongodb -- mongo --eval 'printjson(rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};}))'
+mac:fiware-demo1$ kubectl exec orion-mongodb-0 -c orion-mongodb -- mongo --eval 'printjson(rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};}))'
 MongoDB shell version v3.6.4
 connecting to: mongodb://127.0.0.1:27017
 MongoDB server version: 3.6.4
@@ -327,11 +342,11 @@ MongoDB server version: 3.6.4
 ```
 
 ```bash
-mac:$ kubectl apply -f orion/orion.yaml
+mac:fiware-demo1$ kubectl apply -f orion/orion.yaml
 ```
 
 ```bash
-mac:$ kubectl get pods -l app=orion
+mac:fiware-demo1$ kubectl get pods -l app=orion
 NAME                     READY     STATUS    RESTARTS   AGE
 orion-54f5cdcb5d-d2pt5   1/1       Running   0          56s
 orion-54f5cdcb5d-hv274   1/1       Running   0          56s
@@ -339,13 +354,13 @@ orion-54f5cdcb5d-xbnx2   1/1       Running   0          56s
 ```
 
 ```bash
-mac:$ kubectl get services -l app=orion
+mac:fiware-demo1$ kubectl get services -l app=orion
 NAME      TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
 orion     ClusterIP   10.0.44.126   <none>        1026/TCP   1m
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" https://api.nmatsui.work/orion/v2/entities/
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" https://api.nmatsui.work/orion/v2/entities/
 HTTP/1.1 200 OK
 content-length: 2
 content-type: application/json
@@ -358,7 +373,7 @@ server: envoy
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" https://api.nmatsui.work/orion/v2/subscriptions/
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" https://api.nmatsui.work/orion/v2/subscriptions/
 HTTP/1.1 200 OK
 content-length: 2
 content-type: application/json
@@ -373,11 +388,11 @@ server: envoy
 ## start idas on AKS
 
 ```bash
-mac:$ kubectl apply -f idas/idas-mongodb.yaml
+mac:fiware-demo1$ kubectl apply -f idas/idas-mongodb.yaml
 ```
 
 ```bash
-mac:$ kubectl get pods -l app=idas-mongodb
+mac:fiware-demo1$ kubectl get pods -l app=idas-mongodb
 NAME             READY     STATUS    RESTARTS   AGE
 idas-mongodb-0   2/2       Running   0          12m
 idas-mongodb-1   2/2       Running   0          10m
@@ -385,13 +400,13 @@ idas-mongodb-2   2/2       Running   0          7m
 ```
 
 ```bash
-mac:$ kubectl get services -l app=idas-mongodb
+mac:fiware-demo1$ kubectl get services -l app=idas-mongodb
 NAME           TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)     AGE
 idas-mongodb   ClusterIP   None         <none>        27017/TCP   12m
 ```
 
 ```bash
-mac:$ kubectl exec idas-mongodb-0 -c idas-mongodb -- mongo --eval 'printjson(rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};}))'
+mac:fiware-demo1$ kubectl exec idas-mongodb-0 -c idas-mongodb -- mongo --eval 'printjson(rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};}))'
 MongoDB shell version v3.6.4
 connecting to: mongodb://127.0.0.1:27017
 MongoDB server version: 3.6.4
@@ -411,34 +426,64 @@ MongoDB server version: 3.6.4
 ]
 ```
 
+```bash
+mac:fiware-demo1$ az acr login --name fiwareacr
+mac:fiware-demo1$ docker build -t fiwareacr.azurecr.io/tech-sketch/fiware-mqtt-msgfilter:0.1.0 idas/fiware-mqtt-msgfilter/
+mac:fiware-demo1$ docker push fiwareacr.azurecr.io/tech-sketch/fiware-mqtt-msgfilter:0.1.0
+```
+
+```bash
+mac:fiware-demo1$ az acr repository list --name fiwareacr --output table
+Result
+---------------------------------
+tech-sketch/fiware-bearer-auth
+tech-sketch/fiware-mqtt-msgfilter
+```
+
+```bash
+mac:fiware-demo1$ kubectl apply -f idas/mqtt-msgfilter.yaml
+```
+
+```bash
+mac:fiware-demo1$ kubectl get pods -l pod=mqtt-msgfilter
+NAME                              READY     STATUS    RESTARTS   AGE
+mqtt-msgfilter-6f76445596-cmbqz   1/1       Running   0          26s
+mqtt-msgfilter-6f76445596-wrhzb   1/1       Running   0          26s
+mqtt-msgfilter-6f76445596-znnvg   1/1       Running   0          26s
+```
+
+```bash
+mac:fiware-demo1$ kubectl get services -l service=mqtt-msgfilter
+NAME             TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
+mqtt-msgfilter   ClusterIP   10.0.133.42   <none>        5001/TCP   43s
+```
+
 * replace `<<password_of_iotagent>>` to the password of "iotagent"
 ```bash
-mac:$ sed -e 's/<<password_of_iotagent>>/XXXXXXXXXXXX/g' idas/iotagent-ul/config.js.template > idas/iotagent-ul/config.js
+mac:fiware-demo1$ sed -e 's/<<password_of_iotagent>>/XXXXXXXXXXXX/g' idas/iotagent-ul/config.js.template > idas/iotagent-ul/config.js
 ```
 
 ```bash
-mac:$ az acr login --name fiwareacr
+mac:fiware-demo1$ az acr login --name fiwareacr
+mac:fiware-demo1$ docker build -t fiwareacr.azurecr.io/tech-sketch/iotagent-ul:1.6.0 idas/iotagent-ul/
+mac:fiware-demo1$ docker push fiwareacr.azurecr.io/tech-sketch/iotagent-ul:1.6.0
 ```
 
 ```bash
-mac:$ docker build -t fiwareacr.azurecr.io/tech-sketch/iotagent-ul:1.6.0 idas/iotagent-ul/
-mac:$ docker push fiwareacr.azurecr.io/tech-sketch/iotagent-ul:1.6.0
-```
-
-```bash
-mac:$ az acr repository list --name fiwareacr --output table
+mac:fiware-demo1$ az acr repository list --name fiwareacr --output table
 Result
-------------------------------
+---------------------------------
 tech-sketch/fiware-bearer-auth
+tech-sketch/fiware-mqtt-msgfilter
 tech-sketch/iotagent-ul
 ```
 
 ```bash
-mac:$ kubectl apply -f idas/iotagent-ul.yaml
+mac:fiware-demo1$ kubectl apply -f idas/iotagent-ul.yaml
 ```
 
 ```bash
-mac:$ kubectl get pods -l app=iotagent-ul
+mac:fiware-demo1$ kubectl get pods -l app=iotagent-ul
 NAME                           READY     STATUS    RESTARTS   AGE
 iotagent-ul-79685b64bf-8krps   1/1       Running   0          3m
 iotagent-ul-79685b64bf-m6nlg   1/1       Running   0          3m
@@ -446,13 +491,13 @@ iotagent-ul-79685b64bf-mjpbl   1/1       Running   0          3m
 ```
 
 ```bash
-mac:$ kubectl get services -l app=iotagent-ul
+mac:fiware-demo1$ kubectl get services -l app=iotagent-ul
 NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
 iotagent-ul   ClusterIP   10.0.180.155   <none>        4041/TCP,7896/TCP   43s
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /*" https://api.nmatsui.work/idas/ul20/manage/iot/services/
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /*" https://api.nmatsui.work/idas/ul20/manage/iot/services/
 HTTP/1.1 200 OK
 x-powered-by: Express
 fiware-correlator: c114fc5e-b4a2-40f6-b7fe-1d68369784e5
@@ -467,7 +512,7 @@ server: envoy
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/
 HTTP/1.1 200 OK
 x-powered-by: Express
 fiware-correlator: 1d1ee2f1-83e4-454e-8ef5-a10fd49630ab
@@ -481,34 +526,48 @@ server: envoy
 {"count":0,"devices":[]}
 ```
 
+## start cmd-proxy on AKS
 ```bash
-mac:$ az acr login --name fiwareacr
-mac:$ docker build -t fiwareacr.azurecr.io/tech-etch/fiware-mqtt-msgfilter:0.1.0 idas/fiware-mqtt-msgfilter/
-mac:$ docker push fiwareacr.azurecr.io/tech-sketch/fiware-mqtt-msgfilter:0.1.0
+mac:fiware-demo1$ az acr login --name fiwareacr
 ```
 
 ```bash
-mac:$ kubectl apply -f idas/mqtt-msgfilter.yaml
+mac:fiware-demo1$ docker build --build-arg PORT=8888 -t fiwareacr.azurecr.io/tech-sketch/fiware-cmd-proxy:0.1.0 ./controller/fiware-cmd-proxy/
+mac:fiware-demo1$ docker push fiwareacr.azurecr.io/tech-sketch/fiware-cmd-proxy:0.1.0
 ```
 
 ```bash
-mac:$ kubectl get pods -l pod=mqtt-msgfilter
-NAME                              READY     STATUS    RESTARTS   AGE
-mqtt-msgfilter-6f76445596-cmbqz   1/1       Running   0          26s
-mqtt-msgfilter-6f76445596-wrhzb   1/1       Running   0          26s
-mqtt-msgfilter-6f76445596-znnvg   1/1       Running   0          26s
+mac:fiware-demo1$ az acr repository list --name fiwareacr --output table
+Result
+---------------------------------
+tech-sketch/fiware-bearer-auth
+tech-sketch/fiware-cmd-proxy
+tech-sketch/fiware-mqtt-msgfilter
+tech-sketch/iotagent-ul
 ```
 
 ```bash
-mac:$ kubectl get services -l service=mqtt-msgfilter
-NAME             TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
-mqtt-msgfilter   ClusterIP   10.0.133.42   <none>        5001/TCP   43s
+mac:fiware-demo1$ kubectl apply -f controller/fiware-cmd-proxy.yaml
+```
+
+```bash
+mac:fiware-demo1$ kubectl get pods -l pod=cmd-proxy
+NAME                         READY     STATUS    RESTARTS   AGE
+cmd-proxy-58c756cbcd-q7jzz   1/1       Running   0          5s
+cmd-proxy-58c756cbcd-rs75j   1/1       Running   0          5s
+cmd-proxy-58c756cbcd-v9ptr   1/1       Running   0          5s
+```
+
+```bash
+mac:fiware-demo1$ kubectl get services -l service=cmd-proxy
+NAME        TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+cmd-proxy   ClusterIP   10.0.208.226   <none>        8888/TCP   34s
 ```
 
 ## register "demo1" service
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/services/ -X POST -d @- <<__EOS__
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/services/ -X POST -d @- <<__EOS__
 {
   "services": [
     {
@@ -523,7 +582,7 @@ __EOS__
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /*" https://api.nmatsui.work/idas/ul20/manage/iot/services/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /*" https://api.nmatsui.work/idas/ul20/manage/iot/services/ | jq .
 {
   "count": 1,
   "services": [
@@ -548,7 +607,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
 ## register "gamepad" device
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
 {
   "devices": [
     {
@@ -571,7 +630,7 @@ __EOS__
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/gamepad/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/gamepad/ | jq .
 {
   "device_id": "gamepad",
   "service": "demo1",
@@ -594,7 +653,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
 {
   "id": "gamepad",
   "type": "demo1",
@@ -613,44 +672,45 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
 
 ## test publishing an attribute from gamepad to orion through MQTT and idas
 
-```bash
-mac:$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
+```text
+mac:fiware-demo1$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
 ...
 ```
 
 ```bash
-raspberrypi:$ ./main.py
-2018/05/03 09:28:18 [   INFO] __main__ - run script using pxkwcr.yaml
-2018/05/03 09:28:18 [   INFO] src.controller - initialized FUJIWORK PXKWCR Controller
-2018/05/03 09:28:18 [   INFO] src.controller - start publishing...
+raspberrypi:raspi_gamepad$ ./main.py
+2018/05/06 11:46:04 [   INFO] __main__ - run script using pxkwcr.yaml
+2018/05/06 11:46:04 [   INFO] src.controller - initialized FUJIWORK PXKWCR Controller
+2018/05/06 11:46:04 [   INFO] src.controller - start publishing...
+...
 ```
 
 * press 'circle' button of gamepad
 ```bash
-raspberrypi:$ ./main.py
+raspberrypi:raspi_gamepad$ ./main.py
 ...
-2018/05/03 09:28:27 [   INFO] src.controller - published "button|circle" to "/demo1/gamepad/attrs"
-2018/05/03 09:28:27 [   INFO] src.controller - connected mqtt broker[mqtt.nmatsui.work:8883], response_code=0
-...
-```
-
-```bash
-mac:$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
-...
-...
-Client mosqsub|76808-Nobuyukin received PUBLISH (d0, q0, r0, m0, '/demo1/gamepad/attrs', ... (13 bytes))
-button|circle
+2018/05/06 11:46:15 [   INFO] src.controller - published "2018-05-06T02:46:14.876494+0000|button|circle" to "/demo1/gamepad/attrs"
+2018/05/06 11:46:15 [   INFO] src.controller - connected mqtt broker[mqtt.nmatsui.work:8883], response_code=0
 ...
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
+mac:fiware-demo1$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
+...
+...
+Client mosqsub|60435-MacBook-P received PUBLISH (d0, q0, r0, m0, '/demo1/gamepad/attrs', ... (45 bytes))
+2018-05-06T02:46:14.876494+0000|button|circle
+...
+```
+
+```bash
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
 {
   "id": "gamepad",
   "type": "demo1",
   "TimeInstant": {
     "type": "ISO8601",
-    "value": "2018-05-03T06:07:55.00Z",
+    "value": "2018-05-06T02:46:14.876494+0000",
     "metadata": {}
   },
   "button": {
@@ -659,7 +719,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
     "metadata": {
       "TimeInstant": {
         "type": "ISO8601",
-        "value": "2018-05-03T06:07:55.499Z"
+        "value": "2018-05-06T02:46:14.876494+0000"
       }
     }
   }
@@ -669,7 +729,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
 ## register "turtlesim" device
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
 {
   "devices": [
     {
@@ -692,7 +752,7 @@ __EOS__
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/turtlesim/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/turtlesim/ | jq .
 {
   "device_id": "turtlesim",
   "service": "demo1",
@@ -715,7 +775,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
 ```
 
 ```bash
-$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
 {
   "id": "turtlesim",
   "type": "demo1",
@@ -745,34 +805,36 @@ $ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authori
 ## test subscribing a cmd from orion to ros and publishing a cmdexe from ros to orion through MQTT and idas
 
 ```bash
-mac:$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
+mac:fiware-demo1$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
+...
+```
+
+* start X on ros server and login X using RDP
+
+```bash
+ros-terminal1:ros_ws$ source devel/setup.bash
+ros-terminal1:ros_ws$ roscore
 ...
 ```
 
 ```bash
-ros-terminal1:$ source devel/setup.bash
-ros-terminal1:$ roscore
+ros-terminal2:ros_ws$ source devel/setup.bash
+ros-terminal2:ros_ws$ rosrun turtlesim turtlesim_node
 ...
 ```
 
 ```bash
-ros-terminal2:$ source devel/setup.bash
-ros-terminal2:$ rosrun turtlesim turtlesim_node
+ros-terminal3:ros_ws$ source devel/setup.bash
+ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
 ...
-```
-
-```bash
-ros-terminal3:$ source devel/setup.bash
-ros-terminal3:$ roslaunch turtlesim_operator turtlesim_operator.launch
-...
-[INFO] [1525308700.174050]: [turtlesim_operator.command_sender:CommandSender._on_connect] mqtt connect status=0
-[INFO] [1525308700.174342]: [turtlesim_operator.attribute_receiver:AttributeReceiver._on_connect] mqtt connect status=0
+[INFO] [1525575494.645546]: [turtlesim_operator.command_sender:CommandSender._on_connect] mqtt connect status=0
+[INFO] [1525575494.648536]: [turtlesim_operator.attribute_receiver:AttributeReceiver._on_connect] mqtt connect status=0
 ...
 ```
 
 * send 'circle' cmd to 'turtlesim' entity
 ```bash
-mac:TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v1/updateContext -d @-<<__EOS__ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v1/updateContext -d @-<<__EOS__ | jq .
 {
   "contextElements": [
     {
@@ -794,7 +856,7 @@ __EOS__
 ```
 
 ```bash
-mac:$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
+mac:fiware-demo1$ mosquitto_sub -h mqtt.nmatsui.work -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P <<password_of_iotagent>>
 ...
 Client mosqsub|77956-Nobuyukin received PUBLISH (d0, q0, r0, m0, '/demo1/turtlesim/cmd', ... (21 bytes))
 turtlesim@move|circle
@@ -804,21 +866,21 @@ turtlesim@move|MOVED: circle
 ```
 
 ```bash
-ros-terminal3:$ roslaunch turtlesim_operator turtlesim_operator.launch
+ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
 ...
-[INFO] [1525308845.271134]: [turtlesim_operator.command_sender:CommandSender._on_message] received message from mqtt: turtlesim@move|circle
-[INFO] [1525308845.272738]: [turtlesim_operator.command_sender:CommandSender._do_circle] do circle
+[INFO] [1525575568.112307]: [turtlesim_operator.command_sender:CommandSender._on_message] received message from mqtt: turtlesim@move|circle
+[INFO] [1525575568.114085]: [turtlesim_operator.command_sender:CommandSender._do_circle] do circle
 ...
 ```
 
 ```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
 {
   "id": "turtlesim",
   "type": "demo1",
   "TimeInstant": {
     "type": "ISO8601",
-    "value": "2018-05-03T00:54:05.00Z",
+    "value": "2018-05-06T02:59:28.00Z",
     "metadata": {}
   },
   "move_info": {
@@ -827,7 +889,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
     "metadata": {
       "TimeInstant": {
         "type": "ISO8601",
-        "value": "2018-05-03T00:54:05.363Z"
+        "value": "2018-05-06T02:59:28.233Z"
       }
     }
   },
@@ -837,7 +899,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
     "metadata": {
       "TimeInstant": {
         "type": "ISO8601",
-        "value": "2018-05-03T00:54:05.363Z"
+        "value": "2018-05-06T02:59:28.233Z"
       }
     }
   },
@@ -852,44 +914,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Aut
 ## register fiware-cmd-proxy
 
 ```bash
-mac:$ az acr login --name fiwareacr
-```
-
-```bash
-mac:$ CMD_PROXY_PORT="8888"
-mac:$ docker build --build-arg PORT=${CMD_PROXY_PORT} -t fiwareacr.azurecr.io/tech-sketch/fiware-cmd-proxy:0.1.0 ./controller/fiware-cmd-proxy/
-mac:$ docker push fiwareacr.azurecr.io/tech-sketch/fiware-cmd-proxy:0.1.0
-```
-
-```bash
-mac:$ az acr repository list --name fiwareacr --output table
-Result
-------------------------------
-tech-sketch/fiware-bearer-auth
-tech-sketch/fiware-cmd-proxy
-tech-sketch/iotagent-ul
-```
-
-```bash
-mac:$ kubectl apply -f controller/fiware-cmd-proxy.yaml
-```
-
-```bash
-mac:$ kubectl get pods -l pod=cmd-proxy
-NAME                         READY     STATUS    RESTARTS   AGE
-cmd-proxy-58c756cbcd-q7jzz   1/1       Running   0          5s
-cmd-proxy-58c756cbcd-rs75j   1/1       Running   0          5s
-cmd-proxy-58c756cbcd-v9ptr   1/1       Running   0          5s
-```
-
-```bash
-mac:$ kubectl get services -l service=cmd-proxy
-NAME        TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-cmd-proxy   ClusterIP   10.0.208.226   <none>        8888/TCP   34s
-```
-
-```bash
-mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v2/subscriptions/ -X POST -d @- <<__EOS__
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v2/subscriptions/ -X POST -d @- <<__EOS__
 {
   "subject": {
     "entities": [{
@@ -908,10 +933,10 @@ __EOS__
 ```
 
 ```bash
-$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" https://api.nmatsui.work/orion/v2/subscriptions/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" https://api.nmatsui.work/orion/v2/subscriptions/ | jq .
 [
   {
-    "id": "5aeac0c73c67e1d449c3dc85",
+    "id": "5aee70ef59a5a45b7935a8cc",
     "status": "active",
     "subject": {
       "entities": [
@@ -926,17 +951,23 @@ $ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authori
     },
     "notification": {
       "timesSent": 1,
-      "lastNotification": "2018-05-03T07:56:55.00Z",
+      "lastNotification": "2018-05-06T03:05:19.00Z",
       "attrs": [
         "button"
       ],
       "attrsFormat": "normalized",
       "http": {
         "url": "http://cmd-proxy:8888/gamepad/"
-      },
-      "lastSuccess": "2018-05-03T07:56:55.00Z"
+      }
     }
   }
 ]
 ```
 
+## test gamepad and ros
+1. start `raspi_damepad/main.py` on raspberrypi
+1. start X on ros server
+1. start `roscore` on ros
+1. start `rosrun turtlesim turtlesim_node` on ros
+1. start `roslaunch turtlesim_operator turtlesim_operator.launch` on ros
+1. when you press a button of gamepad, "turtle" moves according to the pressed button
