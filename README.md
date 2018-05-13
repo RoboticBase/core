@@ -242,10 +242,35 @@ ambassador   LoadBalancer   10.0.191.59   www.xxx.yyy.zzz   443:30357/TCP,80:327
 mac:fiware-demo1$ az network dns record-set a add-record --resource-group nmatsui_dns --zone-name nmatsui.work --record-set-name "api" --ipv4-address "www.xxx.yyy.zzz"
 ```
 
+* create random string
 ```bash
-mac:fiware-demo1$ STR=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32); cat << __EOS__ > secrets/auth-tokens.json
-{"${STR}": ["^/orion/.*$", "^/idas/.*$"]}
-__EOS__
+mac:fiware-demo1$ cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32
+```
+
+* create `secrets/auth-tokens.json` like below:
+```json:secrets/auth-tokens.json
+{
+  "bearer_tokens": [
+      {
+          "token": "iRGTsKKHwgjf4rR2XMSN3oE9Dhm6ym3O",
+          "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
+      }, {
+          "token": "4Xc1GFa2D8zkZRbkdygm902oGYeUAJno",
+          "allowed_paths": ["^/idas/.*$"]
+      }
+  ],
+  "basic_auths": [
+      {
+          "username": "user1",
+          "password": "P@ssw0rd",
+          "allowed_paths": ["/controller/"]
+      }, {
+          "username": "user2",
+          "password": "P@ssw0rd",
+          "allowed_paths": ["/controller/"]
+      }
+  ]
+}
 ```
 
 ```bash
