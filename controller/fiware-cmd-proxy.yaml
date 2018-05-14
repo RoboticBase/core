@@ -4,6 +4,14 @@ metadata:
   name: cmd-proxy
   labels:
     service: cmd-proxy
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  controller-mapping
+      prefix: /controller/
+      service: http://cmd-proxy:8888
 spec:
   type: ClusterIP
   selector:
@@ -29,6 +37,10 @@ spec:
         image: fiwareacr.azurecr.io/tech-sketch/fiware-cmd-proxy:0.1.0
         imagePullPolicy: Always
         env:
+        - name: ORION_ENDPOINT
+          value: "http://orion:1026"
+        - name: PREFIX
+          value: "/controller"
         - name: LOG_LEVEL
           value: "DEBUG"
         ports:
