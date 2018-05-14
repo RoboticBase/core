@@ -93,7 +93,7 @@ fiware-etcd-etcd-operator-etcd-restore-operator-5c65cd4469t9xrp   1/1       Runn
 ```
 
 ```bash
-mac:$ kubectl apply -f etcd/etcd-cluster.yaml
+mac:fiware-demo1$ kubectl apply -f etcd/etcd-cluster.yaml
 ```
 
 ```bash
@@ -112,12 +112,10 @@ etcd-cluster-client   ClusterIP   10.0.228.101   <none>        2379/TCP         
 ```
 
 ```text
-mac:fiware-demo1$ kubectl run --rm -i --tty fun --image quay.io/coreos/etcd --restart=Never -- /bin/sh
-/ # etcdctl --peers http://etcd-cluster-client:2379 member list
-217daa653b4d7b56: name=etcd-cluster-0002 peerURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2379 isLeader=true
-41066d74e036e064: name=etcd-cluster-0001 peerURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2379 isLeader=false
-4e063fdd65c779b5: name=etcd-cluster-0000 peerURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2379 isLeader=false
-/ # exit
+mac:fiware-demo1$ kubectl run --rm -it etcd-client --image quay.io/coreos/etcd --restart=Never -- etcdctl --peers http://etcd-cluster-client:2379 member list
+324fbe655cac95f8: name=etcd-cluster-0000 peerURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2379 isLeader=true
+971de8afdc2639c4: name=etcd-cluster-0002 peerURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2379 isLeader=false
+ef8519feb19ec20c: name=etcd-cluster-0001 peerURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2379 isLeader=false
 ```
 
 ## start vernemq cluster on AKS
@@ -126,13 +124,13 @@ mac:fiware-demo1$ kubectl run --rm -i --tty fun --image quay.io/coreos/etcd --re
 ```bash
 mac:fiware-demo1$ mkdir -p secrets
 mac:fiware-demo1$ touch secrets/vmq.passwd
-mac:fiware-demo1$ docker run --rm -v $(PWD)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd iotagent
-mac:fiware-demo1$ docker run --rm -v $(PWD)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd raspberrypi
-mac:fiware-demo1$ docker run --rm -v $(PWD)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd turtlesim
+mac:fiware-demo1$ docker run --rm -v $(pwd)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd iotagent
+mac:fiware-demo1$ docker run --rm -v $(pwd)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd raspberrypi
+mac:fiware-demo1$ docker run --rm -v $(pwd)/secrets:/mnt -it erlio/docker-vernemq vmq-passwd /mnt/vmq.passwd turtlesim
 ```
 
 ```bash
-mac:fiware-demo1$ docker run -it -v $(PWD)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain mqtt.nmatsui.work --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
+mac:fiware-demo1$ docker run -it -v $(pwd)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain mqtt.nmatsui.work --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
 ```
 
 * Another terminal
@@ -203,7 +201,7 @@ mac:fiware-demo1$ az network dns record-set a add-record --resource-group nmatsu
 ## start ambassador on AKS
 
 ```bash
-mac:fiware-demo1$ docker run -it -v $(PWD)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain api.nmatsui.work --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
+mac:fiware-demo1$ docker run -it -v $(pwd)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain api.nmatsui.work --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
 ```
 
 * Another terminal
@@ -217,7 +215,7 @@ mac-another:$ az network dns record-set txt remove-record --resource-group nmats
 ```
 
 ```bash
-mac:fiware-demo1$ kubectl create secret tls ambassador-certs --cert=$(PWD)/secrets/live/api.nmatsui.work/fullchain.pem --key=$(PWD)/secrets/live/api.nmatsui.work/privkey.pem
+mac:fiware-demo1$ kubectl create secret tls ambassador-certs --cert=$(pwd)/secrets/live/api.nmatsui.work/fullchain.pem --key=$(pwd)/secrets/live/api.nmatsui.work/privkey.pem
 ```
 
 ```bash
@@ -263,11 +261,11 @@ mac:fiware-demo1$ cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32
       {
           "username": "user1",
           "password": "P@ssw0rd",
-          "allowed_paths": ["/controller/"]
+          "allowed_paths": ["/controller/web/"]
       }, {
           "username": "user2",
           "password": "P@ssw0rd",
-          "allowed_paths": ["/controller/"]
+          "allowed_paths": ["/controller/web/"]
       }
   ]
 }
@@ -385,7 +383,7 @@ orion     ClusterIP   10.0.44.126   <none>        1026/TCP   1m
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" https://api.nmatsui.work/orion/v2/entities/
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -i -H "Authorization: bearer ${TOKEN}" https://api.nmatsui.work/orion/v2/entities/
 HTTP/1.1 200 OK
 content-length: 2
 content-type: application/json
@@ -398,7 +396,7 @@ server: envoy
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" https://api.nmatsui.work/orion/v2/subscriptions/
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -i -H "Authorization: bearer ${TOKEN}" https://api.nmatsui.work/orion/v2/subscriptions/
 HTTP/1.1 200 OK
 content-length: 2
 content-type: application/json
@@ -522,7 +520,7 @@ iotagent-ul   ClusterIP   10.0.180.155   <none>        4041/TCP,7896/TCP   43s
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /*" https://api.nmatsui.work/idas/ul20/manage/iot/services/
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /*" https://api.nmatsui.work/idas/ul20/manage/iot/services/
 HTTP/1.1 200 OK
 x-powered-by: Express
 fiware-correlator: c114fc5e-b4a2-40f6-b7fe-1d68369784e5
@@ -537,7 +535,7 @@ server: envoy
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/
 HTTP/1.1 200 OK
 x-powered-by: Express
 fiware-correlator: 1d1ee2f1-83e4-454e-8ef5-a10fd49630ab
@@ -592,7 +590,7 @@ cmd-proxy   ClusterIP   10.0.208.226   <none>        8888/TCP   34s
 ## register "demo1" service
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/services/ -X POST -d @- <<__EOS__
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/services/ -X POST -d @- <<__EOS__
 {
   "services": [
     {
@@ -607,7 +605,7 @@ __EOS__
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /*" https://api.nmatsui.work/idas/ul20/manage/iot/services/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /*" https://api.nmatsui.work/idas/ul20/manage/iot/services/ | jq .
 {
   "count": 1,
   "services": [
@@ -632,7 +630,7 @@ mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl
 ## register "gamepad" device
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
 {
   "devices": [
     {
@@ -655,7 +653,7 @@ __EOS__
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/gamepad/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/gamepad/ | jq .
 {
   "device_id": "gamepad",
   "service": "demo1",
@@ -678,7 +676,7 @@ mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
 {
   "id": "gamepad",
   "type": "demo1",
@@ -729,7 +727,7 @@ Client mosqsub|60435-MacBook-P received PUBLISH (d0, q0, r0, m0, '/demo1/gamepad
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/gamepad/ | jq .
 {
   "id": "gamepad",
   "type": "demo1",
@@ -754,7 +752,7 @@ mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl
 ## register "turtlesim" device
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
 {
   "devices": [
     {
@@ -777,7 +775,7 @@ __EOS__
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/turtlesim/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/idas/ul20/manage/iot/devices/turtlesim/ | jq .
 {
   "device_id": "turtlesim",
   "service": "demo1",
@@ -800,7 +798,7 @@ mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
 {
   "id": "turtlesim",
   "type": "demo1",
@@ -859,7 +857,7 @@ ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
 
 * send 'circle' cmd to 'turtlesim' entity
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v1/updateContext -d @-<<__EOS__ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v1/updateContext -d @-<<__EOS__ | jq .
 {
   "contextElements": [
     {
@@ -899,7 +897,7 @@ ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.nmatsui.work/orion/v2/entities/turtlesim/ | jq .
 {
   "id": "turtlesim",
   "type": "demo1",
@@ -939,7 +937,7 @@ mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl
 ## register fiware-cmd-proxy
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v2/subscriptions/ -X POST -d @- <<__EOS__
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.nmatsui.work/orion/v2/subscriptions/ -X POST -d @- <<__EOS__
 {
   "subject": {
     "entities": [{
@@ -958,7 +956,7 @@ __EOS__
 ```
 
 ```bash
-mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.|keys[0]' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" https://api.nmatsui.work/orion/v2/subscriptions/ | jq .
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" https://api.nmatsui.work/orion/v2/subscriptions/ | jq .
 [
   {
     "id": "5aee70ef59a5a45b7935a8cc",
