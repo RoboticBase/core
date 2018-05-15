@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cmd-proxy
+  labels:
+    service: cmd-proxy
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  controller-mapping
+      prefix: /controller/
+      service: http://cmd-proxy:8888
+spec:
+  type: ClusterIP
+  selector:
+    pod: cmd-proxy
+  ports:
+  - name: cmd-proxy
+    port: 8888
+    targetPort: 8888
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: cmd-proxy
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        pod: cmd-proxy
+    spec:
+      containers:
+      - name: fiware-cmd-proxy
+        image: <<LOCAL_REPOSITORY>>/tech-sketch/fiware-cmd-proxy:0.1.0
+        imagePullPolicy: Always
+        env:
+        - name: ORION_ENDPOINT
+          value: "http://orion:1026"
+        - name: PREFIX
+          value: "/controller"
+        - name: LOG_LEVEL
+          value: "DEBUG"
+        ports:
+          - name: cmd-proxy
+            containerPort: 8888
