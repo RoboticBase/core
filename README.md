@@ -13,10 +13,30 @@ This repository construct a [FIWARE](http://www.fiware.org/) platform on [Kubern
 |:--|:--|
 |kubernetes|1.9.6|
 
+## create DNS zone of "cloudconductor.jp"
+
+```bash
+mac:fiware-demo1$ az group create --name dns-zone --location japaneast
+```
+
+```bash
+mac:fiware-demo1$ az network dns zone create --resource-group dns-zone --name "cloudconductor.jp"
+```
+
+```bash
+mac:fiware-demo1$ az network dns zone show --resource-group dns-zone --name "cloudconductor.jp" | jq ".nameServers"
+[
+  "ns1-09.azure-dns.com.",
+  "ns2-09.azure-dns.net.",
+  "ns3-09.azure-dns.org.",
+  "ns4-09.azure-dns.info."
+]
+```
+
 ## start private registry on Azure Container Registry
 
 ```bash
-mac:fiware-demo1$ az login
+mac:fiware-demo1$ az login --tenant tisstc01.onmicrosoft.com
 ```
 
 ```bash
@@ -30,7 +50,21 @@ mac:fiware-demo1$ az acr create --resource-group fiware-demo --name fiwareacr --
 ## start kubernetes on Azure AKS
 
 ```bash
+mac:fiware-demo1$ az provider register -n Microsoft.Compute
+mac:fiware-demo1$ az provider register -n Microsoft.Storage
+mac:fiware-demo1$ az provider register -n Microsoft.Network
 mac:fiware-demo1$ az provider register -n Microsoft.ContainerService
+```
+
+```bash
+mac:fiware-demo1$ az provider show -n Microsoft.Compute | jq '.registrationState' -r
+Registered
+mac:fiware-demo1$ az provider show -n Microsoft.Storage | jq '.registrationState' -r
+Registered
+mac:fiware-demo1$ az provider show -n Microsoft.Network | jq '.registrationState' -r
+Registered
+mac:fiware-demo1$ az provider show -n Microsoft.ContainerService | jq '.registrationState' -r
+Registered
 ```
 
 ```bash
@@ -111,11 +145,11 @@ etcd-cluster          ClusterIP   None           <none>        2379/TCP,2380/TCP
 etcd-cluster-client   ClusterIP   10.0.228.101   <none>        2379/TCP            3m
 ```
 
-```text
-mac:fiware-demo1$ kubectl run --rm -it etcd-client --image quay.io/coreos/etcd --restart=Never -- etcdctl --peers http://etcd-cluster-client:2379 member list
-324fbe655cac95f8: name=etcd-cluster-0000 peerURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2379 isLeader=true
-971de8afdc2639c4: name=etcd-cluster-0002 peerURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2379 isLeader=false
-ef8519feb19ec20c: name=etcd-cluster-0001 peerURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2379 isLeader=false
+```bash
+mac:fiware-demo1$ kubectl run --rm -it etcdclient --image quay.io/coreos/etcd --restart=Never -- etcdctl --peers http://etcd-cluster-client:2379 member list
+ab42ec96726a2edc: name=etcd-cluster-0001 peerURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0001.etcd-cluster.default.svc:2379 isLeader=false
+d3dfab2ca43ad0a7: name=etcd-cluster-0000 peerURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0000.etcd-cluster.default.svc:2379 isLeader=true
+d7c603bd213157b2: name=etcd-cluster-0002 peerURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2380 clientURLs=http://etcd-cluster-0002.etcd-cluster.default.svc:2379 isLeader=false
 ```
 
 ## start vernemq cluster on AKS
