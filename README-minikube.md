@@ -529,7 +529,71 @@ server: envoy
 {"count":0,"devices":[]}
 ```
 
-## start cmd-proxy on AKS
+## start cygnus on minikube
+
+```bash
+mac:fiware-demo1$ kubectl apply -f cygnus/cygnus-mongodb-minikube.yaml
+```
+
+```bash
+mac:fiware-demo1$ kubectl get pods -l app=cygnus-mongodb
+NAME               READY     STATUS    RESTARTS   AGE
+cygnus-mongodb-0   2/2       Running   0          29s
+cygnus-mongodb-1   2/2       Running   0          20s
+cygnus-mongodb-2   2/2       Running   0          12s
+```
+
+```bash
+mac:fiware-demo1$ kubectl get services -l app=cygnus-mongodb
+NAME             TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)     AGE
+cygnus-mongodb   ClusterIP   None         <none>        27017/TCP   55s
+```
+
+```bash
+mac:fiware-demo1$ kubectl exec cygnus-mongodb-0 -c cygnus-mongodb -- mongo --eval 'printjson(rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};}))'
+MongoDB shell version v3.6.4
+connecting to: mongodb://127.0.0.1:27017
+MongoDB server version: 3.6.4
+[
+	{
+		"name" : "cygnus-mongodb-0.cygnus-mongodb.default.svc.cluster.local:27017",
+		"stateStr" : "PRIMARY"
+	},
+	{
+		"name" : "cygnus-mongodb-1.cygnus-mongodb.default.svc.cluster.local:27017",
+		"stateStr" : "SECONDARY"
+	},
+	{
+		"name" : "cygnus-mongodb-2.cygnus-mongodb.default.svc.cluster.local:27017",
+		"stateStr" : "SECONDARY"
+	}
+]
+```
+
+```bash
+mac:fiware-demo1$ docker build -t ${HOST_IPADDR}:5000/tech-sketch/cygnus-ngsi:1.8.0 cygnus/fiware-cygnus/
+mac:fiware-demo1$ docker push ${HOST_IPADDR}:5000/tech-sketch/cygnus-ngsi:1.8.0
+```
+
+```bash
+mac:fiware-demo1$ sed -e "s/<<LOCAL_REPOSITORY>>/${HOST_IPADDR}:5000/g" cygnus/cygnus-minikube.yaml | kubectl apply -f -
+```
+
+```bash
+mac:fiware-demo1$ kubectl get pods -l app=cygnus
+NAME                      READY     STATUS    RESTARTS   AGE
+cygnus-5c68fb6578-fdmtg   1/1       Running   0          44s
+cygnus-5c68fb6578-stmds   1/1       Running   0          44s
+cygnus-5c68fb6578-z85lp   1/1       Running   0          44s
+```
+
+```bash
+mac:fiware-demo1$ kubectl get services -l app=cygnus
+NAME      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
+cygnus    ClusterIP   10.103.255.240   <none>        5050/TCP,8081/TCP   1m
+```
+
+## start cmd-proxy on miikube
 
 ```bash
 mac:fiware-demo1$ docker build --build-arg PORT=8888 -t ${HOST_IPADDR}:5000/tech-sketch/fiware-cmd-proxy:0.1.0 ./controller/fiware-cmd-proxy/
@@ -954,6 +1018,87 @@ mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].t
       "attrsFormat": "normalized",
       "http": {
         "url": "http://cmd-proxy:8888/gamepad/"
+      }
+    }
+  }
+]
+```
+
+## register cygnus
+
+```bash
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" http://127.0.0.1:8080/orion/v2/subscriptions/ -X POST -d @- <<__EOS__
+{
+  "subject": {
+    "entities": [{
+      "idPattern": "gamepad.*",
+      "type": "demo1"
+    }]
+  },
+  "notification": {
+    "http": {
+      "url": "http://cygnus:5050/notify"
+    },
+    "attrs": ["button"],
+    "attrsFormat": "legacy"
+  }
+}
+__EOS__
+```
+
+```bash
+mac:fiware-demo1$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" http://127.0.0.1:8080/orion/v2/subscriptions/ | jq .
+[
+  {
+    "id": "5afa4e2b3b474a846e5a86ff",
+    "status": "active",
+    "subject": {
+      "entities": [
+        {
+          "idPattern": "gamepad.*",
+          "type": "demo1"
+        }
+      ],
+      "condition": {
+        "attrs": []
+      }
+    },
+    "notification": {
+      "timesSent": 99,
+      "lastNotification": "2018-05-15T06:00:02.00Z",
+      "attrs": [
+        "button"
+      ],
+      "attrsFormat": "normalized",
+      "http": {
+        "url": "http://cmd-proxy:8888/gamepad/"
+      },
+      "lastSuccess": "2018-05-15T06:00:02.00Z"
+    }
+  },
+  {
+    "id": "5afb5e6dd7e508de16c8faee",
+    "status": "active",
+    "subject": {
+      "entities": [
+        {
+          "idPattern": "gamepad.*",
+          "type": "demo1"
+        }
+      ],
+      "condition": {
+        "attrs": []
+      }
+    },
+    "notification": {
+      "timesSent": 1,
+      "lastNotification": "2018-05-15T22:25:49.00Z",
+      "attrs": [
+        "button"
+      ],
+      "attrsFormat": "normalized",
+      "http": {
+        "url": "http://cygnus:5050/notify"
       }
     }
   }
