@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: vernemq
-        image: erlio/docker-vernemq:1.3.1
+        image: nmatsui/docker-vernemq:debug_insecure_kubernetes_restapi
+        # image: erlio/docker-vernemq:1.3.1
         ports:
         - containerPort: 1883
           name: mqtt
@@ -42,6 +43,10 @@ spec:
               fieldPath: metadata.name
         - name: DOCKER_VERNEMQ_DISCOVERY_KUBERNETES
           value: "1"
+        - name: DOCKER_VERNEMQ_KUBERNETES_APP_LABEL
+          value: "vernemq"
+        - name: DOCKER_VERNEMQ_KUBERNETES_NAMESPACE
+          value: "default"
         - name: DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MINIMUM
           value: "9100"
         - name: DOCKER_VERNEMQ_ERLANG__DISTRIBUTION__PORT_RANGE__MAXIMUM

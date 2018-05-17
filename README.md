@@ -8,6 +8,7 @@ This repository construct a [FIWARE](http://www.fiware.org/) platform on [Kubern
 |azure cli|2.0.31|
 |kubectl|1.10.1|
 |helm|2.8.2|
+|envsubst|0.19.8.1|
 
 ||version|
 |:--|:--|
@@ -45,6 +46,8 @@ mac:fiware-demo1$ az group create --name fiware-demo --location centralus
 
 ```bash
 mac:fiware-demo1$ az acr create --resource-group fiware-demo --name fiwareacr --sku Basic
+mac:fiware-demo1$ export REPOSITORY=$(az acr show --resource-group fiware-demo --name fiwareacr | jq '.loginServer' -r); echo ${REPOSITORY}
+fiwareacr.azurecr.io
 ```
 
 ## start kubernetes on Azure AKS
@@ -164,23 +167,26 @@ mac:fiware-demo1$ docker run --rm -v $(pwd)/secrets:/mnt -it erlio/docker-vernem
 ```
 
 ```bash
-mac:fiware-demo1$ docker run -it -v $(pwd)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain mqtt.nmatsui.work --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
+mac:fiware-demo1$ docker run -it -v $(pwd)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain mqtt.cloudconductor.jp --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
 ```
 
 * Another terminal
 ```bash
-mac-another:$ az network dns record-set txt add-record --resource-group nmatsui_dns --zone-name nmatsui.work --record-set-name "_acme-challenge.mqtt" --value "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+mac-another:$ az network dns record-set txt add-record --resource-group dns-zone --zone-name "cloudconductor.jp" --record-set-name "_acme-challenge.mqtt" --value "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ```
+
+* Press 'ENTER' at original terminal
+
 
 * After completion of certbot
 ```bash
-mac-another:$ az network dns record-set txt remove-record --resource-group nmatsui_dns --zone-name nmatsui.work --record-set-name "_acme-challenge.mqtt" --value "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+mac-another:$ az network dns record-set txt remove-record --resource-group dns-zone --zone-name "cloudconductor.jp" --record-set-name "_acme-challenge.mqtt" --value "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ```
 
 ```bash
-mac:fiware-demo1$ cat secrets/DST_Root_CA_X3.pem secrets/archive/mqtt.nmatsui.work/chain1.pem > secrets/ca.crt
-mac:fiware-demo1$ cp secrets/archive/mqtt.nmatsui.work/fullchain1.pem secrets/server.crt
-mac:fiware-demo1$ cp secrets/archive/mqtt.nmatsui.work/privkey1.pem secrets/server.key
+mac:fiware-demo1$ cat secrets/DST_Root_CA_X3.pem secrets/archive/mqtt.cloudconductor.jp/chain1.pem > secrets/ca.crt
+mac:fiware-demo1$ cp secrets/archive/mqtt.cloudconductor.jp/fullchain1.pem secrets/server.crt
+mac:fiware-demo1$ cp secrets/archive/mqtt.cloudconductor.jp/privkey1.pem secrets/server.key
 ```
 
 ```bash

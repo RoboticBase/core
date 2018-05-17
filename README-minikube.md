@@ -100,6 +100,7 @@ mac:fiware-demo1$ diff -u /tmp/docker-mac-configuration.json.org /tmp/docker-mac
 
 ```bash
 mac:fiware-demo1$ docker run --name registry -p 5000:5000 -d registry:2.6
+mac:fiware-demo1$ export REPOSITORY=${HOST_IPADDR}:5000;echo ${REPOSITORY}
 ```
 
 ## install helm
@@ -295,13 +296,6 @@ vernemq-passwd                                                Opaque
 ```bash
 mac:fiware-demo1$ docker build -t ${HOST_IPADDR}:5000/tech-sketch/fiware-bearer-auth:0.1.0 ./ambassador/fiware-bearer-auth
 mac:fiware-demo1$ docker push ${HOST_IPADDR}:5000/tech-sketch/fiware-bearer-auth:0.1.0
-```
-
-```bash
-mac:fiware-demo1$ az acr repository list --name fiwareacr --output table
-Result
-------------------------------
-tech-sketch/fiware-bearer-auth
 ```
 
 ```bash
