@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: fiware-cmd-proxy
-        image: fiwareacr.azurecr.io/tech-sketch/fiware-cmd-proxy:0.1.0
+        image: ${REPOSITORY}/tech-sketch/fiware-cmd-proxy:0.1.0
         imagePullPolicy: Always
         env:
         - name: ORION_ENDPOINT
@@ -43,6 +43,14 @@ spec:
           value: "/controller"
         - name: LOG_LEVEL
           value: "DEBUG"
+        - name: FIWARE_SERVICE
+          value: "${FIWARE_SERVICE}"
+        - name: FIWARE_SERVICEPATH
+          value: "${FIWARE_SERVICEPATH}"
+        - name: ROBOT_ID
+          value: "${ROBOT_ID}"
+        - name: ROBOT_TYPE
+          value: "${ROBOT_TYPE}"
         ports:
           - name: cmd-proxy
             containerPort: 8888
