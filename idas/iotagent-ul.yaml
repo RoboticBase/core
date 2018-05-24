@@ -44,5 +44,5 @@ spec:
     spec:
       containers:
       - name: iotagent-ul
-        image: fiwareacr.azurecr.io/tech-sketch/iotagent-ul:1.6.0
+        image: ${REPOSITORY}/tech-sketch/iotagent-ul:1.6.0
         imagePullPolicy: Always

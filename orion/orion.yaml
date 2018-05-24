@@ -38,7 +38,7 @@ spec:
       containers:
       - name: orion
         image: fiware/orion
-        args: ["-dbhost", "orion-mongodb", "-rplSet", "rs0", "-dbTimeout", "10000", "-logLevel", "DEBUG"]
+        args: ["-dbhost", "mongodb", "-rplSet", "rs0", "-dbTimeout", "10000", "-logLevel", "DEBUG"]
         ports:
         - containerPort: 1026
           name: orion

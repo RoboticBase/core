@@ -30,11 +30,11 @@ spec:
     spec:
       containers:
       - name: cygnus
-        image: <<LOCAL_REPOSITORY>>/tech-sketch/cygnus-ngsi:1.8.0
+        image: ${REPOSITORY}/tech-sketch/cygnus-ngsi:1.8.0
         imagePullPolicy: Always
         env:
         - name: CYGNUS_MONGO_HOSTS
-          value: "cygnus-mongodb:27017"
+          value: "mongodb:27017"
         - name: CYGNUS_MONGO_USER
           value: ""
         - name: CYGNUS_MONGO_PASS
