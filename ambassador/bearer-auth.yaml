@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: bearer-auth-api
-        image: fiwareacr.azurecr.io/tech-sketch/fiware-bearer-auth:0.1.0
+        image: ${REPOSITORY}/tech-sketch/fiware-bearer-auth:0.1.0
         imagePullPolicy: Always
         env:
         - name: LISTEN_PORT
@@ -47,4 +47,3 @@ spec:
         ports:
           - name: bearer-auth
             containerPort: 3000
-
