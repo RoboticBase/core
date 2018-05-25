@@ -1,16 +1,16 @@
 # 3. configure fiware on AKS
 
-Configure fiware on AKS like below:
+Configure fiware on AKS by following steps:
 
-1. register "demo1" service
-1. register "gamepad" device
-1. test publishing 'button' attribute from 'gamepad' to 'orion'
-1. register "turtlesim" device
-1. test publishing 'temperature' attribute from 'turtlesim' to orion, and subscribing 'move' command from orion to 'turtlesim'
-1. register "gopigo" device (if gopigo is available)
-1. test subscribing 'move' command from orion to 'gopigo' (if gopigo is available)
-1. register cygnus
-1. register fiware-cmd-proxy
+1. [register "demo1" service](#register-demo1-service)
+1. [register "gamepad" device](#register-gamepad-device)
+1. [test publishing 'button' attribute from 'gamepad' to 'orion'](#test-publishing-button-attribute-from-gamepad-to-orion)
+1. [register "turtlesim" device](#register-turtlesim-device)
+1. [test publishing 'temperature' attribute from 'turtlesim' to orion, and subscribing 'move' command from orion to 'turtlesim'](#test-publishing-temperature-attribute-from-turtlesim-to-orion-and-subscribing-move-command-from-orion-to-turtlesim)
+1. [register "gopigo" device (if gopigo is available)](#register-gopigo-device-if-gopigo-is-available)
+1. [test subscribing 'move' command from orion to 'gopigo' (if gopigo is available)](#test-subscribing-move-command-from-orion-to-gopigo-if-gopigo-is-available)
+1. [register fiware cygnus as subscriber](#register-fiware-cygnus-as-subscriber)
+1. [register cmd-proxy as subscriber](#register-cmd-proxy-as-subscriber)
 
 **In the following document, replace "example.com" with your domain.**
 
@@ -682,7 +682,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);cu
 }
 ```
 
-## register cygnus
+## register fiware cygnus as subscriber
 
 ```bash
 mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.example.com/orion/v2/subscriptions/ -X POST -d @- <<__EOS__
@@ -822,7 +822,7 @@ MongoDB server version: 3.6.5
 { "_id" : ObjectId("5b0791597a204b000a487367"), "recvTime" : ISODate("2018-05-25T04:30:16.598Z"), "attrName" : "temperature", "attrType" : "float32", "attrValue" : "12.1000003815" }
 ```
 
-## register fiware-cmd-proxy
+## register cmd-proxy as subscriber
 
 ```bash
 mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.example.com/orion/v2/subscriptions/ -X POST -d @- <<__EOS__

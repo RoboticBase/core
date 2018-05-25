@@ -1,6 +1,11 @@
 # 1. prepare Microsoft Azure AKS
 
-Prepare [Microsoft Azure AKS](https://azure.microsoft.com/en-us/services/container-service/).
+Prepare [Microsoft Azure AKS](https://azure.microsoft.com/en-us/services/container-service/) by following steps:
+
+1. [create DNS zone](#create-dns-zone-of-examplecom)
+1. [start private registry](#start-private-registry-on-azure-container-registry)
+1. [start kubernetes](#start-kubernetes-on-azure-aks)
+1. [install helm](#install-helm)
 
 **In the following document, replace "example.com" with your domain and replace "tenant.onmicrosoft.com" with your tentant.**
 

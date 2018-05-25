@@ -1,21 +1,23 @@
 # 2. start containers for container-centric fiware demonstration on AKS
 
-Start pods & services on AKS like below:
+Start pods & services on AKS by following steps:
 
-1. start [etcd cluster](https://github.com/coreos/etcd)
-1. start [vernemq cluster](https://vernemq.com/)
-1. start [mongodb cluster](https://www.mongodb.com/)
-1. start [ambassador](https://www.getambassador.io/)
-1. start authorization & authentication servie
-1. start [fiware orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)
-1. start duplicate message filter service for idas
-1. start [fiware IDAS(iotagent-ul)](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)
-1. start [fiware cygnus](https://catalogue-server.fiware.org/enablers/cygnus)
-1. start command pxory service (this service connects 'gamepad' and 'web controller' to 'turtlesim' or 'gopigo')
+1. [start etcd cluster](#start-etcd-cluster-on-aks)
+1. [start vernemq cluster](#start-vernemq-cluster-on-aks)
+1. [start mongodb cluster](#start-mondodb-cluster-on-aks)
+1. [start ambassador](#start-ambassador-on-aks)
+1. [start authorization & authentication servie](#start-authorization--authentication-service-on-aks)
+1. [start fiware orion](#start-fiware-orion-on-aks)
+1. [start duplicate message filter service for idas](#start-duplicate-message-filter-service-for-idas)
+1. [start fiware IDAS(iotagent-ul)](#start-fiware-idasiotagent-ul-on-aks)
+1. [start fiware cygnus](#start-fiware-cygnus-on-aks)
+1. [start command pxory service](#start-command-proxy-service-on-aks)
 
 **In the following document, replace "example.com" with your domain.**
 
 ## start etcd cluster on AKS
+
+[etcd](https://github.com/coreos/etcd)
 
 ```bash
 mac:$ helm install stable/etcd-operator --name fiware-etcd --set rbac.create=false
@@ -56,6 +58,8 @@ d7c603bd213157b2: name=etcd-cluster-0002 peerURLs=http://etcd-cluster-0002.etcd-
 
 ## start vernemq cluster on AKS
 
+[vernemq](https://vernemq.com/)
+
 * create usernames & passwords of vernemq
 ```bash
 mac:$ mkdir -p secrets
@@ -89,7 +93,6 @@ mac-another:$ az network dns record-set list --resource-group dns-zone --zone-na
 ```
 
 * Press 'ENTER' at original terminal when `_acme-challenge.mqtt.example.com.` txt record is created.
-
 
 * After completion of certbot
 ```bash
@@ -159,6 +162,8 @@ mac:$ mosquitto_sub -h mqtt.example.com -p 8883 --cafile ./secrets/ca.crt -d -t 
 
 ## start mondodb cluster on AKS
 
+[mongodb](https://www.mongodb.com/)
+
 ```bash
 mac:$ kubectl apply -f mongodb/mongodb-cluster-azure.yaml
 ```
@@ -207,6 +212,8 @@ MongoDB server version: 3.6.5
 ```
 
 ## start ambassador on AKS
+
+[ambassador](https://www.getambassador.io/)
 
 ```bash
 mac:$ docker run -it -v $(pwd)/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain api.example.com --email nobuyuki.matsui@gmail.com --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns
@@ -355,7 +362,9 @@ NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
 bearer-auth   ClusterIP   10.0.129.102   <none>        3000/TCP   2m
 ```
 
-## start orion on AKS
+## start fiware orion on AKS
+
+[fiware orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)
 
 ```bash
 mac:$ kubectl apply -f orion/orion.yaml
@@ -435,7 +444,11 @@ NAME             TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
 mqtt-msgfilter   ClusterIP   10.0.133.42   <none>        5001/TCP   43s
 ```
 
-## start idas(iotagent-ul) on AKS
+## start fiware idas(iotagent-ul) on AKS
+
+[fiware IDAS(iotagent-ul)](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)
+
+**In this demonstration, we use customized iotagent-ul in order to ignore duplicate MQTT messages.**
 
 * replace `<<password_of_iotagent>>` to the password of "iotagent"
 ```bash
@@ -505,7 +518,11 @@ server: envoy
 {"count":0,"devices":[]}
 ```
 
-## start cygnus on AKS
+## start fiware cygnus on AKS
+
+[fiware cygnus](https://catalogue-server.fiware.org/enablers/cygnus)
+
+**In this demonstration, we use re-configured cygnus in order to revoke unnecessary sinks.**
 
 ```bash
 mac:$ az acr login --name fiwareacr
@@ -541,7 +558,11 @@ NAME      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
 cygnus    ClusterIP   10.103.255.240   <none>        5050/TCP,8081/TCP   1m
 ```
 
-## start cmd-proxy for 'turtlesim' on AKS
+## start command proxy service on AKS
+
+The 'command pxory service' connects 'gamepad' and 'web controller' to 'turtlesim' or 'gopigo'.
+
+In this step, we configure the service as connecting to 'turtlesim'. If you want to start the service as connecting to 'gopigo', use `ROBOT_ID=gopigo` instead of `ROBOT_ID=turtlesim`.
 
 ```bash
 mac:$ az acr login --name fiwareacr
@@ -561,7 +582,6 @@ tech-sketch/iotagent-ul
 ```
 
 * create three 'cmd-proxy' pods and a 'cmd-proxy' service to control 'turtlesim'.
-    * if you want to start 'cmd-proxy' for 'gopigo', use `ROBOT_ID=gopigo` instead of `ROBOT_ID=turtlesim`
 ```bash
 mac:$ env FIWARE_SERVICE=demo1 FIWARE_SERVICEPATH=/ ROBOT_ID=turtlesim ROBOT_TYPE=demo1 envsubst < controller/fiware-cmd-proxy.yaml | kubectl apply -f -
 ```

@@ -1,6 +1,11 @@
 # 4. operate 'turtlesim' using 'gamepad' and 'web controller'
 
-Operate 'turtlesim' using 'gamepad' and 'web controller' through fiware on AKS.
+Operate 'turtlesim' using 'gamepad' and 'web controller' through fiware on AKS by following steps:
+
+1. [reconfigure 'cmd-proxy' to connect 'turtlesim'](#reconfigure-cmd-proxy-to-connect-turtlesim)
+1. [start 'turtlesim'](#start-turtlesim)
+1. [operate 'turtlesim' using 'gamepad'](#operate-turtlesim-using-gamepad)
+1. [operate 'turtlesim' using 'web controller'](#operate-turtlesim-using-web-controller)
 
 **In the following document, replace "example.com" with your domain.**
 
@@ -56,7 +61,7 @@ nmatsui@:container-centric-fiware-demonstration (feature/web_controller_using_ba
     ```
 1. when you press a button of gamepad, 'turtle' moves according to the pressed button
 
-### operate 'turtlesim' using 'web controller'
+## operate 'turtlesim' using 'web controller'
 1. access to 'web controller( https://api.example.com/controller/web/ )'
 1. login 'web controller' using user/passwrod which is defined by `auth-token.json`
 1. when you press a button of web controller, 'turtle' moves according to the pressed button

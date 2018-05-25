@@ -1,6 +1,11 @@
 # 5. operate 'gopigo' using 'gamepad' and 'web controller' (if gopigo is available)
 
-Operate 'gopigo' using 'gamepad' and 'web controller' through fiware on AKS.
+Operate 'gopigo' using 'gamepad' and 'web controller' through fiware on AKS by following steps:
+
+1. [reconfigure 'cmd-proxy' to connect 'gopigo'](#reconfigure-cmd-proxy-to-connect-gopigo)
+1. [start 'gopigo'](#start-gopigo)
+1. [operate 'gopigo' using 'gamepad'](#operate-gopigo-using-gamepad)
+1. [operate 'gopigo' using 'web controller'](#operate-gopigo-using-web-controller)
 
 **In the following document, replace "example.com" with your domain.**
 
@@ -48,7 +53,7 @@ pod/cmd-proxy-74766cf8-v8g25   1/1       Running   0          19s
     ```
 1. when you press a button of gamepad, 'gopigo' moves according to the pressed button
 
-### operate 'gopigo' using 'web controller'
+## operate 'gopigo' using 'web controller'
 1. access to 'web controller( https://api.example.com/controller/web/ )'
 1. login 'web controller' using user/passwrod which is defined by `auth-token.json`
 1. when you press a button of web controller, 'gopigo' moves according to the pressed button
