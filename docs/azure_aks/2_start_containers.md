@@ -31,6 +31,11 @@ fiware-etcd-etcd-operator-etcd-restore-operator-5c65cd4469t9xrp   1/1       Runn
 ```
 
 ```bash
+mac:$ export POD=$(kubectl get pods -l app=fiware-etcd-etcd-operator-etcd-operator --namespace default --output name)
+mac:$ kubectl logs $POD --namespace=default
+```
+
+```bash
 mac:$ kubectl apply -f etcd/etcd-cluster.yaml
 ```
 

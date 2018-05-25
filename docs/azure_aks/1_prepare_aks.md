@@ -42,7 +42,6 @@ mac:$ az group create --name fiware-demo --location centralus
 ```bash
 mac:$ az acr create --resource-group fiware-demo --name fiwareacr --sku Basic
 mac:$ export REPOSITORY=$(az acr show --resource-group fiware-demo --name fiwareacr | jq '.loginServer' -r); echo ${REPOSITORY}
-fiwareacr.azurecr.io
 ```
 
 ```bash

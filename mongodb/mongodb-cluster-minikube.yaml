@@ -39,6 +39,6 @@ spec:
         image: cvallance/mongo-k8s-sidecar
         env:
         - name: MONGO_SIDECAR_POD_LABELS
-          value: "app=orion-mongodb"
+          value: "app=mongodb"
         - name: KUBERNETES_MONGO_SERVICE_NAME
-          value: "orion-mongodb"
+          value: "mongodb"
