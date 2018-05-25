@@ -356,7 +356,7 @@ mqtt-msgfilter   ClusterIP   10.106.214.152   <none>        5001/TCP   27s
 
 **In this demonstration, we use customized iotagent-ul in order to ignore duplicate MQTT messages.**
 
-* replace `<<password_of_iotagent>>` to the password of "iotagent"
+* XXXXXXXXXXXX is the password of "iotagent"
 ```bash
 mac:$ env IOTAGENT_PASSWORD=XXXXXXXXXXXX envsubst < idas/iotagent-ul/config.js.template > idas/iotagent-ul/config.js
 ```
