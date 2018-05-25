@@ -256,6 +256,12 @@ mac:$ kubectl exec vernemq-0 -- vmq-admin cluster show
 mac:$ az network dns record-set a add-record --resource-group dns-zone --zone-name "cloudconductor.jp" --record-set-name "mqtt" --ipv4-address "WWW.XXX.YYY.ZZZ"
 ```
 
+* XXXXXXXXXXXX is the password of "iotagent"
+```text
+mac:$ mosquitto_sub -h mqtt.cloudconductor.jp -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P XXXXXXXXXXXX
+...
+```
+
 ## start mondodb cluster on AKS
 
 ```bash
@@ -364,6 +370,14 @@ ambassador   LoadBalancer   10.0.191.59   www.xxx.yyy.zzz   443:30357/TCP,80:327
 
 ```bash
 mac:$ az network dns record-set a add-record --resource-group dns-zone --zone-name "cloudconductor.jp" --record-set-name "api" --ipv4-address "www.xxx.yyy.zzz"
+```
+
+```bash
+mac:$ curl -i https://api.cloudconductor.jp
+HTTP/1.1 404 Not Found
+date: Fri, 25 May 2018 00:47:41 GMT
+server: envoy
+content-length: 0
 ```
 
 * create random string
@@ -629,7 +643,7 @@ NAME      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
 cygnus    ClusterIP   10.103.255.240   <none>        5050/TCP,8081/TCP   1m
 ```
 
-## start cmd-proxy on AKS
+## start cmd-proxy for 'turtlesim' on AKS
 
 ```bash
 mac:$ az acr login --name fiwareacr
@@ -648,8 +662,9 @@ tech-sketch/fiware-mqtt-msgfilter
 tech-sketch/iotagent-ul
 ```
 
+* create three 'cmd-proxy' pods and a 'cmd-proxy' service to control 'turtlesim'.
 ```bash
-mac:$ env FIWARE_SERVICE=demo1 FIWARE_SERVICEPATH=/ ROBOT_ID=gopigo ROBOT_TYPE=demo1 envsubst < controller/fiware-cmd-proxy.yaml | kubectl apply -f -
+mac:$ env FIWARE_SERVICE=demo1 FIWARE_SERVICEPATH=/ ROBOT_ID=turtlesim ROBOT_TYPE=demo1 envsubst < controller/fiware-cmd-proxy.yaml | kubectl apply -f -
 ```
 
 ```bash
@@ -831,7 +846,308 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);cu
 }
 ```
 
-## register "gopigo" device
+## register "turtlesim" device
+
+```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.cloudconductor.jp/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
+{
+  "devices": [
+    {
+      "device_id": "turtlesim",
+      "entity_name": "turtlesim",
+      "entity_type": "demo1",
+      "timezone": "Asia/Tokyo",
+      "protocol": "UL20",
+      "attributes": [
+        {
+          "name": "temperature",
+          "type": "float32"
+        }
+      ],
+      "commands": [
+        {
+          "name": "move",
+          "type": "string"
+        }
+      ],
+      "transport": "MQTT"
+    }
+  ]
+}
+__EOS__
+```
+
+```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.cloudconductor.jp/idas/ul20/manage/iot/devices/turtlesim/ | jq .
+{
+  "device_id": "turtlesim",
+  "service": "demo1",
+  "service_path": "/",
+  "entity_name": "turtlesim",
+  "entity_type": "demo1",
+  "transport": "MQTT",
+  "attributes": [
+    {
+      "object_id": "temperature",
+      "name": "temperature",
+      "type": "float32"
+    }
+  ],
+  "lazy": [],
+  "commands": [
+    {
+      "object_id": "move",
+      "name": "move",
+      "type": "string"
+    }
+  ],
+  "static_attributes": [],
+  "protocol": "UL20"
+}
+```
+
+```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.cloudconductor.jp/orion/v2/entities/turtlesim/ | jq .
+{
+  "id": "turtlesim",
+  "type": "demo1",
+  "TimeInstant": {
+    "type": "ISO8601",
+    "value": " ",
+    "metadata": {}
+  },
+  "move_info": {
+    "type": "commandResult",
+    "value": " ",
+    "metadata": {}
+  },
+  "move_status": {
+    "type": "commandStatus",
+    "value": "UNKNOWN",
+    "metadata": {}
+  },
+  "temperature": {
+    "type": "float32",
+    "value": " ",
+    "metadata": {}
+  },
+  "move": {
+    "type": "string",
+    "value": "",
+    "metadata": {}
+  }
+}
+```
+
+## test publishing an attribute from turtlesim to orion through MQTT and idas, subscribing a cmd from orion to turtlesim and publishing a cmdexe from turtlesim to orion through MQTT and idas
+
+* XXXXXXXXXXXX is the password of "iotagent"
+```bash
+mac:$ mosquitto_sub -h mqtt.cloudconductor.jp -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P XXXXXXXXXXXX
+...
+```
+
+* start X on ros server and login X using RDP
+
+* open terminal1 and start `roscore`
+```bash
+ros-terminal1:ros_ws$ source devel/setup.bash
+ros-terminal1:ros_ws$ roscore
+...
+```
+
+* open terminal2 and start `turtlesim`
+```bash
+ros-terminal2:ros_ws$ source devel/setup.bash
+ros-terminal2:ros_ws$ rosrun turtlesim turtlesim_node
+...
+```
+
+* open terminal3 and start `turtlesim_operator`
+```bash
+ros-terminal3:ros_ws$ env MQTT_HOST=mqtt.cloudconductor.jp TURTLESIM_PASSWORD=Turtles1mP@ssw0rd envsubst < src/turtlesim_operator/config/params-azure.yaml.template > src/turtlesim_operator/config/params.yaml
+ros-terminal3:ros_ws$ source devel/setup.bash
+ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+... logging to /home/ubuntu/.ros/log/872b8e06-5fbf-11e8-bdde-02dff3ffcd9e/roslaunch-ubuntu-xenial-12540.log
+Checking log directory for disk usage. This may take awhile.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+
+started roslaunch server http://ubuntu-xenial:42084/
+
+SUMMARY
+========
+
+PARAMETERS
+...
+running rosparam delete /command_sender/
+running rosparam delete /attribute_receiver/
+process[command_sender-1]: started with pid [12567]
+process[attribute_receiver-2]: started with pid [12568]
+[INFO] [1527215493.418127]: [__main__:main] Start node : command_sender_node.py [mode=production]
+[INFO] [1527215493.420951]: [__main__:main] Start node : attribute_receiver_node.py
+[INFO] [1527215493.426882]: [turtlesim_operator.command_sender:CommandSender.connect] Connect mqtt broker
+[INFO] [1527215493.432872]: [turtlesim_operator.attribute_receiver:AttributeReceiver.connect] Connect mqtt broker
+[INFO] [1527215494.574014]: [turtlesim_operator.attribute_receiver:AttributeReceiver.start] AttributeReceiver start : attribute_receiver_node.py
+[INFO] [1527215494.575131]: [turtlesim_operator.command_sender:CommandSender.start] CommandSender start : command_sender_node.py
+[INFO] [1527215494.878739]: [turtlesim_operator.attribute_receiver:AttributeReceiver._on_connect] mqtt connect status=0
+[INFO] [1527215494.880586]: [turtlesim_operator.command_sender:CommandSender._on_connect] mqtt connect status=0
+...
+```
+
+* send 'circle' cmd to 'turtlesim' entity
+```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" -H "Content-Type: application/json" https://api.cloudconductor.jp/orion/v1/updateContext -d @-<<__EOS__ | jq .
+{
+  "contextElements": [
+    {
+      "id": "turtlesim",
+      "isPattern": "false",
+      "type": "demo1",
+      "attributes": [
+        {
+          "name": "move",
+          "type": "string",
+          "value": "circle"
+        }
+      ]
+    }
+  ],
+  "updateAction": "UPDATE"
+}
+__EOS__
+```
+
+```bash
+mac:$ mosquitto_sub -h mqtt.cloudconductor.jp -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P XXXXXXXXXXXX
+...
+Client mosqsub|22161-MacBook-P received PUBLISH (d0, q0, r0, m0, '/demo1/turtlesim/cmd', ... (21 bytes))
+turtlesim@move|circle
+Client mosqsub|22161-MacBook-P received PUBLISH (d0, q0, r0, m0, '/demo1/turtlesim/cmdexe', ... (30 bytes))<Paste>
+...
+```
+
+```bash
+ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+...
+[INFO] [1527219554.229942]: [turtlesim_operator.command_sender:CommandSender._on_message] received message from mqtt: turtlesim@move|circle
+[INFO] [1527219554.232153]: [turtlesim_operator.command_sender:CommandSender._do_circle] do circle
+...
+```
+
+```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.cloudconductor.jp/orion/v2/entities/turtlesim/ | jq .
+{
+  "id": "turtlesim",
+  "type": "demo1",
+  "TimeInstant": {
+    "type": "ISO8601",
+    "value": "2018-05-25T03:39:14.00Z",
+    "metadata": {}
+  },
+  "move_info": {
+    "type": "commandResult",
+    "value": "executed circle",
+    "metadata": {
+      "TimeInstant": {
+        "type": "ISO8601",
+        "value": "2018-05-25T03:39:14.339Z"
+      }
+    }
+  },
+  "move_status": {
+    "type": "commandStatus",
+    "value": "OK",
+    "metadata": {
+      "TimeInstant": {
+        "type": "ISO8601",
+        "value": "2018-05-25T03:39:14.339Z"
+      }
+    }
+  },
+  "temperature": {
+    "type": "float32",
+    "value": " ",
+    "metadata": {}
+  },
+  "move": {
+    "type": "string",
+    "value": "",
+    "metadata": {}
+  }
+}
+```
+
+* open terminal4 and publish `templerature` to rostopic
+```bash
+ros-terminal4:ros_ws$ source devel/setup.bash
+ros-terminal4:ros_ws$ rostopic pub -1 /turtle1/temperature std_msgs/Float32 -- 25.3
+```
+
+```bash
+ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+...
+[INFO] [1527221663.972928]: [turtlesim_operator.attribute_receiver:AttributeReceiver._on_receive] received message from ros : 25.2999992371
+...
+```
+
+```bash
+mac:$ mosquitto_sub -h mqtt.cloudconductor.jp -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P XXXXXXXXXXXX
+...
+Client mosqsub|22161-MacBook-P received PUBLISH (d0, q0, r0, m0, '/demo1/turtlesim/attrs', ... (57 bytes))
+2018-05-25T04:14:23.973467+0000|temperature|25.2999992371
+...
+```
+
+```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" https://api.cloudconductor.jp/orion/v2/entities/turtlesim/ | jq .
+{
+  "id": "turtlesim",
+  "type": "demo1",
+  "TimeInstant": {
+    "type": "ISO8601",
+    "value": "2018-05-25T04:14:23.973467+0000",
+    "metadata": {}
+  },
+  "move_info": {
+    "type": "commandResult",
+    "value": " ",
+    "metadata": {
+      "TimeInstant": {
+        "type": "ISO8601",
+        "value": "2018-05-25T03:39:14.339Z"
+      }
+    }
+  },
+  "move_status": {
+    "type": "commandStatus",
+    "value": "UNKNOWN",
+    "metadata": {
+      "TimeInstant": {
+        "type": "ISO8601",
+        "value": "2018-05-25T03:39:14.339Z"
+      }
+    }
+  },
+  "temperature": {
+    "type": "float32",
+    "value": "12.1000003815",
+    "metadata": {
+      "TimeInstant": {
+        "type": "ISO8601",
+        "value": "2018-05-25T04:30:16.726545+0000"
+      }
+    }
+  },
+  "move": {
+    "type": "string",
+    "value": "",
+    "metadata": {}
+  }
+}
+```
+
+## register "gopigo" device (if gopigo is available)
 
 ```bash
 mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.cloudconductor.jp/idas/ul20/manage/iot/devices/ -X POST -d @- <<__EOS__
@@ -907,7 +1223,7 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);cu
 }
 ```
 
-## test subscribing a cmd from orion to ros and publishing a cmdexe from ros to orion through MQTT and idas
+## test subscribing a cmd from orion to gopigo and publishing a cmdexe from gopigo to orion through MQTT and idas (if gopigo is available)
 
 * XXXXXXXXXXXX is the password of "iotagent"
 ```bash
@@ -915,15 +1231,15 @@ mac:$ mosquitto_sub -h mqtt.cloudconductor.jp -p 8883 --cafile ./secrets/ca.crt 
 ...
 ```
 
-* start X on ros server and login X using RDP
-
+* ssh to gopigo on terminal1 and start `roscore`
 ```bash
 ros-terminal1:gopigo_ws$ source devel/setup.bash
 ros-terminal1:gopigo_ws$ roscore
 ...
 ```
 
-* ZZZZZZZZZZZZ is the password of "raspberrypi"
+* ssh to gopigo on terminal2 and start `ros_gopigo`
+* ZZZZZZZZZZZZ is the password of "gopigo"
 ```bash
 ros-terminal2:gopigo_ws$ env MQTT_HOST=mqtt.cloudconductor.jp GOPIGO_PASSWORD=ZZZZZZZZZZZZ envsubst < src/ros_gopigo/config/params-azure.yaml.template > src/ros_gopigo/config/params.yaml
 ros-terminal2:gopigo_ws$ source devel/setup.bash
@@ -955,7 +1271,7 @@ process[fiware2gopigo_node-2]: started with pid [4755]
 ...
 ```
 
-* send 'circle' cmd to 'turtlesim' entity
+* send 'circle' cmd to 'gopigo' entity
 ```bash
 mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-Servicepath: /" -H "Content-Type: application/json" https://api.cloudconductor.jp/orion/v1/updateContext -d @-<<__EOS__ | jq .
 {
@@ -981,15 +1297,15 @@ __EOS__
 ```bash
 mac:$ mosquitto_sub -h mqtt.cloudconductor.jp -p 8883 --cafile ./secrets/ca.crt -d -t /# -u iotagent -P XXXXXXXXXXXX
 ...
-Client mosqsub|77956-Nobuyukin received PUBLISH (d0, q0, r0, m0, '/demo1/turtlesim/cmd', ... (21 bytes))
+Client mosqsub|77956-Nobuyukin received PUBLISH (d0, q0, r0, m0, '/demo1/gopigo/cmd', ... (21 bytes))
 gopigo@move|circle
-Client mosqsub|77956-Nobuyukin received PUBLISH (d0, q0, r0, m0, '/demo1/turtlesim/cmdexe', ... (28 bytes))
+Client mosqsub|77956-Nobuyukin received PUBLISH (d0, q0, r0, m0, '/demo1/gopigo/cmdexe', ... (28 bytes))
 gopigo@move|executed circle
 ...
 ```
 
 ```bash
-ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+ros-terminal2:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
 ...
 [INFO] [1527152726.487569]: [ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo._on_message] received message from mqtt: gopigo@move|circle
 [INFO] [1527152726.499365]: [ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo._do_circle] do circle
@@ -1057,6 +1373,26 @@ __EOS__
 ```
 
 ```bash
+mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" -H "Content-Type: application/json" https://api.cloudconductor.jp/orion/v2/subscriptions/ -X POST -d @- <<__EOS__
+{
+  "subject": {
+    "entities": [{
+      "idPattern": "turtlesim.*",
+      "type": "demo1"
+    }]
+  },
+  "notification": {
+    "http": {
+      "url": "http://cygnus:5050/notify"
+    },
+    "attrs": ["temperature"],
+    "attrsFormat": "legacy"
+  }
+}
+__EOS__
+```
+
+```bash
 mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);curl -sS -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: demo1" -H "Fiware-ServicePath: /" https://api.cloudconductor.jp/orion/v2/subscriptions/ | jq .
 [
   {
@@ -1078,6 +1414,32 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);cu
       "lastNotification": "2018-05-24T08:14:17.00Z",
       "attrs": [
         "button"
+      ],
+      "attrsFormat": "legacy",
+      "http": {
+        "url": "http://cygnus:5050/notify"
+      }
+    }
+  },
+  {
+    "id": "5b079158a7bb4515a7bbf6cc",
+    "status": "active",
+    "subject": {
+      "entities": [
+        {
+          "idPattern": "turtlesim.*",
+          "type": "demo1"
+        }
+      ],
+      "condition": {
+        "attrs": []
+      }
+    },
+    "notification": {
+      "timesSent": 1,
+      "lastNotification": "2018-05-25T04:30:16.00Z",
+      "attrs": [
+        "temperature"
       ],
       "attrsFormat": "legacy",
       "http": {
@@ -1109,7 +1471,7 @@ mac:$ kubectl exec mongodb-0 -c mongodb -- mongo sth_demo1 --eval 'printjson(db.
 MongoDB shell version v3.6.5
 connecting to: mongodb://127.0.0.1:27017/sth_demo1
 MongoDB server version: 3.6.5
-[ "sth_/_gamepad_demo1" ]
+[ "sth_/_gamepad_demo1", "sth_/_turtlesim_demo1" ]
 ```
 
 ```bash
@@ -1118,6 +1480,14 @@ MongoDB shell version v3.6.5
 connecting to: mongodb://127.0.0.1:27017/sth_demo1
 MongoDB server version: 3.6.5
 { "_id" : ObjectId("5b06745ac7f7c0000aac9659"), "recvTime" : ISODate("2018-05-24T08:14:17.733Z"), "attrName" : "button", "attrType" : "string", "attrValue" : "circle" }
+```
+
+```bash
+mac:$ kubectl exec mongodb-0 -c mongodb -- mongo sth_demo1 --eval 'db.getCollection("sth_/_turtlesim_demo1").find()'
+MongoDB shell version v3.6.5
+connecting to: mongodb://127.0.0.1:27017/sth_demo1
+MongoDB server version: 3.6.5
+{ "_id" : ObjectId("5b0791597a204b000a487367"), "recvTime" : ISODate("2018-05-25T04:30:16.598Z"), "attrName" : "temperature", "attrType" : "float32", "attrValue" : "12.1000003815" }
 ```
 
 ## register fiware-cmd-proxy
@@ -1172,6 +1542,32 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);cu
     }
   },
   {
+    "id": "5b079158a7bb4515a7bbf6cc",
+    "status": "active",
+    "subject": {
+      "entities": [
+        {
+          "idPattern": "turtlesim.*",
+          "type": "demo1"
+        }
+      ],
+      "condition": {
+        "attrs": []
+      }
+    },
+    "notification": {
+      "timesSent": 1,
+      "lastNotification": "2018-05-25T04:30:16.00Z",
+      "attrs": [
+        "temperature"
+      ],
+      "attrsFormat": "legacy",
+      "http": {
+        "url": "http://cygnus:5050/notify"
+      }
+    }
+  },
+  {
     "id": "5b06878991cc31d4197bd441",
     "status": "active",
     "subject": {
@@ -1201,14 +1597,66 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);cu
 ]
 ```
 
-## control gopigo using gamepad
-1. start `roscore` on ros
-1. start `roslaunch ros_gopigo ros_gopigo.launch` on ros
-1. start `raspi_damepad/main.py` on raspberrypi
-1. when you press a button of gamepad, gopigo moves according to the pressed button
+## control 'turtlesim'
 
-## control gopigo using web controller
-1. start `roscore` on ros
-1. start `roslaunch ros_gopigo ros_gopigo.launch` on ros
+### confirm ros server
+1. confirm that `rocore` is running on ros server
+1. confirm that `turtlesim` is running on ros server
+1. confirm that `turtlesim_operator` is running on ros server
+
+### gamepad
+1. confirm that `main.py` is running on raspberrypi
+1. when you press a button of gamepad, 'turtle' moves according to the pressed button
+
+### web controller
+1. access to https://api.cloudconductor.jp/controller/web/
+1. when you press a button of web controller, gopigo moves according to the pressed button
+
+## use 'gopigo' instead of 'turtlesim' (if gopigo is available)
+
+```bash
+NAME                              DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.extensions/cmd-proxy   3         3         3            3           11m
+
+NAME                                         DESIRED   CURRENT   READY     AGE
+replicaset.extensions/cmd-proxy-57756c46cd   3         3         3         11m
+
+NAME                             READY     STATUS    RESTARTS   AGE
+pod/cmd-proxy-57756c46cd-bxxv8   1/1       Running   0          11m
+pod/cmd-proxy-57756c46cd-mfj7f   1/1       Running   0          11m
+pod/cmd-proxy-57756c46cd-xqqvz   1/1       Running   0          11m
+nmatsui@:container-centric-fiware-demonstration (feature/web_controller_using_basicauth *=)$
+```
+
+```bash
+mac:$ env FIWARE_SERVICE=demo1 FIWARE_SERVICEPATH=/ ROBOT_ID=gopigo ROBOT_TYPE=demo1 envsubst < controller/fiware-cmd-proxy.yaml | kubectl apply -f -
+```
+
+```bash
+$ kubectl get deployments,replicasets,pods -l pod=cmd-proxy
+NAME                              DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+deployment.extensions/cmd-proxy   3         3         3            3           14m
+
+NAME                                         DESIRED   CURRENT   READY     AGE
+replicaset.extensions/cmd-proxy-57756c46cd   0         0         0         14m
+replicaset.extensions/cmd-proxy-74766cf8     3         3         3         19s
+
+NAME                           READY     STATUS    RESTARTS   AGE
+pod/cmd-proxy-74766cf8-5xnq7   1/1       Running   0          16s
+pod/cmd-proxy-74766cf8-fpcvf   1/1       Running   0          12s
+pod/cmd-proxy-74766cf8-v8g25   1/1       Running   0          19s
+```
+
+## control 'gopigo'
+
+### confirm gopigo
+1. confirm that `rocore` is running on ros server
+1. confirm that `ros_gopigo` is running on ros server
+
+### gamepad
+1. confirm that `main.py` is running on raspberrypi
+1. when you press a button of gamepad, 'turtle' moves according to the pressed button
+
+### web controller
 1. access to https://api.cloudconductor.jp/controller/web/
 1. when you press a button of web controller, gopigo moves according to the pressed button
