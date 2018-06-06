@@ -255,12 +255,7 @@ vernemq-passwd                                                Opaque            
 ```
 
 ```bash
-mac:$ docker build -t ${REPOSITORY}/tech-sketch/fiware-ambassador-auth:0.1.0 ./ambassador/fiware-ambassador-auth
-mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-ambassador-auth:0.1.0
-```
-
-```bash
-mac:$ envsubst < ambassador/fiware-ambassador-auth.yaml | kubectl apply -f -
+mac:$ kubectl apply -f ambassador/fiware-ambassador-auth.yaml
 ```
 
 ```bash
@@ -328,12 +323,7 @@ server: envoy
 ## start duplicate message filter service for idas
 
 ```bash
-mac:$ docker build -t ${REPOSITORY}/tech-sketch/fiware-mqtt-msgfilter:0.1.0 idas/fiware-mqtt-msgfilter/
-mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-mqtt-msgfilter:0.1.0
-```
-
-```bash
-mac:$ envsubst < idas/fiware-mqtt-msgfilter.yaml | kubectl apply -f -
+mac:$ kubectl apply -f idas/fiware-mqtt-msgfilter.yaml
 ```
 
 ```bash
@@ -448,11 +438,6 @@ cygnus    ClusterIP   10.111.106.17   <none>        5050/TCP,8081/TCP   40s
 The 'command pxory service' connects 'gamepad' and 'web controller' to 'turtlesim' or 'gopigo'.
 
 In this step, we configure the service as connecting to 'turtlesim'. If you want to start the service as connecting to 'gopigo', use `ROBOT_ID=gopigo` instead of `ROBOT_ID=turtlesim`.
-
-```bash
-mac:$ docker build --build-arg PORT=8888 -t ${REPOSITORY}/tech-sketch/fiware-cmd-proxy:0.1.0 ./controller/fiware-cmd-proxy/
-mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-cmd-proxy:0.1.0
-```
 
 * create three 'cmd-proxy' pods and a 'cmd-proxy' service to control 'turtlesim'.
 ```bash

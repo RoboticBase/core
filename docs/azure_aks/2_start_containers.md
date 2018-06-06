@@ -337,20 +337,7 @@ vernemq-passwd                                                Opaque            
 ```
 
 ```bash
-mac:$ az acr login --name fiwareacr
-mac:$ docker build -t ${REPOSITORY}/tech-sketch/fiware-ambassador-auth:0.1.0 ./ambassador/fiware-ambassador-auth
-mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-ambassador-auth:0.1.0
-```
-
-```bash
-mac:$ az acr repository list --name fiwareacr --output table
-Result
-------------------------------
-tech-sketch/fiware-ambassador-auth
-```
-
-```bash
-mac:$ envsubst < ambassador/fiware-ambassador-auth.yaml | kubectl apply -f -
+mac:$ kubectl apply -f ambassador/fiware-ambassador-auth.yaml
 ```
 
 ```bash
@@ -418,21 +405,7 @@ server: envoy
 ## start duplicate message filter service for idas
 
 ```bash
-mac:$ az acr login --name fiwareacr
-mac:$ docker build -t ${REPOSITORY}/tech-sketch/fiware-mqtt-msgfilter:0.1.0 idas/fiware-mqtt-msgfilter/
-mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-mqtt-msgfilter:0.1.0
-```
-
-```bash
-mac:$ az acr repository list --name fiwareacr --output table
-Result
----------------------------------
-tech-sketch/fiware-bearer-auth
-tech-sketch/fiware-mqtt-msgfilter
-```
-
-```bash
-mac:$ envsubst < idas/fiware-mqtt-msgfilter.yaml | kubectl apply -f -
+mac:$ kubectl apply -f idas/fiware-mqtt-msgfilter.yaml
 ```
 
 ```bash
@@ -470,8 +443,6 @@ mac:$ docker push ${REPOSITORY}/tech-sketch/iotagent-ul:1.6.0
 mac:$ az acr repository list --name fiwareacr --output table
 Result
 ---------------------------------
-tech-sketch/fiware-bearer-auth
-tech-sketch/fiware-mqtt-msgfilter
 tech-sketch/iotagent-ul
 ```
 
@@ -540,8 +511,6 @@ mac:$ az acr repository list --name fiwareacr --output table
 Result
 ---------------------------------
 tech-sketch/cygnus-ngsi
-tech-sketch/fiware-bearer-auth
-tech-sketch/fiware-mqtt-msgfilter
 tech-sketch/iotagent-ul
 ```
 
@@ -568,23 +537,6 @@ cygnus    ClusterIP   10.103.255.240   <none>        5050/TCP,8081/TCP   1m
 The 'command pxory service' connects 'gamepad' and 'web controller' to 'turtlesim' or 'gopigo'.
 
 In this step, we configure the service as connecting to 'turtlesim'. If you want to start the service as connecting to 'gopigo', use `ROBOT_ID=gopigo` instead of `ROBOT_ID=turtlesim`.
-
-```bash
-mac:$ az acr login --name fiwareacr
-mac:$ docker build --build-arg PORT=8888 -t ${REPOSITORY}/tech-sketch/fiware-cmd-proxy:0.1.0 ./controller/fiware-cmd-proxy/
-mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-cmd-proxy:0.1.0
-```
-
-```bash
-mac:$ az acr repository list --name fiwareacr --output table
-Result
----------------------------------
-tech-sketch/cygnus-ngsi
-tech-sketch/fiware-bearer-auth
-tech-sketch/fiware-cmd-proxy
-tech-sketch/fiware-mqtt-msgfilter
-tech-sketch/iotagent-ul
-```
 
 * create three 'cmd-proxy' pods and a 'cmd-proxy' service to control 'turtlesim'.
 ```bash
