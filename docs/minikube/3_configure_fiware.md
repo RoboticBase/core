@@ -134,10 +134,17 @@ mac:$ hostname
 MacBook-Pro.local
 ```
 
+* prepare `fiware-gamepad-controller` on Raspberry Pi
+```bash
+raspberrypi:$ git clone https://github.com/tech-sketch/fiware-gamepad-controller.git
+raspberrypi:$ cd fiware-gamepad-controller
+raspoberypi:$ pip install -r requirements/common.txt
+```
+
 * ssh raspberrypi and start `main.py` (YYYYYYYYYYYY is the password of "raspberrypi", and "HHHHHHHHHH" is the `hostname` of host pc)
 ```bash
-raspberrypi:raspi_gamepad$ env MQTT_HOST="HHHHHHHHHH" RASPI_RASSWORD=YYYYYYYYYYYY envsubst < conf/pxkwcr-minikube.yaml.template > conf/pxkwcr-minikube.yaml
-raspberrypi:raspi_gamepad$ ./main.py pxkwcr-minikube
+raspberrypi:$ env MQTT_HOST="HHHHHHHHHH" RASPI_RASSWORD="YYYYYYYYYYYY" envsubst < conf/pxkwcr-minikube.yaml.template > conf/pxkwcr-minikube.yaml
+raspberrypi:$ ./main.py pxkwcr-minikube
 2018/05/25 19:25:33 [   INFO] __main__ - run script using pxkwcr-minikube.yaml
 2018/05/25 19:25:34 [   INFO] src.controller - initialized FUJIWORK PXKWCR Controller
 2018/05/25 19:25:34 [   INFO] src.controller - start publishing...
@@ -288,17 +295,27 @@ mac:$ mosquitto_sub -h ${HOST_IPADDR} -p 1883 -d -t /# -u iotagent -P XXXXXXXXXX
 
 * start X on ros server and login X using RDP
 
+* prepare `fiware-ros-turtlesim` on ROS test server
+```bash
+ros-terminal1:$ cd ~/ros_ws/src
+ros-terminal1:$ git clone https://github.com/tech-sketch/fiware-ros-turtlesim.git
+ros-terminal1:$ cd fiware-ros-turtlesim
+ros-terminal1:$ pip install -r requirements/common.txt
+```
+
 * open terminal1 and start `roscore`
 ```bash
-ros-terminal1:ros_ws$ source devel/setup.bash
-ros-terminal1:ros_ws$ roscore
+ros-terminal1:$ cd ~/ros_ws
+ros-terminal1:$ source devel/setup.bash
+ros-terminal1:$ roscore
 ...
 ```
 
 * open terminal2 and start `turtlesim`
 ```bash
-ros-terminal2:ros_ws$ source devel/setup.bash
-ros-terminal2:ros_ws$ rosrun turtlesim turtlesim_node
+ros-terminal2:$ cd ~/ros_ws
+ros-terminal2:$ source devel/setup.bash
+ros-terminal2:$ rosrun turtlesim turtlesim_node
 ...
 ```
 
@@ -310,9 +327,11 @@ MacBook-Pro.local
 
 * open terminal3 and start `turtlesim_operator` (ZZZZZZZZZZZZ is the password of "turtlesim", and "HHHHHHHHHH" is the `hostname` of host pc)
 ```bash
-ros-terminal3:ros_ws$ env MQTT_HOST=HHHHHHHHHH TURTLESIM_PASSWORD=ZZZZZZZZZZZZ envsubst < src/turtlesim_operator/config/params-minikube.yaml.template > src/turtlesim_operator/config/params.yaml
-ros-terminal3:ros_ws$ source devel/setup.bash
-ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+ros-terminal3:$ cd ~/ros_ws
+ros-terminal3:$ catkin_make
+ros-terminal3:$ source devel/setup.bash
+ros-terminal3:$ env MQTT_HOST="HHHHHHHHHH" TURTLESIM_PASSWORD="ZZZZZZZZZZZZ" envsubst < src/fiware-ros-turtlesim/config/params-minikube.yaml.template > src/fiware-ros-turtlesim/config/params.yaml
+ros-terminal3:$ roslaunch fiware-ros-turtlesim fiware-ros-turtlesim.launch
 ... logging to /home/ubuntu/.ros/log/1bbff6ea-6008-11e8-bdde-02dff3ffcd9e/roslaunch-ubuntu-xenial-28173.log
 Checking log directory for disk usage. This may take awhile.
 Press Ctrl-C to interrupt
@@ -333,12 +352,12 @@ process[command_sender-1]: started with pid [28200]
 process[attribute_receiver-2]: started with pid [28201]
 [INFO] [1527244874.614400]: [__main__:main] Start node : command_sender_node.py [mode=production]
 [INFO] [1527244874.621494]: [__main__:main] Start node : attribute_receiver_node.py
-[INFO] [1527244874.625126]: [turtlesim_operator.command_sender:CommandSender.connect] Connect mqtt broker
-[INFO] [1527244874.632231]: [turtlesim_operator.attribute_receiver:AttributeReceiver.connect] Connect mqtt broker
-[INFO] [1527244874.730438]: [turtlesim_operator.attribute_receiver:AttributeReceiver.start] AttributeReceiver start : attribute_receiver_node.py
-[INFO] [1527244874.731459]: [turtlesim_operator.command_sender:CommandSender.start] CommandSender start : command_sender_node.py
-[INFO] [1527244874.737303]: [turtlesim_operator.attribute_receiver:AttributeReceiver._on_connect] mqtt connect status=0
-[INFO] [1527244874.742508]: [turtlesim_operator.command_sender:CommandSender._on_connect] mqtt connect status=0
+[INFO] [1527244874.625126]: [fiware_ros_turtlesim.command_sender:CommandSender.connect] Connect mqtt broker
+[INFO] [1527244874.632231]: [fiware_ros_turtlesim.attribute_receiver:AttributeReceiver.connect] Connect mqtt broker
+[INFO] [1527244874.730438]: [fiware_ros_turtlesim.attribute_receiver:AttributeReceiver.start] AttributeReceiver start : attribute_receiver_node.py
+[INFO] [1527244874.731459]: [fiware_ros_turtlesim.command_sender:CommandSender.start] CommandSender start : command_sender_node.py
+[INFO] [1527244874.737303]: [fiware_ros_turtlesim.attribute_receiver:AttributeReceiver._on_connect] mqtt connect status=0
+[INFO] [1527244874.742508]: [fiware_ros_turtlesim.command_sender:CommandSender._on_connect] mqtt connect status=0
 ...
 ```
 
@@ -376,10 +395,10 @@ turtlesim@move|executed circle
 ```
 
 ```bash
-ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+ros-terminal3:$ roslaunch turtlesim_operator turtlesim_operator.launch
 ...
-[INFO] [1527244943.572875]: [turtlesim_operator.command_sender:CommandSender._on_message] received message from mqtt: turtlesim@move|circle
-[INFO] [1527244943.574072]: [turtlesim_operator.command_sender:CommandSender._do_circle] do circle
+[INFO] [1527244943.572875]: [fiware_ros_turtlesim.command_sender:CommandSender._on_message] received message from mqtt: turtlesim@move|circle
+[INFO] [1527244943.574072]: [fiware_ros_turtlesim.command_sender:CommandSender._do_circle] do circle
 ...
 ```
 
@@ -428,14 +447,15 @@ mac:$ TOKEN=$(cat secrets/auth-tokens.json | jq '.bearer_tokens[0].token' -r);cu
 
 * open terminal4 and publish `templerature` to rostopic
 ```bash
-ros-terminal4:ros_ws$ source devel/setup.bash
-ros-terminal4:ros_ws$ rostopic pub -1 /turtle1/temperature std_msgs/Float32 -- 25.3
+ros-terminal4:$ cd ~/ros_ws
+ros-terminal4:$ source devel/setup.bash
+ros-terminal4:$ rostopic pub -1 /turtle1/temperature std_msgs/Float32 -- 25.3
 ```
 
 ```bash
 ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
 ...
-[INFO] [1527245105.261060]: [turtlesim_operator.attribute_receiver:AttributeReceiver._on_receive] received message from ros : 25.2999992371
+[INFO] [1527245105.261060]: [fiware_ros_turtlesim.attribute_receiver:AttributeReceiver._on_receive] received message from ros : 25.2999992371
 ...
 ```
 
@@ -579,18 +599,31 @@ mac:$ mosquitto_sub -h ${HOST_IPADDR} -p 1883 -d -t /# -u iotagent -P XXXXXXXXXX
 ...
 ```
 
+* prepare `fiware-ros-gopigo` on gopigo
+```bash
+ros-terminal1:$ cd ~/gopigo_ws/src
+ros-terminal1:$ git clone https://github.com/tech-sketch/fiware-ros-gopigo.git
+ros-terminal1:$ cd fiware-ros-gopigo
+ros-terminal1:$ /bin/bash update_tools_for_ubuntu.sh
+ros-terminal1:$ pip install -r requirements/common.txt
+ros-terminal1:$ pip install -r requirements/gopigo.txt
+```
+
 * ssh to gopigo on terminal1 and start `roscore`
 ```bash
-ros-terminal1:gopigo_ws$ source devel/setup.bash
-ros-terminal1:gopigo_ws$ roscore
+ros-terminal1:$ cd ~/gopigo_ws
+ros-terminal1:$ source devel/setup.bash
+ros-terminal1:$ roscore
 ...
 ```
 
 * ssh to gopigo on terminal2 and start `ros_gopigo` (ZZZZZZZZZZZZ is the password of "gopigo", and "HHHHHHHHHH" is the `hostname` of host pc)
 ```bash
-ros-terminal2:gopigo_ws$ env MQTT_HOST=HHHHHHHHHH GOPIGO_PASSWORD=ZZZZZZZZZZZZ envsubst < src/ros_gopigo/config/params-minikube.yaml.template > src/ros_gopigo/config/params.yaml
-ros-terminal2:gopigo_ws$ source devel/setup.bash
-ros-terminal2:gopigo_ws$ roslaunch ros_gopigo ros_gopigo.launch
+ros-terminal2:$ cd ~/gopigo_ws
+ros-terminal2:$ catkin_make
+ros-terminal2:$ source devel/setup.bash
+ros-terminal2:$ env MQTT_HOST="HHHHHHHHHH GOPIGO_PASSWORD=ZZZZZZZZZZZZ envsubst < src/fiware-ros-gopigo/config/params-minikube.yaml.template > src/fiware-ros-gopigo/config/params.yaml
+ros-terminal2:$ roslaunch fiware-ros-gopigo fiware-ros-gopigo.launch
 ... logging to /home/ubuntu/.ros/log/999a53e6-600b-11e8-81c1-84afec5283f0/roslaunch-ubuntu-1881.log
 Checking log directory for disk usage. This may take awhile.
 Press Ctrl-C to interrupt
@@ -612,10 +645,10 @@ process[fiware2gopigo_node-2]: started with pid [1909]
 INFO: cannot create a symlink to latest log directory: [Errno 2] No such file or directory: '/home/ubuntu/.ros/log/latest'
 [INFO] [1527246373.245011]: [__main__:main] Start node : fiware2gopigo
 [INFO] [1527246373.245010]: [__main__:main] Start node : ros_gopigo
-[INFO] [1527246373.300212]: [ros_gopigo.gopigo_impl:Gopigo.start] Gopigo start: ros_gopigo
-[INFO] [1527246373.313067]: [ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo.connect] Connect to MQTT broker
-[INFO] [1527246373.431902]: [ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo.start] Fiware2Gopigo start: fiware2gopigo
-[INFO] [1527246373.457469]: [ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo._on_connect] connected to MQTT Broker, status: 0
+[INFO] [1527246373.300212]: [fiware_ros_gopigo.gopigo_impl:Gopigo.start] Gopigo start: ros_gopigo
+[INFO] [1527246373.313067]: [fiware_ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo.connect] Connect to MQTT broker
+[INFO] [1527246373.431902]: [fiware_ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo.start] Fiware2Gopigo start: fiware2gopigo
+[INFO] [1527246373.457469]: [fiware_ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo._on_connect] connected to MQTT Broker, status: 0
 ...
 ```
 
@@ -653,7 +686,7 @@ gopigo@move|executed circle
 ```
 
 ```bash
-ros-terminal2:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+ros-terminal2:$ roslaunch fiware_ros_gopigo fiware_ros_gopigo.launch
 ...
 [INFO] [1527246429.544076]: [ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo._on_message] received message from mqtt: gopigo@move|circle
 [INFO] [1527246429.556360]: [ros_gopigo.fiware2gopigo_impl:Fiware2Gopigo._do_circle] do circle

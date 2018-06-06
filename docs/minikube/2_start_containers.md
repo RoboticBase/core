@@ -255,26 +255,26 @@ vernemq-passwd                                                Opaque            
 ```
 
 ```bash
-mac:$ docker build -t ${REPOSITORY}/tech-sketch/fiware-bearer-auth:0.1.0 ./ambassador/fiware-bearer-auth
-mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-bearer-auth:0.1.0
+mac:$ docker build -t ${REPOSITORY}/tech-sketch/fiware-ambassador-auth:0.1.0 ./ambassador/fiware-ambassador-auth
+mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-ambassador-auth:0.1.0
 ```
 
 ```bash
-mac:$ envsubst < ambassador/bearer-auth.yaml | kubectl apply -f -
+mac:$ envsubst < ambassador/fiware-ambassador-auth.yaml | kubectl apply -f -
 ```
 
 ```bash
-mac:$ kubectl get pods -l pod=bearer-auth
+mac:$ kubectl get pods -l pod=ambassador-auth
 NAME                           READY     STATUS    RESTARTS   AGE
-bearer-auth-69b5c77699-lxwch   1/1       Running   0          8s
-bearer-auth-69b5c77699-n6md2   1/1       Running   0          8s
-bearer-auth-69b5c77699-p2kql   1/1       Running   0          8s
+ambassador-auth-69b5c77699-lxwch   1/1       Running   0          8s
+ambassador-auth-69b5c77699-n6md2   1/1       Running   0          8s
+ambassador-auth-69b5c77699-p2kql   1/1       Running   0          8s
 ```
 
 ```bash
-mac:$ kubectl get services -l service=bearer-auth
+mac:$ kubectl get services -l service=ambassador-auth
 NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-bearer-auth   ClusterIP   10.107.210.87   <none>        3000/TCP   19s
+ambassador-auth   ClusterIP   10.107.210.87   <none>        3000/TCP   19s
 ```
 
 ## start fiware orion on minikube
@@ -333,7 +333,7 @@ mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-mqtt-msgfilter:0.1.0
 ```
 
 ```bash
-mac:$ envsubst < idas/mqtt-msgfilter.yaml | kubectl apply -f -
+mac:$ envsubst < idas/fiware-mqtt-msgfilter.yaml | kubectl apply -f -
 ```
 
 ```bash

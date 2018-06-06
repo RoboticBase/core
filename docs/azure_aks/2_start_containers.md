@@ -338,33 +338,33 @@ vernemq-passwd                                                Opaque            
 
 ```bash
 mac:$ az acr login --name fiwareacr
-mac:$ docker build -t ${REPOSITORY}/tech-sketch/fiware-bearer-auth:0.1.0 ./ambassador/fiware-bearer-auth
-mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-bearer-auth:0.1.0
+mac:$ docker build -t ${REPOSITORY}/tech-sketch/fiware-ambassador-auth:0.1.0 ./ambassador/fiware-ambassador-auth
+mac:$ docker push ${REPOSITORY}/tech-sketch/fiware-ambassador-auth:0.1.0
 ```
 
 ```bash
 mac:$ az acr repository list --name fiwareacr --output table
 Result
 ------------------------------
-tech-sketch/fiware-bearer-auth
+tech-sketch/fiware-ambassador-auth
 ```
 
 ```bash
-mac:$ envsubst < ambassador/bearer-auth.yaml | kubectl apply -f -
+mac:$ envsubst < ambassador/fiware-ambassador-auth.yaml | kubectl apply -f -
 ```
 
 ```bash
-mac:$ kubectl get pods -l pod=bearer-auth
+mac:$ kubectl get pods -l pod=ambassador-auth
 NAME                           READY     STATUS    RESTARTS   AGE
-bearer-auth-6fffdbd9c9-7kkpr   1/1       Running   0          56s
-bearer-auth-6fffdbd9c9-qxw6m   1/1       Running   0          56s
-bearer-auth-6fffdbd9c9-sdn5b   1/1       Running   0          56s
+ambassador-auth-6fffdbd9c9-7kkpr   1/1       Running   0          56s
+ambassador-auth-6fffdbd9c9-qxw6m   1/1       Running   0          56s
+ambassador-auth-6fffdbd9c9-sdn5b   1/1       Running   0          56s
 ```
 
 ```bash
-mac:$ kubectl get services -l service=bearer-auth
+mac:$ kubectl get services -l service=ambassador-auth
 NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-bearer-auth   ClusterIP   10.0.129.102   <none>        3000/TCP   2m
+ambassador-auth   ClusterIP   10.0.129.102   <none>        3000/TCP   2m
 ```
 
 ## start fiware orion on AKS
@@ -432,7 +432,7 @@ tech-sketch/fiware-mqtt-msgfilter
 ```
 
 ```bash
-mac:$ envsubst < idas/mqtt-msgfilter.yaml | kubectl apply -f -
+mac:$ envsubst < idas/fiware-mqtt-msgfilter.yaml | kubectl apply -f -
 ```
 
 ```bash
