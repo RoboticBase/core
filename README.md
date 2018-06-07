@@ -4,7 +4,19 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 
 ![conrainer-centric-fiware-demonstration.png](/docs/images/container-centric-fiware-demonstration.png)
 
-In the current version, Microsoft Azure AKS (preview) and minikube is tested.
+|component|summary|
+|:--|:--|
+|[kubernetes](https://kubernetes.io/)|Container Orchestration Platform|
+|[ambassador](https://www.getambassador.io/)|API Gateway|
+|fiware-ambssador-auth|Authorization and Authentication component working with ambassador|
+|fiware-cmd-proxy|Business Logic component working with FIWARE orion|
+|[FIWARE orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)|Publish/Subscribe Context Broker|
+|[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|
+|[FIWARE iotagent-ul](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|
+|fiware-mqtt-msgfilter|MQTT message duplication checker working with FIWARE iotagent-ul and etcd|
+|[etcd](https://coreos.com/etcd/docs/latest/)|Distributed Key-Value Store in order to manege distributed lock|
+|[VerneMQ](https://vernemq.com/)|Distributed MQTT Broker|
+|[MongoDB](https://www.mongodb.com/)|Document-oriented NoSQL Database|
 
 ## Requirements
 
@@ -32,6 +44,8 @@ In the current version, Microsoft Azure AKS (preview) and minikube is tested.
 |:--|:--|
 |Azure AKS|1.9.6|
 |minikube|1.9.4|
+
+At current version, [Microsoft Azure AKS (preview)](https://azure.microsoft.com/en-us/services/container-service/) and [minikube](https://github.com/kubernetes/minikube) is tested.
 
 ## getting started
 ### Microsoft Azure AKS
