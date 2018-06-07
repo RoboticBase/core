@@ -18,6 +18,12 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 |[VerneMQ](https://vernemq.com/)|Distributed MQTT Broker|
 |[MongoDB](https://www.mongodb.com/)|Document-oriented NoSQL Database|
 
+|device|summary|
+|:--|:--|
+|fiware-gamepad-controller|Gamepad Controller|
+|fiware-ros-turtlesim|ROS package to act as a bridge FIWARE orion and ROS demo node (turtlesim)|
+|fiware-ros-gopigo|ROS package to act as a bridge FIWARE orion and gopigo|
+
 ## Requirements
 
 * kubernetes client PC
