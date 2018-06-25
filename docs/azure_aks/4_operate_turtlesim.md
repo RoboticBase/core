@@ -45,12 +45,12 @@ nmatsui@:container-centric-fiware-demonstration (feature/web_controller_using_ba
     ros-terminal2:ros_ws$ source devel/setup.bash
     ros-terminal2:ros_ws$ rosrun turtlesim turtlesim_node
     ```
-1. open terminal3 and start `turtlesim_operator` (ZZZZZZZZZZZZ is the password of "turtlesim")
+1. open terminal3 and start `fiware-ros-turtlesim` (ZZZZZZZZZZZZ is the password of "turtlesim")
 
     ```bash
-    ros-terminal3:ros_ws$ env MQTT_HOST=mqtt.example.com TURTLESIM_PASSWORD=ZZZZZZZZZZZZ envsubst < src/turtlesim_operator/config/params-azure.yaml.template > src/turtlesim_operator/config/params.yaml
+    ros-terminal3:ros_ws$ env MQTT_HOST="mqtt.example.com" TURTLESIM_PASSWORD="ZZZZZZZZZZZZ" envsubst < src/fiware-ros-turtlesim/config/params-azure.yaml.template > src/fiware-ros-turtlesim/config/params.yaml
     ros-terminal3:ros_ws$ source devel/setup.bash
-    ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+    ros-terminal3:ros_ws$ roslaunch fiware-ros-turtlesim fiware-ros-turtlesim.launch
     ```
 
 ## operate 'turtlesim' using 'gamepad'

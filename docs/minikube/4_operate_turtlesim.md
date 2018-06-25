@@ -42,12 +42,12 @@ pod/cmd-proxy-698f8db9c9-wtrw8   1/1       Running   0          1h
     ros-terminal2:ros_ws$ source devel/setup.bash
     ros-terminal2:ros_ws$ rosrun turtlesim turtlesim_node
     ```
-1. open terminal3 and start `turtlesim_operator` (ZZZZZZZZZZZZ is the password of "turtlesim", and "HHHHHHHHHH" is the `hostname` of host pc)
+1. open terminal3 and start `fiware-ros-turtlesim` (ZZZZZZZZZZZZ is the password of "turtlesim", and "HHHHHHHHHH" is the `hostname` of host pc)
 
     ```bash
-    ros-terminal3:ros_ws$ env MQTT_HOST=HHHHHHHHHH TURTLESIM_PASSWORD=ZZZZZZZZZZZZ envsubst < src/turtlesim_operator/config/params-minikube.yaml.template > src/turtlesim_operator/config/params.yaml
+    ros-terminal3:ros_ws$ env MQTT_HOST="HHHHHHHHHH" TURTLESIM_PASSWORD="ZZZZZZZZZZZZ" envsubst < src/fiware-ros-turtlesim/config/params-minikube.yaml.template > src/fiware-ros-turtlesim/config/params.yaml
     ros-terminal3:ros_ws$ source devel/setup.bash
-    ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+    ros-terminal3:ros_ws$ roslaunch fiware-ros-turtlesim fiware-ros-turtlesim.launch
     ```
 
 ## operate 'turtlesim' using 'gamepad'

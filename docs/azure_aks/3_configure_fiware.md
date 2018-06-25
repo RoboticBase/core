@@ -323,7 +323,7 @@ ros-terminal2:$ rosrun turtlesim turtlesim_node
 ...
 ```
 
-* open terminal3 and start `turtlesim_operator` (ZZZZZZZZZZZZ is the password of "turtlesim")
+* open terminal3 and start `fiware-ros-turtlesim` (ZZZZZZZZZZZZ is the password of "turtlesim")
 ```bash
 ros-terminal3:$ cd ~/ros_ws
 ros-terminal3:$ catkin_make
@@ -391,7 +391,7 @@ turtlesim@move|executed circle
 ```
 
 ```bash
-ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+ros-terminal3:$ roslaunch fiware-ros-turtlesim fiware-ros-turtlesim.launch
 ...
 [INFO] [1528251288.776914]: [fiware_ros_turtlesim.command_sender:CommandSender._on_message] received message from mqtt: turtlesim@move|circle
 [INFO] [1528251288.778754]: [fiware_ros_turtlesim.command_sender:CommandSender._do_circle] do circle
@@ -449,7 +449,7 @@ ros-terminal4:$ rostopic pub -1 /turtle1/temperature std_msgs/Float32 -- 25.3
 ```
 
 ```bash
-ros-terminal3:ros_ws$ roslaunch turtlesim_operator turtlesim_operator.launch
+ros-terminal3:$ roslaunch fiware-ros-turtlesim fiware-ros-turtlesim.launch
 ...
 [INFO] [1528251469.593141]: [fiware_ros_turtlesim.attribute_receiver:AttributeReceiver._on_receive] received message from ros : 25.2999992371
 ...
