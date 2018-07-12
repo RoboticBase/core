@@ -31,9 +31,9 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 ||version|
 |:--|:--|
 |OS|macOS Sierra 10.12.6|
-|azure cli|2.0.31|
-|kubectl|1.10.2|
-|helm|2.8.2|
+|azure cli|2.0.41|
+|kubectl|1.9.3|
+|helm|2.9.1|
 |envsubst|0.19.8.1|
 
 * minikube host PC
@@ -48,16 +48,34 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 
 ||version|
 |:--|:--|
-|Azure AKS|1.9.6|
+|Azure AKS|1.10.3|
 |minikube|1.9.4|
 
-At current version, [Microsoft Azure AKS (preview)](https://azure.microsoft.com/en-us/services/container-service/) and [minikube](https://github.com/kubernetes/minikube) is tested.
-
 ## getting started
+
+1. install jupyter notebook
+
+    ```bash
+    $ cd docs
+    $ ./setup_jupyter_notebook.sh
+    ```
+1. start jupyter notebook
+
+    ```bash
+    $ ./start_jupyter_notebook.sh
+    ```
+
 ### Microsoft Azure AKS
 
-1. [prepare Microsoft Azure AKS](/docs/azure_aks/1_prepare_aks.md)
-1. [start containers on Kubernetes](/docs/azure_aks/2_start_containers.md)
+1. setup environment variables
+
+    ```bash
+    $ cp azure_aks/env.template azure_aks/env
+    $ vi env
+    ```
+1. prepare Microsoft Azure AKS step by step using [/docs/azure_aks/1_prepare_aks.ipynb](/docs/azure_aks/1_prepare_aks.ipynb).
+
+1. start pods on Kubernetes step by step using [/docs/azure_aks/2_start_pods.ipynb](/docs/azure_aks/2_start_pods.ipynb)
 1. [configure fiware](/docs/azure_aks/3_configure_fiware.md)
 1. [operate 'turtlesim'](/docs/azure_aks/4_operate_turtlesim.md)
 1. [operate 'gopigo'](/docs/azure_aks/5_operate_gopigo.md) (if gopigo is available)
