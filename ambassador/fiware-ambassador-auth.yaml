@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: ambassador-auth-api
-        image: techsketch/fiware-ambassador-auth:0.1.0
+        image: techsketch/fiware-ambassador-auth:0.1.1
         imagePullPolicy: Always
         env:
         - name: LISTEN_PORT
