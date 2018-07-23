@@ -31,8 +31,8 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 ||version|
 |:--|:--|
 |OS|macOS Sierra 10.12.6|
-|azure cli|2.0.41|
-|kubectl|1.9.3|
+|azure cli|2.0.42|
+|kubectl|1.10.2|
 |helm|2.9.1|
 |envsubst|0.19.8.1|
 
@@ -42,14 +42,14 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 |:--|:--|
 |OS|macOS Sierra 10.12.6|
 |VirtualBox|5.2.12 r122591|
-|minikube|0.27.0|
+|minikube|0.28.1|
 
 * Kubernetes
 
 ||version|
 |:--|:--|
 |Azure AKS|1.10.3|
-|minikube|1.9.4|
+|minikube|1.10.0|
 
 ## getting started
 
@@ -74,19 +74,26 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
     $ vi env
     ```
 1. prepare Microsoft Azure AKS step by step using [/docs/azure_aks/1_prepare_aks.ipynb](/docs/azure_aks/1_prepare_aks.ipynb).
-
-1. start pods on Kubernetes step by step using [/docs/azure_aks/2_start_pods.ipynb](/docs/azure_aks/2_start_pods.ipynb)
-1. [configure fiware](/docs/azure_aks/3_configure_fiware.md)
-1. [operate 'turtlesim'](/docs/azure_aks/4_operate_turtlesim.md)
-1. [operate 'gopigo'](/docs/azure_aks/5_operate_gopigo.md) (if gopigo is available)
+1. start pods on Kubernetes step by step using [/docs/azure_aks/2_start_pods.ipynb](/docs/azure_aks/2_start_pods.ipynb).
+1. register iot device & robot to fiware step by step using [/docs/azure_aks/3_register_device.ipynb](/docs/azure_aks/3_register_device.ipynb).
+1. register business logic to fiware step by step using [/docs/azure_aks/4_register_business_logic.ipynb](/docs/azure_aks/4_register_business_logic.ipynb).
+1. operate turtlebot3 step by step using [/docs/azure_aks/5_operate_turtlebot3.ipynb](/docs/azure_aks/5_operate_turtlebot3.ipynb).
+1. visualize the data of turtlebot3 step by step using [/docs/azure_aks/6_visualize_data.ipynb](/docs/azure_aks/6_visualize_data.ipynb).
 
 ### minikube
 
-1. [prepare minikube](/docs/minikube/1_prepare_minikube.md)
-1. [start containers on Kubernetes](/docs/minikube/2_start_containers.md)
-1. [configure fiware](/docs/minikube/3_configure_fiware.md)
-1. [operate 'turtlesim'](/docs/minikube/4_operate_turtlesim.md)
-1. [operate 'gopigo'](/docs/minikube/5_operate_gopigo.md) (if gopigo is available)
+1. setup environment variables
+
+    ```bash
+    $ cp minikube/env.template minikube/env
+    $ vi env
+    ```
+1. prepare minikube step by step using [/docs/minikube/1_prepare_minikube.ipynb](/docs/minikube/1_prepare_minikube.ipynb).
+1. start pods on Kubernetes step by step using [/docs/minikube/2_start_pods.ipynb](/docs/minikube/2_start_pods.ipynb).
+1. register iot device & robot to fiware step by step using [/docs/minikube/3_register_device.ipynb](/docs/minikube/3_register_device.ipynb).
+1. register business logic to fiware step by step using [/docs/minikube/4_register_business_logic.ipynb](/docs/minikube/4_register_business_logic.ipynb).
+1. operate turtlebot3 step by step using [/docs/minikube/5_operate_turtlebot3.ipynb](/docs/minikube/5_operate_turtlebot3.ipynb).
+1. visualize the data of turtlebot3 step by step using [/docs/minikube/6_visualize_data.ipynb](/docs/minikube/6_visualize_data.ipynb).
 
 ## Related Repositories
 ### customized FIWARE components
@@ -117,14 +124,18 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 * [tech-sketch/fiware-gamepad-controller](https://github.com/tech-sketch/fiware-gamepad-controller)
     * A python3.6 application in order to receive gamepad events and to send a command corresponding the event to MQTT broker.
 
+### robot data visualizer
+* [tech-sketch/fiware-robot-visualization](https://github.com/tech-sketch/fiware-robot-visualization)
+    * A python3.6 application in order to visualize the robot locus.
+
 ### ROS package
-* [tech-sketch/fiware-ros-turtlesim](https://github.com/tech-sketch/fiware-ros-turtlesim)
+* [tech-sketch/fiware_ros_turtlebot3_bridge](https://github.com/tech-sketch/fiware_ros_turtlebot3_bridge)
     * A [ROS](http://wiki.ros.org/) pakage witten by python2 in order to act as a bridge between MQTT broker and ROS nodes.
-    * When a MQTT message is received from a MQTT topic, this package publish a seriese of ROS message to a ROS topic for turtlesim.
+    * When a MQTT message is received from a MQTT topic, this package create ROS message and publish a ROS message to a ROS topic.
     * At the opposite, when a ROS message is received from a ROS topic, this package publish a MQTT message to a MQTT topic.
-* [tech-sketch/fiware-ros-gopigo](https://github.com/tech-sketch/fiware-ros-gopigo)
-    * A [ROS](http://wiki.ros.org/) pakage witten by python2 in order to act as a bridge between MQTT broker and ROS nodes.
-    * When a MQTT message is received from a MQTT topic, this package publish a seriese of ROS message to a ROS topic for gopigo.
+* [tech-sketch/fiware_ros_turtlebot3_operator](https://github.com/tech-sketch/fiware_ros_turtlebot3_operator)
+    * A [ROS](http://wiki.ros.org/) pakage witten by python2 in order to control "turtlebot3" and receive its odometries.
+    * You can use this package with either actual robot or simulator.
 
 ## License
 
