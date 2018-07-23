@@ -48,7 +48,7 @@ spec:
         - name: FIWARE_SERVICE
           value: "${FIWARE_SERVICE}"
         - name: FIWARE_SERVICEPATH
-          value: "${FIWARE_SERVICEPATH}"
+          value: "${ROBOT_SERVICEPATH}"
         - name: ROBOT_ID
           value: "${ROBOT_ID}"
         - name: ROBOT_TYPE
