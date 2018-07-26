@@ -118,15 +118,13 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 
 ### Business Logic components
 * [tech-sketch/fiware-cmd-proxy](https://github.com/tech-sketch/fiware-cmd-proxy)
-    * A REST API component working with [FIWARE orion context broker](https://github.com/telefonicaid/fiware-orion) in order to receive a command from gamepad or web controler and to send a command to ROS robot.
+    * A web application working with [FIWARE orion context broker](https://github.com/telefonicaid/fiware-orion) in order to receive a command from gamepad or web controler and to send a command to ROS robot.
+* [tech-ksetch/fiware-robot-visualization](https://github.com/tech-sketch/fiware-robot-visualization)
+    * A web application working with [FIWARE cygnus](https://github.com/telefonicaid/fiware-cygnus) in order to visualize the locus of ROS robot.
 
 ### gamepad controller
 * [tech-sketch/fiware-gamepad-controller](https://github.com/tech-sketch/fiware-gamepad-controller)
     * A python3.6 application in order to receive gamepad events and to send a command corresponding the event to MQTT broker.
-
-### robot data visualizer
-* [tech-sketch/fiware-robot-visualization](https://github.com/tech-sketch/fiware-robot-visualization)
-    * A python3.6 application in order to visualize the robot locus.
 
 ### ROS package
 * [tech-sketch/fiware_ros_turtlebot3_bridge](https://github.com/tech-sketch/fiware_ros_turtlebot3_bridge)
