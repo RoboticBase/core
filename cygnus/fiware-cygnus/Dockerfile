@@ -1,4 +1,4 @@
-FROM fiware/cygnus-ngsi:latest
+FROM fiware/cygnus-ngsi:1.9.0
 
 ENV CYGNUS_SERVICE_PORT "5050"
 ENV CYGNUS_API_PORT "8081"
