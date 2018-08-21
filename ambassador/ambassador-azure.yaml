@@ -79,7 +79,7 @@ spec:
       serviceAccountName: ambassador
       containers:
       - name: ambassador
-        image: quay.io/datawire/ambassador:0.35.2
+        image: quay.io/datawire/ambassador:0.37.0
         resources:
           limits:
             cpu: 1
@@ -105,5 +105,5 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 3
       # - name: statsd
-      #   image: quay.io/datawire/statsd:0.35.2
+      #   image: quay.io/datawire/statsd:0.37.0
       restartPolicy: Always
