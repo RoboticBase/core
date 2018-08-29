@@ -21,10 +21,19 @@
         }
       },
       "spec": {
+        "imagePullSecrets": [
+          {
+            "name": "${ACR_NAME}"
+          }
+        ],
         "containers": [
           {
             "name": "ros-master",
-            "image": "ubuntu:16.04",
+            "image": "${REPOSITORY}/tech-sketch/ros-master:0.2.0",
+            "imagePullPolicy": "Always",
+            "command": [
+              "/opt/kube_entrypoint.sh"
+            ],
             "ports": [
               {
                 "containerPort": 11311
@@ -51,11 +60,6 @@
                 "name": "opt-ros",
                 "readOnly": true
               }
-            ],
-            "command": [
-              "/bin/bash",
-              "-c",
-              "source /opt/ros/kinetic/setup.bash; roscore"
             ]
           }
         ],
