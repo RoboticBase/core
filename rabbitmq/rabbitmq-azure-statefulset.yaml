@@ -16,7 +16,7 @@ data:
       loopback_users.guest = false
       mqtt.allow_anonymous = false
       mqtt.vhost = /
-      mqtt.exchange = amq.topic
+      mqtt.exchange = iota-exchange
       mqtt.subscription_ttl = 86400000
       mqtt.prefetch = 10
       mqtt.tcp_listen_options.backlog = 128

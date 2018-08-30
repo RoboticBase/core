@@ -44,5 +44,12 @@ spec:
     spec:
       containers:
       - name: iotagent-ul
-        image: ${REPOSITORY}/tech-sketch/iotagent-ul:1.7.0.plus
+        image: ${REPOSITORY}/tech-sketch/iotagent-ul:290a1fa
         imagePullPolicy: Always
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/iotagent-ul
+      volumes:
+        - name: config-volume
+          configMap:
+            name: iotagent-config
