@@ -34,22 +34,6 @@ subjects:
   name: ambassador
   namespace: default
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: ambassador
-  creationTimestamp: null
-  labels:
-    service: ambassador
-spec:
-  type: NodePort
-  ports:
-  - name: ambassador
-    port: 80
-    targetPort: 80
-  selector:
-    service: ambassador
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -58,12 +42,15 @@ spec:
   replicas: 3
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
       labels:
         service: ambassador
     spec:
+      serviceAccountName: ambassador
       containers:
       - name: ambassador
-        image: quay.io/datawire/ambassador:0.35.2
+        image: quay.io/datawire/ambassador:0.39.0
         resources:
           limits:
             cpu: 1
@@ -89,5 +76,5 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 3
       # - name: statsd
-      #   image: quay.io/datawire/statsd:0.32.1
+      #   image: quay.io/datawire/statsd:0.39.0
       restartPolicy: Always
