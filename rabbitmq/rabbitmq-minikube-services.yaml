@@ -35,3 +35,18 @@ spec:
      protocol: TCP
      port: 1883
      targetPort: 1883
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+    service: dns
+spec:
+  clusterIP: None
+  selector:
+    app: rabbitmq
+  ports:
+   - name: amqp
+     port: 5672

@@ -52,3 +52,18 @@ spec:
      protocol: TCP
      port: 8883
      targetPort: 8883
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+    service: dns
+spec:
+  clusterIP: None
+  selector:
+    app: rabbitmq
+  ports:
+   - name: amqp
+     port: 5672

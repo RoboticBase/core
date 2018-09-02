@@ -8,7 +8,9 @@ data:
   rabbitmq.conf: |
       cluster_formation.peer_discovery_backend  = rabbit_peer_discovery_k8s
       cluster_formation.k8s.host = kubernetes.default.svc.cluster.local
-      cluster_formation.k8s.address_type = ip
+      cluster_formation.k8s.address_type = hostname
+      cluster_formation.k8s.hostname_suffix = rabbitmq.default.svc.cluster.local
+      cluster_formation.k8s.service_name = rabbitmq
       cluster_formation.node_cleanup.interval = 30
       cluster_formation.node_cleanup.only_log_warning = true
       cluster_partition_handling = autoheal
@@ -85,12 +87,18 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           - name: RABBITMQ_USE_LONGNAME
             value: "true"
-          - name: RABBITMQ_NODENAME
-            value: "rabbit@$(MY_POD_IP)"
+          - name: K8S_HOSTNAME_SUFFIX
+            value: ".rabbitmq.default.svc.cluster.local"
           - name: K8S_SERVICE_NAME
-            value: "rabbitmq-amqp"
+            value: "rabbitmq"
+          - name: RABBITMQ_NODENAME
+            value: "rabbit@$(MY_POD_NAME)$(K8S_HOSTNAME_SUFFIX)"
           - name: RABBITMQ_ERLANG_COOKIE
             value: "rabbitmqcookie"
       volumes:
