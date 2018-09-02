@@ -27,6 +27,8 @@ config.mqtt = {};
 config.amqp = {
     host: "rabbitmq-amqp",
     port: 5672,
+    username: "iotagent",
+    password: "${IOTA_PASSWORD}",
     exchange: "iota-exchange",
     queue: "iotaqueue",
     options: {durable: true}
