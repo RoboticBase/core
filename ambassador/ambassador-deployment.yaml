@@ -34,35 +34,6 @@ subjects:
   name: ambassador
   namespace: default
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: ambassador
-  creationTimestamp: null
-  labels:
-    service: ambassador
-  annotations:
-    getambassador.io/config: |
-      ---
-      apiVersion: ambassador/v0
-      kind: Module
-      name: tls
-      config:
-        server:
-          enabled: True
-          redirect_cleartext_from: 80
-spec:
-  type: LoadBalancer
-  ports:
-  - name: ambassador-tls
-    port: 443
-    targetPort: 443
-  - name: ambassador
-    port: 80
-    targetPort: 80
-  selector:
-    service: ambassador
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -79,7 +50,7 @@ spec:
       serviceAccountName: ambassador
       containers:
       - name: ambassador
-        image: quay.io/datawire/ambassador:0.37.0
+        image: quay.io/datawire/ambassador:0.39.0
         resources:
           limits:
             cpu: 1
@@ -105,5 +76,5 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 3
       # - name: statsd
-      #   image: quay.io/datawire/statsd:0.37.0
+      #   image: quay.io/datawire/statsd:0.39.0
       restartPolicy: Always
