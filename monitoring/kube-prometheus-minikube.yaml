@@ -1,0 +1,20 @@
+global:
+  rbacEnable: true
+
+alertmanager:
+  image:
+    repository: quay.io/prometheus/alertmanager
+    tag: v0.15.1
+
+prometheus:
+  image:
+    repository: quay.io/prometheus/prometheus
+    tag: v2.3.2
+
+grafana:
+  image:
+    repository: grafana/grafana
+    tag: 5.2.2
+  auth:
+    anonymous:
+      enabled: "false"

@@ -15,12 +15,15 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 |[FIWARE iotagent-ul](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|
 |[RabbitMQ](https://www.rabbitmq.com/)|Distributed Message Queue|
 |[MongoDB](https://www.mongodb.com/)|Document-oriented NoSQL Database|
+|[Prometheus](https://prometheus.io/)|Monitoring and Alerting toolkit|
+|[Grafana](https://grafana.com/)|Analytics and Alerting platform for time series metrics|
+|[Elasticsearch](https://www.elastic.co/products/elasticsearch)|Distributed search and analytics engine|
+|[fluentd](https://www.fluentd.org/)|Data collector for unified logging layer|
+|[Kibana](https://www.elastic.co/products/kibana)|Visualize the Elasticsearch data|
 
 |device|summary|
 |:--|:--|
 |fiware-gamepad-controller|Gamepad Controller|
-|
-
 |fiware-ros-bridge|ROS package to act as a bridge FIWARE orion and ROS|
 |fiware-ros-operator|ROS package to control turtlebot3 (simulator and physical robot)|
 
@@ -31,25 +34,28 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 ||version|
 |:--|:--|
 |OS|macOS Sierra 10.12.6|
-|azure cli|2.0.44|
+|azure cli|2.0.45|
 |kubectl|1.11.2|
 |helm|2.10.0|
 |envsubst|0.19.8.1|
 
-* minikube host PC
+* minikube
+    * when you use monitoring & logging, you have to give **4 cpu & 8192 MB memories** to minikube.
 
 ||version|
 |:--|:--|
 |OS|macOS Sierra 10.12.6|
 |VirtualBox|5.2.12 r122591|
 |minikube|0.28.2|
+|kubernetes|1.10.0|
 
-* Kubernetes
+* Azure AKS
+    * when you use monitoring & logging, you have to use the vm series which supports `Premium Storage` such as `Dsv3-series`.
 
 ||version|
 |:--|:--|
-|Azure AKS|1.10.3|
-|minikube|1.10.0|
+|region|japaneast|
+|kubernetes|1.11.2|
 
 ## getting started
 
@@ -74,11 +80,12 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
     $ vi env
     ```
 1. prepare Microsoft Azure AKS step by step using [/docs/azure_aks/1_prepare_aks.ipynb](/docs/azure_aks/1_prepare_aks.ipynb).
-1. start pods on Kubernetes step by step using [/docs/azure_aks/2_start_pods.ipynb](/docs/azure_aks/2_start_pods.ipynb).
+1. start pods on Azure AKS step by step using [/docs/azure_aks/2_start_pods.ipynb](/docs/azure_aks/2_start_pods.ipynb).
 1. register iot device & robot to fiware step by step using [/docs/azure_aks/3_register_device.ipynb](/docs/azure_aks/3_register_device.ipynb).
 1. register business logic to fiware step by step using [/docs/azure_aks/4_register_business_logic.ipynb](/docs/azure_aks/4_register_business_logic.ipynb).
-1. operate turtlebot3 step by step using [/docs/azure_aks/5_operate_turtlebot3.ipynb](/docs/azure_aks/5_operate_turtlebot3.ipynb).
-1. visualize the data of turtlebot3 step by step using [/docs/azure_aks/6_visualize_data.ipynb](/docs/azure_aks/6_visualize_data.ipynb).
+1. start monitoring and logging on Azure AKS step by step uging [/doss/azure_aks/5_start_monitoring_and_logging.ipynb](/docs/azure_aks/5_start_monitoring_and_logging.ipynb).
+1. operate turtlebot3 step by step using [/docs/azure_aks/6_operate_turtlebot3.ipynb](/docs/azure_aks/6_operate_turtlebot3.ipynb).
+1. visualize the data of turtlebot3 step by step using [/docs/azure_aks/7_visualize_data.ipynb](/docs/azure_aks/7_visualize_data.ipynb).
 
 ### minikube
 
@@ -89,11 +96,12 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
     $ vi env
     ```
 1. prepare minikube step by step using [/docs/minikube/1_prepare_minikube.ipynb](/docs/minikube/1_prepare_minikube.ipynb).
-1. start pods on Kubernetes step by step using [/docs/minikube/2_start_pods.ipynb](/docs/minikube/2_start_pods.ipynb).
+1. start pods on minikube step by step using [/docs/minikube/2_start_pods.ipynb](/docs/minikube/2_start_pods.ipynb).
 1. register iot device & robot to fiware step by step using [/docs/minikube/3_register_device.ipynb](/docs/minikube/3_register_device.ipynb).
 1. register business logic to fiware step by step using [/docs/minikube/4_register_business_logic.ipynb](/docs/minikube/4_register_business_logic.ipynb).
-1. operate turtlebot3 step by step using [/docs/minikube/5_operate_turtlebot3.ipynb](/docs/minikube/5_operate_turtlebot3.ipynb).
-1. visualize the data of turtlebot3 step by step using [/docs/minikube/6_visualize_data.ipynb](/docs/minikube/6_visualize_data.ipynb).
+1. start monitoring and logging on minikube step by step uging [/doss/minikube/5_start_monitoring_and_logging.ipynb](/docs/minikube/5_start_monitoring_and_logging.ipynb).
+1. operate turtlebot3 step by step using [/docs/minikube/6_operate_turtlebot3.ipynb](/docs/minikube/6_operate_turtlebot3.ipynb).
+1. visualize the data of turtlebot3 step by step using [/docs/minikube/7_visualize_data.ipynb](/docs/minikube/7_visualize_data.ipynb).
 
 ## Related Repositories
 ### FIWARE components
