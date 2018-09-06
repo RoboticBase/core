@@ -8,10 +8,9 @@ metadata:
     getambassador.io/config: |
       ---
       apiVersion: ambassador/v0
-      kind: Module
+      kind:  AuthService
       name:  authentication
-      config:
-        auth_service: "ambassador-auth:3000"
+      auth_service: "ambassador-auth:3000"
 spec:
   type: ClusterIP
   selector:

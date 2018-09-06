@@ -1,0 +1,42 @@
+global:
+  rbacEnable: true
+
+alertmanager:
+  image:
+    repository: quay.io/prometheus/alertmanager
+    tag: v0.15.1
+  storageSpec:
+    volumeClaimTemplate:
+      metadata:
+        name: prometheus-alertmanager-storage-claim
+        annotations:
+          volume.beta.kubernetes.io/storage-class: managed-premium
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 30Gi
+
+prometheus:
+  image:
+    repository: quay.io/prometheus/prometheus
+    tag: v2.3.2
+  storageSpec:
+    volumeClaimTemplate:
+      metadata:
+        name: prometheus-prometheus-storage-claim
+        annotations:
+          volume.beta.kubernetes.io/storage-class: managed-premium
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 30Gi
+
+grafana:
+  image:
+    repository: grafana/grafana
+    tag: 5.2.2
+  auth:
+    anonymous:
+      enabled: "false"
