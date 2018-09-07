@@ -4,6 +4,7 @@ MAINTAINER Nobuyuki Matsui <nobuyuki.matsui@gmail.com>
 ENV PYTHONUNBUFFERED 1
 
 COPY ./kube_entrypoint.sh /opt/kube_entrypoint.sh
+COPY ./certs/DST_Root_CA_X3.pem /etc/fiware_ros_turtlebot3_bridge/certs/ca.crt
 WORKDIR /opt/ros_ws
 
 RUN apt update && apt upgrade -y && apt install -y git ca-certificates python-setuptools python-pip --no-install-recommends && \
