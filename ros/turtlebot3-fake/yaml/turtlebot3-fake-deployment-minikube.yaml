@@ -18,7 +18,7 @@ spec:
         runAsUser: ${TURTLEBOT3_UID}
       containers:
       - name: turtlebot3-fake
-        image: "${REPOSITORY}/tech-sketch/turtlebot3-fake:0.2.0"
+        image: "${EXTERNAL_HOST_IPADDR}:5000/tech-sketch/turtlebot3-fake:0.2.0"
         imagePullPolicy: Always
         command:
         - "/opt/kube_entrypoint.sh"

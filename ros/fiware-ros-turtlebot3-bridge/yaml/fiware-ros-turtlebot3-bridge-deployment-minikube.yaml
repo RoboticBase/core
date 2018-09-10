@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ros-bridge
-        image: "${REPOSITORY}/tech-sketch/fiware-ros-turtlebot3-bridge:0.2.0"
+        image: "${EXTERNAL_HOST_IPADDR}:5000/tech-sketch/fiware-ros-turtlebot3-bridge:0.2.0"
         imagePullPolicy: Always
         command:
         - "/opt/kube_entrypoint.sh"
