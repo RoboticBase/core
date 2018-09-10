@@ -29,11 +29,11 @@ def main(args):
         print(f'{args.yaml_path} does not exist')
         exit(1)
 
-    print(f'Deploy {args.yaml_path} to {args.endpoint}')
+    command = 'delete' if args.delete else 'apply'
+    print(f'{command} {args.yaml_path} to {args.endpoint}')
     with open(args.yaml_path) as f:
         data = json.dumps(yaml.load(f))
 
-    command = 'delete' if args.delete else 'apply'
 
     url = urllib.parse.urljoin(args.endpoint, '/orion/v1/updateContext')
     headers = {
