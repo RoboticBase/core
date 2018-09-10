@@ -14,9 +14,11 @@ spec:
       labels:
         app: turtlebot3-operator
     spec:
+      imagePullSecrets:
+      - name: "${ACR_NAME}"
       containers:
       - name: turtlebot3-operator
-        image: "${EXTERNAL_HOST_IPADDR}:5000/tech-sketch/fiware-ros-turtlebot3-operator:0.2.0"
+        image: "${REPOSITORY}/tech-sketch/fiware-ros-turtlebot3-operator:0.2.0"
         imagePullPolicy: Always
         command:
         - "/opt/kube_entrypoint.sh"
@@ -32,7 +34,7 @@ spec:
         - name: POLYGON_VELOCITIES_X
           value: '0.2'
         - name: POLYGON_VELOCITIES_Z
-          value: '0.2'
+          value: '0.3'
         - name: POLYGON_EDGE_LENGTH
           value: '0.4'
         volumeMounts:
