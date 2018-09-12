@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ros-bridge-configmaps
+  namespace: default
+  labels:
+    app: ros-bridge
+data:
+  turtlebot3_attrs.yaml: |
+    topics:
+      mqtt: "/robot/turtlebot3/attrs"
+      ros: "/turtlebot3_bridge/attrs"
+  turtlebot3_cmd.yaml: |
+    topics:
+      mqtt:
+        cmd: "/robot/turtlebot3/cmd"
+        result: "/robot/turtlebot3/cmdexe"
+      ros: "/turtlebot3_bridge/cmd"

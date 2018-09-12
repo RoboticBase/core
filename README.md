@@ -21,9 +21,13 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 |[fluentd](https://www.fluentd.org/)|Data collector for unified logging layer|
 |[Kibana](https://www.elastic.co/products/kibana)|Visualize the Elasticsearch data|
 
-|device|summary|
+|gamepad|summary|
 |:--|:--|
 |fiware-gamepad-controller|Gamepad Controller|
+
+|turtlebot3|summary|
+|:--|:--|
+|mqtt-kube-operator|MQTT client to deploy (or delete) a resource to its own Kubernetes|
 |fiware-ros-bridge|ROS package to act as a bridge FIWARE orion and ROS|
 |fiware-ros-operator|ROS package to control turtlebot3 (simulator and physical robot)|
 
@@ -79,13 +83,16 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
     $ cp azure_aks/env.template azure_aks/env
     $ vi env
     ```
-1. prepare Microsoft Azure AKS step by step using [/docs/azure_aks/1_prepare_aks.ipynb](/docs/azure_aks/1_prepare_aks.ipynb).
-1. start pods on Azure AKS step by step using [/docs/azure_aks/2_start_pods.ipynb](/docs/azure_aks/2_start_pods.ipynb).
-1. register iot device & robot to fiware step by step using [/docs/azure_aks/3_register_device.ipynb](/docs/azure_aks/3_register_device.ipynb).
-1. register business logic to fiware step by step using [/docs/azure_aks/4_register_business_logic.ipynb](/docs/azure_aks/4_register_business_logic.ipynb).
-1. start monitoring and logging on Azure AKS step by step uging [/doss/azure_aks/5_start_monitoring_and_logging.ipynb](/docs/azure_aks/5_start_monitoring_and_logging.ipynb).
-1. operate turtlebot3 step by step using [/docs/azure_aks/6_operate_turtlebot3.ipynb](/docs/azure_aks/6_operate_turtlebot3.ipynb).
-1. visualize the data of turtlebot3 step by step using [/docs/azure_aks/7_visualize_data.ipynb](/docs/azure_aks/7_visualize_data.ipynb).
+1. prepare Microsoft Azure AKS -- [/docs/azure_aks/01_prepare_aks.ipynb](/docs/azure_aks/01_prepare_aks.ipynb).
+1. start pods on Azure AKS -- [/docs/azure_aks/02_start_pods.ipynb](/docs/azure_aks/02_start_pods.ipynb).
+1. register iot device & robot to FIWARE  -- [/docs/azure_aks/03_register_device.ipynb](/docs/azure_aks/03_register_device.ipynb).
+1. register business logic to FIWARE -- [/docs/azure_aks/04_register_business_logic.ipynb](/docs/azure_aks/04_register_business_logic.ipynb).
+1. start monitoring and logging on Azure AKS -- [/doss/azure_aks/05_start_monitoring_and_logging.ipynb](/docs/azure_aks/05_start_monitoring_and_logging.ipynb).
+1. prepare minikube in turtlebot3, and start `mqtt-kube-operator` in order to enable remote deployment -- [/docs/azure_aks/06_prepare_remote_deploy.ipynb](/docs/azure_aks/06_prepare_remote_deploy.ipynb).
+1. deploy programs to turtlebot3 through FIWARE -- [/docs/azure_aks/07_deploy_containers_to_turtlebot3.ipynb](/docs/azure_aks/07_deploy_containers_to_turtlebot3.ipynb).
+1. operate turtlebot3 step by step using [/docs/azure_aks/08_operate_turtlebot3.ipynb](/docs/azure_aks/08_operate_turtlebot3.ipynb).
+1. visualize the data of turtlebot3 step by step using [/docs/azure_aks/09_visualize_data.ipynb](/docs/azure_aks/09_visualize_data.ipynb).
+1. delete programs from turtlebot3 through FIWARE -- [/docs/azure_aks/10_delete_containers_from_turtlebot3.ipynb](/docs/azure_aks/10_delete_containers_from_turtlebot3.ipynb).
 
 ### minikube
 
@@ -95,15 +102,19 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
     $ cp minikube/env.template minikube/env
     $ vi env
     ```
-1. prepare minikube step by step using [/docs/minikube/1_prepare_minikube.ipynb](/docs/minikube/1_prepare_minikube.ipynb).
-1. start pods on minikube step by step using [/docs/minikube/2_start_pods.ipynb](/docs/minikube/2_start_pods.ipynb).
-1. register iot device & robot to fiware step by step using [/docs/minikube/3_register_device.ipynb](/docs/minikube/3_register_device.ipynb).
-1. register business logic to fiware step by step using [/docs/minikube/4_register_business_logic.ipynb](/docs/minikube/4_register_business_logic.ipynb).
-1. start monitoring and logging on minikube step by step uging [/doss/minikube/5_start_monitoring_and_logging.ipynb](/docs/minikube/5_start_monitoring_and_logging.ipynb).
-1. operate turtlebot3 step by step using [/docs/minikube/6_operate_turtlebot3.ipynb](/docs/minikube/6_operate_turtlebot3.ipynb).
-1. visualize the data of turtlebot3 step by step using [/docs/minikube/7_visualize_data.ipynb](/docs/minikube/7_visualize_data.ipynb).
+1. prepare minikube -- [/docs/minikube/01_prepare_minikube.ipynb](/docs/minikube/01_prepare_minikube.ipynb).
+1. start pods on minikube -- [/docs/minikube/02_start_pods.ipynb](/docs/minikube/02_start_pods.ipynb).
+1. register iot device & robot to fiware -- [/docs/minikube/03_register_device.ipynb](/docs/minikube/03_register_device.ipynb).
+1. register business logic to FIWARE -- [/docs/minikube/04_register_business_logic.ipynb](/docs/minikube/04_register_business_logic.ipynb).
+1. start monitoring and logging on minikube -- [/doss/minikube/05_start_monitoring_and_logging.ipynb](/docs/minikube/05_start_monitoring_and_logging.ipynb).
+1. prepare minikube in turtlebot3, and start `mqtt-kube-operator` in order to enable remote deployment -- [/docs/minikube/06_prepare_remote_deploy.ipynb](/docs/minikube/06_prepare_remote_deploy.ipynb).
+1. deploy programs to turtlebot3 through FIWARE -- [/docs/minikube/07_deploy_containers_to_turtlebot3.ipynb](/docs/minikube/07_deploy_containers_to_turtlebot3.ipynb).
+1. operate turtlebot3 step by step using [/docs/minikube/08_operate_turtlebot3.ipynb](/docs/minikube/08_operate_turtlebot3.ipynb).
+1. visualize the data of turtlebot3 step by step using [/docs/minikube/09_visualize_data.ipynb](/docs/minikube/09_visualize_data.ipynb).
+1. delete programs from turtlebot3 through FIWARE -- [/docs/minikube/10_delete_containers_from_turtlebot3.ipynb](/docs/minikube/10_delete_containers_from_turtlebot3.ipynb).
 
-## Related Repositories
+
+## Related Repositories (Cloud)
 ### FIWARE components
 * [telefonicaid/fiware-orion](https://github.com/telefonicaid/fiware-orion)
     * Orion is a FIWARE's reference implementation of the Publish/Subscribe Context Broker.
@@ -125,6 +136,7 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
     * A REST API component working with [Ambassador](https://www.getambassador.io/) on Kubernetes in order to authorize and authanticate the client.
     * Bearar Authenticaton and Basic Authentication are supported.
 
+## Related Repositories (Device & Robot)
 ### gamepad controller
 * [tech-sketch/fiware-gamepad-controller](https://github.com/tech-sketch/fiware-gamepad-controller)
     * A python3.6 application in order to receive gamepad events and to send a command corresponding the event to MQTT broker.
@@ -137,6 +149,10 @@ This repository construct a container-centric [FIWARE](http://www.fiware.org/) d
 * [tech-sketch/fiware_ros_turtlebot3_operator](https://github.com/tech-sketch/fiware_ros_turtlebot3_operator)
     * A [ROS](http://wiki.ros.org/) pakage witten by python2 in order to control "turtlebot3" and receive its odometries.
     * You can use this package with either actual robot or simulator.
+
+### Support components
+* [tech-sketch/mqtt-kube-operator](https://github.com/tech-sketch/mqtt-kube-operator)
+    * A MQTT client to deploy (or delete) a resource to its own Kubernetes.
 
 ## License
 
