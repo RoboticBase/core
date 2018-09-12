@@ -1,8 +1,14 @@
-# container-centric fiware demonstaration
+# RoboticBase-core
 
-This repository construct a container-centric [FIWARE](http://www.fiware.org/) demonstration on [Kubernetes](https://kubernetes.io/).
+This repository is a core components of "RoboticBase".
 
-![conrainer-centric-fiware-demonstration.png](/docs/images/container-centric-fiware-demonstration.png)
+## Description
+"RoboticBase" is a robot management platform based on [FIWARE](http://www.fiware.org/) which enables you to manage and operate many kinds of robots and IoT devices as interactions of contexts.
+
+"RoboticBase" allows robots to collaborate with IoT devices, Open Data, human beings and so on. You can connect a robot to "RoboticBase" using the open APIs of the robot, and operate the robot through those APIs. In turn, "RoboticBase" has an ability to manage ROS. If you connect a ROS robot to "RoboticBase", you can operate the robot directly without restrictions.  
+For example, you can deploy a ROS program to the robot and access the raw data of the robot through "RoboticBase".
+
+![roboticbase-core-architecture.png](/docs/images/roboticbase-core-architecure.png)
 
 |component|summary|
 |:--|:--|
