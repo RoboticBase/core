@@ -8,7 +8,7 @@ This repository is a core components of "RoboticBase".
 "RoboticBase" allows robots to collaborate with IoT devices, Open Data, human beings and so on. You can connect a robot to "RoboticBase" using the open APIs of the robot, and operate the robot through those APIs. In turn, "RoboticBase" has an ability to manage ROS. If you connect a ROS robot to "RoboticBase", you can operate the robot directly without restrictions.  
 For example, you can deploy a ROS program to the robot and access the raw data of the robot through "RoboticBase".
 
-![roboticbase-core-architecture.png](/docs/images/roboticbase-core-architecure.png)
+![roboticbase-core-architecture.png](/docs/images/roboticbase-core-architecture.png)
 
 |component|summary|
 |:--|:--|
@@ -29,13 +29,13 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 
 |gamepad|summary|
 |:--|:--|
-|fiware-gamepad-controller|Gamepad Controller|
+|[gamepad](https://github.com/tech-sketch/fiware-gamepad-controller)|Gamepad Controller connecting FIWARE|
 
 |turtlebot3|summary|
 |:--|:--|
-|mqtt-kube-operator|MQTT client to deploy (or delete) a resource to its own Kubernetes|
-|fiware-ros-bridge|ROS package to act as a bridge FIWARE orion and ROS|
-|fiware-ros-operator|ROS package to control turtlebot3 (simulator and physical robot)|
+|[deployer](https://github.com/tech-sketch/mqtt-kube-operator)|MQTT client to deploy (or delete) a resource to its own Kubernetes|
+|[bridge](https://github.com/tech-sketch/fiware_ros_turtlebot3_bridge)|ROS package to act as a bridge FIWARE orion and ROS|
+|[operator](https://github.com/tech-sketch/fiware_ros_turtlebot3_operator)|ROS package to control turtlebot3 (simulator and physical robot)|
 
 ## Requirements
 
@@ -145,11 +145,11 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 ## Related Repositories (Device & Robot)
 ### gamepad controller
 * [tech-sketch/fiware-gamepad-controller](https://github.com/tech-sketch/fiware-gamepad-controller)
-    * A python3.6 application in order to receive gamepad events and to send a command corresponding the event to MQTT broker.
+    * A python3.6 application in order to receive gamepad events and to send a command corresponding the event to FIWARE.
 
 ### ROS package
 * [tech-sketch/fiware_ros_turtlebot3_bridge](https://github.com/tech-sketch/fiware_ros_turtlebot3_bridge)
-    * A [ROS](http://wiki.ros.org/) pakage witten by python2 in order to act as a bridge between MQTT broker and ROS nodes.
+    * A [ROS](http://wiki.ros.org/) pakage witten by python2 in order to act as a bridge between FIWARE and ROS nodes.
     * When a MQTT message is received from a MQTT topic, this package create ROS message and publish a ROS message to a ROS topic.
     * At the opposite, when a ROS message is received from a ROS topic, this package publish a MQTT message to a MQTT topic.
 * [tech-sketch/fiware_ros_turtlebot3_operator](https://github.com/tech-sketch/fiware_ros_turtlebot3_operator)
