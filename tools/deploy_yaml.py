@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
-import base64
 import json
 import os
 import urllib.parse
@@ -26,14 +25,12 @@ def parse_args():
 
 def main(args):
     if not os.path.isfile(args.yaml_path):
-        print(f'{args.yaml_path} does not exist')
-        exit(1)
+        raise FileNotFoundError(f'{args.yaml_path} does not exist')
 
     command = 'delete' if args.delete else 'apply'
     print(f'{command} {args.yaml_path} to {args.endpoint}')
     with open(args.yaml_path) as f:
         data = json.dumps(yaml.load(f))
-
 
     url = urllib.parse.urljoin(args.endpoint, '/orion/v1/updateContext')
     headers = {
@@ -64,4 +61,8 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main(parse_args())
+    try:
+        main(parse_args())
+    except Exception as e:
+        print(e)
+        exit(1)
