@@ -30,12 +30,16 @@ spec:
     spec:
       containers:
       - name: cygnus
-        image: ${REPOSITORY}/tech-sketch/cygnus-ngsi:1.9.0
+        image: techsketch/fiware-cygnus:1.9.0.elasticsearch
         imagePullPolicy: Always
         env:
-        - name: CYGNUS_MONGO_HOSTS
-          value: "mongodb:27017"
-        - name: CYGNUS_MONGO_USER
-          value: ""
-        - name: CYGNUS_MONGO_PASS
-          value: ""
+        - name: CYGNUS_SERVICE_PORT
+          value: "5050"
+        - name: CYGNUS_API_PORT
+          value: "8081"
+        - name: CYGNUS_ELASTICSEARCH_HOST
+          value: "elasticsearch-logging.monitoring.svc.cluster.local"
+        - name: CYGNUS_ELASTICSEARCH_PORT
+          value: "9200"
+        - name: CYGNUS_ELASTICSEARCH_SSL
+          value: "false"
