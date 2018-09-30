@@ -1,35 +1,35 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: cygnus
+  name: cygnus-mongo
   labels:
-    app: cygnus
+    app: cygnus-mongo
 spec:
   type: ClusterIP
   selector:
-    app: cygnus
+    app: cygnus-mongo
   ports:
   - port: 5050
-    name: cygnus-service
+    name: cygnus-mongo-service
   - port: 8081
-    name: cygnus-api
+    name: cygnus-mongo-api
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: cygnus
+  name: cygnus-mongo
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: cygnus
+      app: cygnus-mongo
   template:
     metadata:
       labels:
-        app: cygnus
+        app: cygnus-mongo
     spec:
       containers:
-      - name: cygnus
+      - name: cygnus-mongo
         image: techsketch/fiware-cygnus:1.9.0.elasticsearch
         imagePullPolicy: Always
         env:

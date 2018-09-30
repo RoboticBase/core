@@ -1,35 +1,35 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: cygnus
+  name: cygnus-elasticsearch
   labels:
-    app: cygnus
+    app: cygnus-elasticsearch
 spec:
   type: ClusterIP
   selector:
-    app: cygnus
+    app: cygnus-elasticsearch
   ports:
   - port: 5050
-    name: cygnus-service
+    name: cygnus-elasticsearch-service
   - port: 8081
-    name: cygnus-api
+    name: cygnus-elasticsearch-api
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: cygnus
+  name: cygnus-elasticsearch
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: cygnus
+      app: cygnus-elasticsearch
   template:
     metadata:
       labels:
-        app: cygnus
+        app: cygnus-elasticsearch
     spec:
       containers:
-      - name: cygnus
+      - name: cygnus-elasticsearch
         image: techsketch/fiware-cygnus:1.9.0.elasticsearch
         imagePullPolicy: Always
         env:
@@ -45,3 +45,11 @@ spec:
           value: "9200"
         - name: CYGNUS_ELASTICSEARCH_SSL
           value: "false"
+        - name: CYGNUS_ELASTICSEARCH_TIMEZONE
+          value: "Asia/Tokyo"
+        - name: CYGNUS_ELASTICSEARCH_ATTR_PERSISTENCE
+          value: "column"
+        - name: CYGNUS_ELASTICSEARCH_CAST_VALUE
+          value: "true"
+        - name: CYGNUS_ELASTICSEARCH_CACHE_FLASH_INTERVAL_SEC
+          value: "2"
