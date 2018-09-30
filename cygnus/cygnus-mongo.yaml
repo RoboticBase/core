@@ -38,7 +38,7 @@ spec:
         - name: CYGNUS_API_PORT
           value: "8081"
         - name: CYGNUS_LOG_LEVEL
-          value: "DEBUG"
+          value: "INFO"
         - name: CYGNUS_MONGO_HOSTS
           value: "mongodb:27017"
         - name: CYGNUS_MONGO_USER

@@ -38,7 +38,7 @@ spec:
         - name: CYGNUS_API_PORT
           value: "8081"
         - name: CYGNUS_LOG_LEVEL
-          value: "DEBUG"
+          value: "INFO"
         - name: CYGNUS_ELASTICSEARCH_HOST
           value: "elasticsearch-logging.monitoring.svc.cluster.local"
         - name: CYGNUS_ELASTICSEARCH_PORT
