@@ -4,6 +4,7 @@ metadata:
   name: turtlebot3-operator
   labels:
     app: turtlebot3-operator
+    report: "true"
 spec:
   replicas: 1
   selector:
