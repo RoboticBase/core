@@ -12,7 +12,7 @@ data:
         cmd_sub: "/turtlebot3_bridge/cmd"
         attrs_pub: "/turtlebot3_bridge/attrs"
       thresholds:
-        send_delta_millisec: 100
+        send_delta_millisec: 200
     turtlebot3:
       rate_hz: 10
       circle:
