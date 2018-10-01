@@ -23,6 +23,13 @@ spec:
         imagePullPolicy: Always
         command:
         - "/opt/kube_entrypoint.sh"
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 5"]
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 5"]
         env:
         - name: ROS_HOSTNAME
           value: turtlebot3-operator
