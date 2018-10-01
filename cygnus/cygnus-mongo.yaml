@@ -45,3 +45,5 @@ spec:
           value: ""
         - name: CYGNUS_MONGO_PASS
           value: ""
+        - name: CYGNUS_MONGO_ATTR_PERSISTENCE
+          value: "column"

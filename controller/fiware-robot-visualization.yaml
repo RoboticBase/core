@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: fiware-robot-visualization
-        image: techsketch/fiware-robot-visualization:0.1.1
+        image: techsketch/fiware-robot-visualization:0.2.0
         imagePullPolicy: Always
         env:
         - name: LISTEN_PORT
@@ -53,6 +53,8 @@ spec:
           value: "${MONGODB_DATABASE}"
         - name: MONGODB_COLLECTION
           value: "${MONGODB_COLLECTION}"
+        - name: CYGNUS_MONGO_ATTR_PERSISTENCE
+          value: "column"
         ports:
           - name: robot-vis
             containerPort: 8888
