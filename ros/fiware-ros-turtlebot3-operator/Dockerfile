@@ -9,6 +9,6 @@ WORKDIR /opt/ros_ws
 RUN apt update && apt upgrade -y && apt install -y git ca-certificates --no-install-recommends && \
     mkdir -p /opt/ros_ws/src && \
     git clone https://github.com/tech-sketch/fiware_ros_turtlebot3_operator.git src/fiware_ros_turtlebot3_operator && \
-    git clone https://github.com/tech-sketch/fiware_ros_turtlebot3_bridge.git src/fiware_ros_turtlebot3_bridge && \
+    git clone https://github.com/tech-sketch/fiware_ros_turtlebot3_msgs.git src/fiware_ros_turtlebot3_msgs && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get purge -y --auto-remove git

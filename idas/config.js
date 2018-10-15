@@ -37,7 +37,7 @@ config.amqp = {
 config.http = {};
 
 config.iota = {
-    logLevel: "DEBUG",
+    logLevel: "INFO",
     timestamp: true,
     contextBroker: {
         host: "orion",
