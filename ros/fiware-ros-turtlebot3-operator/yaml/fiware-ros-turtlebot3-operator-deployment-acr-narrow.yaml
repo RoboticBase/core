@@ -4,6 +4,7 @@ metadata:
   name: turtlebot3-operator
   labels:
     app: turtlebot3-operator
+    report: "true"
 spec:
   replicas: 1
   selector:
@@ -22,6 +23,13 @@ spec:
         imagePullPolicy: Always
         command:
         - "/opt/kube_entrypoint.sh"
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 5"]
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 5"]
         env:
         - name: ROS_HOSTNAME
           value: turtlebot3-operator
