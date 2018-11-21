@@ -31,6 +31,10 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |:--|:--|
 |[gamepad](https://github.com/tech-sketch/fiware-gamepad-controller)|Gamepad Controller connecting FIWARE|
 
+|robot(Android)|summary|
+|:--|:--|
+|[robot(Android)](https://github.com/tech-sketch/fiware_xperiahello)|Android Application for [Xperia Hello!](https://www.sonymobile.co.jp/product/smartproducts/g1209/)|
+
 |turtlebot3|summary|
 |:--|:--|
 |[deployer](https://github.com/tech-sketch/mqtt-kube-operator)|MQTT client to deploy (or delete) a resource to its own Kubernetes|
@@ -146,6 +150,10 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 ### gamepad controller
 * [tech-sketch/fiware-gamepad-controller](https://github.com/tech-sketch/fiware-gamepad-controller)
     * A python3.6 application in order to receive gamepad events and to send a command corresponding the event to FIWARE.
+
+### android application for Xperia Hello!
+* [tech-sketch/fiware_xperiahello](https://github.com/tech-sketch/fiware_xperiahello)
+    * An android application for Xperia Hello! It connect to FIWARE using MQTT(S).
 
 ### ROS package
 * [tech-sketch/fiware_ros_turtlebot3_bridge](https://github.com/tech-sketch/fiware_ros_turtlebot3_bridge)
