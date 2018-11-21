@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.3.0]
+### Added
+* employed "Cygnus ElasticsearchSink"
+* employed "ROS bridge and ROS operator"
+
 ## [0.2.0]
 ### Changed
 * testd on Azure AKS(1.11.2) and minikube(1.10.0)
