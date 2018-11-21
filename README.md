@@ -41,6 +41,13 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |[bridge](https://github.com/tech-sketch/fiware_ros_turtlebot3_bridge)|ROS package to act as a bridge FIWARE orion and ROS|
 |[operator](https://github.com/tech-sketch/fiware_ros_turtlebot3_operator)|ROS package to control turtlebot3 (simulator and physical robot)|
 
+## An experiment to prove our concept
+We and University of Aizu have been performed an experiment to guide a visitor by collaborating with heterogeneous robots, IoT devices and people through this Robot Platform on Nov. 6th - 8th , 2018.
+
+Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc1).
+
+[![video](http://img.youtube.com/vi/D9NPxxYgPa0/0.jpg)](https://youtu.be/D9NPxxYgPa0)
+
 ## Requirements
 
 * kubernetes client PC
