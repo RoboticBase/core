@@ -61,7 +61,8 @@ config.iota = {
     providerUrl: "http://iotagent-ul:4041",
     deviceRegistrationDuration: "P1M",
     defaultType: "fiware",
-    defaultResource: "/iot/d"
+    defaultResource: "/iot/d",
+    autocast: "true"
 };
 
 config.defaultKey = 'TEF';
