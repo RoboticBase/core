@@ -1,0 +1,36 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: proxy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: proxy
+  template:
+    metadata:
+      labels:
+        app: proxy
+    spec:
+      containers:
+      - name: proxy
+        image: k8saksacr.azurecr.io/tech-sketch/roboticbase-proxy:0.0.1
+        imagePullPolicy: Always
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: "PORT"
+          value: "3000"
+        - name: "EVENT_PATH"
+          value: "/events/"
+        - name: "CALLBACK_PATH"
+          value: "/callback/"
+        - name: "ORION_ENDPOINT"
+          value: "http://orion:1026"
+        - name: "EXPIRE_SEC"
+          value: "3600"
+        ports:
+        - containerPort: 3000
+          name: proxy
