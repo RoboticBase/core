@@ -50,6 +50,8 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 
 ## Requirements
 
+### When you use macOS,
+
 * kubernetes client PC
 
 ||version|
@@ -69,6 +71,27 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 |VirtualBox|5.2.12 r122591|
 |minikube|0.28.2|
 |kubernetes|1.10.0|
+
+### When you use Ubuntu,
+* kubernetes client PC
+
+||version|
+|:--|:--|
+|OS|Ubuntu 16.04|
+|kubectl|1.12.2|
+|helm|2.11.0|
+|envsubst|0.19.7|
+
+* minikube
+    * when you use monitoring & logging, you have to give **4 cpu & 8192 MB memories** to minikube.
+
+||version|
+|:--|:--|
+|OS|Ubuntu 16.04|
+|VirtualBox|5.2.14 r123301|
+|minikube|0.28.2|
+|kubernetes|1.10.0|
+
 
 * Azure AKS
     * when you use monitoring & logging, you have to use the vm series which supports `Premium Storage` such as `Dsv3-series`.
@@ -111,7 +134,26 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 1. visualize the data of turtlebot3 step by step using [/docs/azure_aks/09_visualize_data.ipynb](/docs/azure_aks/09_visualize_data.ipynb).
 1. delete programs from turtlebot3 through FIWARE -- [/docs/azure_aks/10_delete_containers_from_turtlebot3.ipynb](/docs/azure_aks/10_delete_containers_from_turtlebot3.ipynb).
 
-### minikube
+### minikube on macOS
+
+1. setup environment variables
+
+    ```bash
+    $ cp minikube/env.template minikube/env
+    $ vi env
+    ```
+1. prepare minikube -- [/docs/minikube/01_prepare_minikube.ipynb](/docs/minikube/01_prepare_minikube.ipynb).
+1. start pods on minikube -- [/docs/minikube/02_start_pods.ipynb](/docs/minikube/02_start_pods.ipynb).
+1. register iot device & robot to fiware -- [/docs/minikube/03_register_device.ipynb](/docs/minikube/03_register_device.ipynb).
+1. register business logic to FIWARE -- [/docs/minikube/04_register_business_logic.ipynb](/docs/minikube/04_register_business_logic.ipynb).
+1. start monitoring and logging on minikube -- [/doss/minikube/05_start_monitoring_and_logging.ipynb](/docs/minikube/05_start_monitoring_and_logging.ipynb).
+1. prepare minikube in turtlebot3, and start `mqtt-kube-operator` in order to enable remote deployment -- [/docs/minikube/06_prepare_remote_deploy.ipynb](/docs/minikube/06_prepare_remote_deploy.ipynb).
+1. deploy programs to turtlebot3 through FIWARE -- [/docs/minikube/07_deploy_containers_to_turtlebot3.ipynb](/docs/minikube/07_deploy_containers_to_turtlebot3.ipynb).
+1. operate turtlebot3 step by step using [/docs/minikube/08_operate_turtlebot3.ipynb](/docs/minikube/08_operate_turtlebot3.ipynb).
+1. visualize the data of turtlebot3 step by step using [/docs/minikube/09_visualize_data.ipynb](/docs/minikube/09_visualize_data.ipynb).
+1. delete programs from turtlebot3 through FIWARE -- [/docs/minikube/10_delete_containers_from_turtlebot3.ipynb](/docs/minikube/10_delete_containers_from_turtlebot3.ipynb).
+
+### minikube on Ubuntu
 
 1. setup environment variables
 
