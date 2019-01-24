@@ -25,6 +25,7 @@ data:
         server {
             listen 8888;
             client_max_body_size 20M;
+            client_body_buffer_size 512k;
             charset utf-8;
             location /static {
                 alias /var/www/static;

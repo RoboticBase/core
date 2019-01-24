@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wirecloud
+  labels:
+    app: wirecloud
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  wirecloud-mapping
+      prefix: /
+      host: "^wirecloud\\..+$"
+      host_regex: true
+      service: http://wirecloud:8888
+      timeout_ms: 180000
+spec:
+  type: ClusterIP
+  selector:
+    app: wirecloud
+  ports:
+  - port: 8888
+    targetPort: wirecloud-nginx
+    name: wirecloud

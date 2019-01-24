@@ -1,0 +1,62 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: wirecloud
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wirecloud
+  template:
+    metadata:
+      labels:
+        app: wirecloud
+    spec:
+      containers:
+      - name: wirecloud-django
+        image: fiware/wirecloud:1.2
+        env:
+        - name: DEBUG
+          value: "True"
+        - name: FORWARDED_ALLOW_IPS
+          value: "*"
+        - name: DB_HOST
+          value: "stolon-proxy"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "wirecloud"
+        - name: DB_USERNAME
+          value: "wirecloud"
+        - name: DB_PASSWORD
+          value: "${PGPASSWORD}"
+        ports:
+        - containerPort: 8000
+          name: wirecloud-app
+        volumeMounts:
+        - name: wirecloud-shared-static
+          mountPath: "/var/www/static"
+        - name: wirecloud-shared-data
+          mountPath: "/opt/wirecloud_instance/data"
+      - name: wirecloud-nginx
+        image: nginx
+        ports:
+        - containerPort: 8888
+          name: wirecloud-nginx
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: "/etc/nginx/nginx.conf"
+          subPath: nginx.conf
+          readOnly: true
+        - name: wirecloud-shared-static
+          mountPath: "/var/www/static"
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+      - name: wirecloud-shared-data
+        persistentVolumeClaim:
+          claimName: wirecloud-shared-data
+      - name: wirecloud-shared-static
+        persistentVolumeClaim:
+          claimName: wirecloud-shared-static
