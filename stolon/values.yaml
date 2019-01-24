@@ -1,0 +1,17 @@
+image:
+  repository: sorintlab/stolon
+  tag: v0.13.0-pg10
+  pullPolicy: IfNotPresent
+
+debug: true
+
+persistence:
+  enabled: true
+  storageClassName: "managed-premium"
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+
+superuserPassword: suP@ssw0rd
+
+replicationPassword: replP@ssw0rd
