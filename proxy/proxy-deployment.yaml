@@ -31,6 +31,8 @@ spec:
           value: "http://orion:1026"
         - name: "EXPIRE_SEC"
           value: "3600"
+        - name: "HEARTBEAT_SEC"
+          value: "30"
         ports:
         - containerPort: 3000
           name: proxy
