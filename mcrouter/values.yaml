@@ -1,0 +1,25 @@
+image: jphalip/mcrouter:0.36.0
+
+memcached:
+  enabled: true
+  replicaCount: 3
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 256m
+    memory: 512Mi
+
+mcrouterCommandParams:
+  port: 5000
+
+memcachedService:
+  port: 11211
+  namespace: "default"
+
+controller: "statefulset"
+
+statefulset:
+  replicas: 3

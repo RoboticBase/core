@@ -30,6 +30,8 @@ spec:
           value: "wirecloud"
         - name: DB_PASSWORD
           value: "${PGPASSWORD}"
+        - name: MEMCACHED_LOCATION
+          value: "mcrouter:5000"
         ports:
         - containerPort: 8000
           name: wirecloud-app
