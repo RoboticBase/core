@@ -11,6 +11,8 @@ metadata:
       kind:  Mapping
       name:  controller-mapping
       prefix: /controller/
+      host: "^api\\..+$"
+      host_regex: true
       service: http://cmd-proxy:8888
 spec:
   type: ClusterIP

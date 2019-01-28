@@ -11,6 +11,8 @@ metadata:
       kind:  Mapping
       name:  orion-mapping
       prefix: /orion/
+      host: "^api\\..+$"
+      host_regex: true
       service: http://orion:1026
 spec:
   type: ClusterIP

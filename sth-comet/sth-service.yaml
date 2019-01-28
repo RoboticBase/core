@@ -12,6 +12,8 @@ metadata:
       name:  sth-mapping
       prefix: /sth/
       service: http://sth:8666
+      host: "^api\\..+$"
+      host_regex: true
       cors:
         origins: "*"
         methods: OPTIONS, GET

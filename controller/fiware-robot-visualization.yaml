@@ -11,6 +11,8 @@ metadata:
       kind:  Mapping
       name:  visualizer-mapping
       prefix: /visualizer/
+      host: "^api\\..+$"
+      host_regex: true
       service: http://robot-visualization:8888
 spec:
   type: ClusterIP
