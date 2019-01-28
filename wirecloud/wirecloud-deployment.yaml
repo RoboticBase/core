@@ -57,8 +57,18 @@ spec:
         configMap:
           name: nginx-conf
       - name: wirecloud-shared-data
-        persistentVolumeClaim:
-          claimName: wirecloud-shared-data
+        flexVolume:
+          driver: ceph.rook.io/rook
+          fsType: ceph
+          options:
+            fsName: sharedfs
+            clusterNamespace: rook-ceph
+            path: /data
       - name: wirecloud-shared-static
-        persistentVolumeClaim:
-          claimName: wirecloud-shared-static
+        flexVolume:
+          driver: ceph.rook.io/rook
+          fsType: ceph
+          options:
+            fsName: sharedfs
+            clusterNamespace: rook-ceph
+            path: /static

@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sharedfs-initjob
+  namespace: rook-ceph
+  labels:
+    job: sharedfs-initjob
+spec:
+  template:
+    metadata:
+      labels:
+        job: sharedfs-initjob
+    spec:
+      containers:
+      - name: sharedfs-initjob
+        image: alpine:latest
+        command: ["/bin/ash", "-c", "mkdir -p /sharedfs/data /sharedfs/static; df; echo '----'; ls -ld /sharedfs/*"]
+        volumeMounts:
+        - name: cephfs
+          mountPath: /sharedfs
+      volumes:
+      - name: cephfs
+        flexVolume:
+          driver: ceph.rook.io/rook
+          fsType: ceph
+          options:
+            fsName: sharedfs
+            clusterNamespace: rook-ceph
+      restartPolicy: Never
+  backoffLimit: 1
