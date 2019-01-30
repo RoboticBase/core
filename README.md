@@ -15,7 +15,6 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |[kubernetes](https://kubernetes.io/)|Container Orchestration Platform|
 |[ambassador](https://www.getambassador.io/)|API Gateway|
 |fiware-ambssador-auth|Authorization and Authentication component working with ambassador|
-|fiware-cmd-proxy|Business Logic component working with FIWARE orion|
 |[FIWARE orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)|Publish/Subscribe Context Broker|
 |[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|
 |[FIWARE iotagent-ul](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|
@@ -26,20 +25,6 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |[Elasticsearch](https://www.elastic.co/products/elasticsearch)|Distributed search and analytics engine|
 |[fluentd](https://www.fluentd.org/)|Data collector for unified logging layer|
 |[Kibana](https://www.elastic.co/products/kibana)|Visualize the Elasticsearch data|
-
-|gamepad|summary|
-|:--|:--|
-|[gamepad](https://github.com/tech-sketch/fiware-gamepad-controller)|Gamepad Controller connecting FIWARE|
-
-|robot(Android)|summary|
-|:--|:--|
-|[robot(Android)](https://github.com/tech-sketch/fiware_xperiahello)|Android Application for [Xperia Hello!](https://www.sonymobile.co.jp/product/smartproducts/g1209/)|
-
-|turtlebot3|summary|
-|:--|:--|
-|[deployer](https://github.com/tech-sketch/mqtt-kube-operator)|MQTT client to deploy (or delete) a resource to its own Kubernetes|
-|[bridge](https://github.com/tech-sketch/fiware_ros_turtlebot3_bridge)|ROS package to act as a bridge FIWARE orion and ROS|
-|[operator](https://github.com/tech-sketch/fiware_ros_turtlebot3_operator)|ROS package to control turtlebot3 (simulator and physical robot)|
 
 ## An experiment to prove our concept
 We and University of Aizu have been performed an experiment to guide a visitor by collaborating with heterogeneous robots, IoT devices and people through this Robot Platform on Nov. 6th - 8th , 2018.
@@ -142,16 +127,9 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
     $ cp minikube/env.template minikube/env
     $ vi env
     ```
-1. prepare minikube -- [/docs/minikube/01_prepare_minikube.ipynb](/docs/minikube/01_prepare_minikube.ipynb).
-1. start pods on minikube -- [/docs/minikube/02_start_pods.ipynb](/docs/minikube/02_start_pods.ipynb).
-1. register iot device & robot to fiware -- [/docs/minikube/03_register_device.ipynb](/docs/minikube/03_register_device.ipynb).
-1. register business logic to FIWARE -- [/docs/minikube/04_register_business_logic.ipynb](/docs/minikube/04_register_business_logic.ipynb).
-1. start monitoring and logging on minikube -- [/doss/minikube/05_start_monitoring_and_logging.ipynb](/docs/minikube/05_start_monitoring_and_logging.ipynb).
-1. prepare minikube in turtlebot3, and start `mqtt-kube-operator` in order to enable remote deployment -- [/docs/minikube/06_prepare_remote_deploy.ipynb](/docs/minikube/06_prepare_remote_deploy.ipynb).
-1. deploy programs to turtlebot3 through FIWARE -- [/docs/minikube/07_deploy_containers_to_turtlebot3.ipynb](/docs/minikube/07_deploy_containers_to_turtlebot3.ipynb).
-1. operate turtlebot3 step by step using [/docs/minikube/08_operate_turtlebot3.ipynb](/docs/minikube/08_operate_turtlebot3.ipynb).
-1. visualize the data of turtlebot3 step by step using [/docs/minikube/09_visualize_data.ipynb](/docs/minikube/09_visualize_data.ipynb).
-1. delete programs from turtlebot3 through FIWARE -- [/docs/minikube/10_delete_containers_from_turtlebot3.ipynb](/docs/minikube/10_delete_containers_from_turtlebot3.ipynb).
+1. prepare minikube -- [/docs/minikube/macOS/01_prepare_minikube.ipynb](/docs/minikube/macOS/01_prepare_minikube.ipynb).
+1. start pods on minikube -- [/docs/minikube/macOS/02_start_pods.ipynb](/docs/minikube/macOS/02_start_pods.ipynb).
+1. start monitoring and logging on minikube -- [/docs/minikube/macOS/03_start_monitoring_and_logging.ipynb](/docs/minikube/macOS/03_start_monitoring_and_logging.ipynb).
 
 ### minikube on Ubuntu
 
@@ -161,16 +139,9 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
     $ cp minikube/env.template minikube/env
     $ vi env
     ```
-1. prepare minikube -- [/docs/minikube/01_prepare_minikube.ipynb](/docs/minikube/01_prepare_minikube.ipynb).
-1. start pods on minikube -- [/docs/minikube/02_start_pods.ipynb](/docs/minikube/02_start_pods.ipynb).
-1. register iot device & robot to fiware -- [/docs/minikube/03_register_device.ipynb](/docs/minikube/03_register_device.ipynb).
-1. register business logic to FIWARE -- [/docs/minikube/04_register_business_logic.ipynb](/docs/minikube/04_register_business_logic.ipynb).
-1. start monitoring and logging on minikube -- [/doss/minikube/05_start_monitoring_and_logging.ipynb](/docs/minikube/05_start_monitoring_and_logging.ipynb).
-1. prepare minikube in turtlebot3, and start `mqtt-kube-operator` in order to enable remote deployment -- [/docs/minikube/06_prepare_remote_deploy.ipynb](/docs/minikube/06_prepare_remote_deploy.ipynb).
-1. deploy programs to turtlebot3 through FIWARE -- [/docs/minikube/07_deploy_containers_to_turtlebot3.ipynb](/docs/minikube/07_deploy_containers_to_turtlebot3.ipynb).
-1. operate turtlebot3 step by step using [/docs/minikube/08_operate_turtlebot3.ipynb](/docs/minikube/08_operate_turtlebot3.ipynb).
-1. visualize the data of turtlebot3 step by step using [/docs/minikube/09_visualize_data.ipynb](/docs/minikube/09_visualize_data.ipynb).
-1. delete programs from turtlebot3 through FIWARE -- [/docs/minikube/10_delete_containers_from_turtlebot3.ipynb](/docs/minikube/10_delete_containers_from_turtlebot3.ipynb).
+1. prepare minikube -- [/docs/minikube/Ubuntu/01_prepare_minikube.ipynb](/docs/minikube/Ubuntu/01_prepare_minikube.ipynb).
+1. start pods on minikube -- [/docs/minikube/Ubuntu/02_start_pods.ipynb](/docs/minikube/Ubuntu/02_start_pods.ipynb).
+1. start monitoring and logging on minikube -- [/docs/minikube/Ubuntu/03_start_monitoring_and_logging.ipynb](/docs/minikube/Ubuntu/03_start_monitoring_and_logging.ipynb).
 
 
 ## Related Repositories (Cloud)
@@ -183,12 +154,6 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 * [telefonicaid/fiware-cygnus](https://github.com/telefonicaid/fiware-cygnus)
     * Cygnus is a connector in charge of persisting certain sources of data in certain configured third-party storages, creating a historical view of such data.
         * In this demonstration, historical data are stored to mongodb.
-
-### Business Logic components
-* [tech-sketch/fiware-cmd-proxy](https://github.com/tech-sketch/fiware-cmd-proxy)
-    * A web application working with [FIWARE orion context broker](https://github.com/telefonicaid/fiware-orion) in order to receive a command from gamepad or web controler and to send a command to ROS robot.
-* [tech-ksetch/fiware-robot-visualization](https://github.com/tech-sketch/fiware-robot-visualization)
-    * A web application working with [FIWARE cygnus](https://github.com/telefonicaid/fiware-cygnus) in order to visualize the locus of ROS robot.
 
 ### Support components
 * [tech-sketch/fiware-ambassador-auth](https://github.com/tech-sketch/fiware-ambassador-auth)
