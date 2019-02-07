@@ -1,2 +1,0 @@
-requests>=2.19
-PyYAML>=3.13
