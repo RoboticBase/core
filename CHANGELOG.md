@@ -1,6 +1,46 @@
 # Change Log
 
 ## [Unreleased]
+* We will employ "wirecloud" as a core component of RoboticBase-core
+* We will employ`"sth-comet" as a core component of RoboticBase-core
+
+## [0.4.0]
+### Changed
+* split repository ([core](https://github.com/RoboticBase/core) and [example-turtlebot3](https://github.com/RoboticBase/example-turtlebot3))
+* update components to adjust [FIWARE Release 7.5.1](https://github.com/Fiware/catalogue/releases)
+
+* rabbitmq
+    * no change
+* mongodb
+    * 3.6 -> 4.0.6
+    * use healm (stable/mongodb-replicaset)
+* ambassador
+    * 0.39.0 -> 0.50.0
+    * change the "apiVersion" of deployment
+* fiware-ambassador-auth -> auth
+    * 0.1.1 -> 0.2.0
+    * change the "apiVersion" of deployment
+    * change docker repository (techsketch/fiware-ambassador-auth -> roboticbase/fiware-ambassador-auth)
+    * change the format of `auth-token.json`
+    * move to `auth` directory
+* orion
+    * 1.15.1 -> 2.1.0
+    * split the single yaml to service yaml and deployment yaml
+    * change the "apiVersion" of deployment
+    * add a routing rule which uses a regex of host name
+* idas
+    * private image(tech-sketch/iotagent-ul:290a1fa) -> fiware/iotagent-ul:1.8.0
+    * split the single yaml to service yaml and deployment yaml
+    * rename configuration file (`config.js` -> `rb-config.js`)
+    * remove `iotagent-ul/Dockerfile`
+    * change the "apiVersion" of deployment
+    * add a routing rule which uses a regex of host name
+* cygnus
+    * techsketch/fiware-cygnus:1.9.0.elasticsearch -> fiware/cygnus-ngsi:1.10.0
+    * split the single yaml to service yaml and deployment yaml
+    * change the "apiVersion" of deployment
+    * change CYGNUS_MONGO_ATTR_PERSISTENCE (column -> row)
+        * because `sth-comet` can't recognize "column" style record
 
 ## [0.3.0]
 ### Added
