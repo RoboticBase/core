@@ -34,23 +34,26 @@ subjects:
   name: ambassador
   namespace: default
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ambassador
 spec:
   replicas: 3
+  selector:
+    matchLabels:
+      app: ambassador
   template:
     metadata:
       annotations:
         sidecar.istio.io/inject: "false"
       labels:
-        service: ambassador
+        app: ambassador
     spec:
       serviceAccountName: ambassador
       containers:
       - name: ambassador
-        image: quay.io/datawire/ambassador:0.39.0
+        image: quay.io/datawire/ambassador:0.50.1
         resources:
           limits:
             cpu: 1
@@ -75,6 +78,9 @@ spec:
             port: 8877
           initialDelaySeconds: 30
           periodSeconds: 3
-      # - name: statsd
-      #   image: quay.io/datawire/statsd:0.39.0
+      - name: statsd-exporter
+        image: prom/statsd-exporter
       restartPolicy: Always
+      dnsPolicy: ClusterFirst
+      terminationGracePeriodSeconds: 30
+      securityContext: {}
