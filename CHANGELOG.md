@@ -8,7 +8,7 @@
 ## [0.4.0]
 ### Changed
 * split repository ([core](https://github.com/RoboticBase/core) and [example-turtlebot3](https://github.com/RoboticBase/example-turtlebot3))
-* update components to adjust [FIWARE Release 7.5.1](https://github.com/Fiware/catalogue/releases)
+* update components and documents to adjust [FIWARE Release 7.5.1](https://github.com/Fiware/catalogue/releases)
 
 * rabbitmq
     * no change
@@ -40,7 +40,7 @@
     * techsketch/fiware-cygnus:1.9.0.elasticsearch -> fiware/cygnus-ngsi:1.10.0
     * split the single yaml to service yaml and deployment yaml
     * change the "apiVersion" of deployment
-    * change CYGNUS_MONGO_ATTR_PERSISTENCE (column -> row)
+    * change `CYGNUS_MONGO_ATTR_PERSISTENCE` (column -> row)
         * because `sth-comet` can't recognize "column" style record
 * cygnus-elasticsearch
     * techsketch/fiware-cygnus:1.9.0.elasticsearch -> roboticbase/fiware-cygnus:1.9.0.elasticsearch
