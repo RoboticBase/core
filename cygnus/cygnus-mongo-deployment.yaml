@@ -23,7 +23,7 @@ spec:
         - name: CYGNUS_LOG_LEVEL
           value: "INFO"
         - name: CYGNUS_MONGO_HOSTS
-          value: "mongodb:27017"
+          value: "mongodb-client:27017"
         - name: CYGNUS_MONGO_USER
           value: ""
         - name: CYGNUS_MONGO_PASS
