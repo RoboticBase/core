@@ -3,6 +3,7 @@
 ## [Unreleased]
 * We will employ "wirecloud" as a core component of RoboticBase-core
 * We will employ`"sth-comet" as a core component of RoboticBase-core
+* We will employ`"kurento" as a core component of RoboticBase-core
 
 ## [0.4.0]
 ### Changed
@@ -41,6 +42,22 @@
     * change the "apiVersion" of deployment
     * change CYGNUS_MONGO_ATTR_PERSISTENCE (column -> row)
         * because `sth-comet` can't recognize "column" style record
+* cygnus-elasticsearch
+    * techsketch/fiware-cygnus:1.9.0.elasticsearch -> roboticbase/fiware-cygnus:1.9.0.elasticsearch
+* prometheus
+    * v2.3.2 -> v2.7.1
+    * deployCoreDNS false -> true
+    * deployKubeDNS true -> false
+* alertmanager
+    * v0.15.1 -> v0.16.1
+* grafana
+    * 5.2.2 -> 5.4.3
+* elasticsearch
+    * v6.2.5 -> v6.3.0
+* fluentd
+    * v2.2.0 -> v2.4.0
+* kibana
+    * 6.2.4 -> 6.3.2
 
 ## [0.3.0]
 ### Added
