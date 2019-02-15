@@ -1,20 +1,4 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: cygnus-elasticsearch
-  labels:
-    app: cygnus-elasticsearch
-spec:
-  type: ClusterIP
-  selector:
-    app: cygnus-elasticsearch
-  ports:
-  - port: 5050
-    name: cygnus-elasticsearch-service
-  - port: 8081
-    name: cygnus-elasticsearch-api
----
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cygnus-elasticsearch
@@ -30,7 +14,7 @@ spec:
     spec:
       containers:
       - name: cygnus-elasticsearch
-        image: techsketch/fiware-cygnus:1.9.0.elasticsearch
+        image: roboticbase/fiware-cygnus:1.9.0.elasticsearch
         imagePullPolicy: Always
         env:
         - name: CYGNUS_SERVICE_PORT

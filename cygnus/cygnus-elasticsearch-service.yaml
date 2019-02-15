@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cygnus-elasticsearch
+  labels:
+    app: cygnus-elasticsearch
+spec:
+  type: ClusterIP
+  selector:
+    app: cygnus-elasticsearch
+  ports:
+  - port: 5050
+    name: cygnus-elasticsearch-service
+  - port: 8081
+    name: cygnus-elasticsearch-api
