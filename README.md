@@ -54,8 +54,8 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 |:--|:--|
 |OS|macOS Sierra 10.12.6|
 |VirtualBox|5.2.12 r122591|
-|minikube|0.28.2|
-|kubernetes|1.10.0|
+|minikube|0.34.1|
+|kubernetes|1.12.5|
 
 ### When you use Ubuntu,
 * kubernetes client PC
