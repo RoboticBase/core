@@ -4,17 +4,17 @@ global:
 alertmanager:
   image:
     repository: quay.io/prometheus/alertmanager
-    tag: v0.15.1
+    tag: v0.16.1
 
 prometheus:
   image:
     repository: quay.io/prometheus/prometheus
-    tag: v2.3.2
+    tag: v2.7.1
 
 grafana:
   image:
     repository: grafana/grafana
-    tag: 5.2.2
+    tag: 5.4.3
   auth:
     anonymous:
       enabled: "false"
