@@ -29,7 +29,7 @@
 
 ## cygnus-elasticsearchの設定
 
-1. cygnus-elasticsearch-serviceのインストール
+1. cygnus-elasticsearch-serviceの作成
 
     ```
     $ kubectl apply -f cygnus/cygnus-elasticsearch-service.yaml
@@ -41,7 +41,7 @@
         service/cygnus-elasticsearch created
         ```
 
-1. cygnus-elasticsearch-deploymentのインストール
+1. cygnus-elasticsearch-deploymentの作成
 
     ```
     $ kubectl apply -f cygnus/cygnus-elasticsearch-deployment.yaml
@@ -585,7 +585,7 @@
 
 ## Elasticsearchの設定
 
-1. elasticsearch-minikube-serviceのインストール
+1. elasticsearch-minikube-serviceの作成
 
     ```
     $ kubectl apply -f logging/elasticsearch-minikube-service.yaml
@@ -597,7 +597,7 @@
         service/elasticsearch-logging created
         ```
 
-1. elasticsearch-minikube-deploymentのインストール
+1. elasticsearch-minikube-deploymentの作成
 
     ```
     $ kubectl apply -f logging/elasticsearch-minikube-deployment.yaml
@@ -667,7 +667,7 @@
 
 ## fluentdの設定
 
-1. fluentd-es-configmapのインストール
+1. fluentd-es-configmapの作成
 
     ```
     $ kubectl apply -f logging/fluentd-es-configmap.yaml
@@ -679,7 +679,7 @@
         configmap/fluentd-es-config-v0.2.0 created
         ```
 
-1. fluentd-es-dsのインストール
+1. fluentd-es-dsの作成
 
     ```
     $ kubectl apply -f logging/fluentd-es-ds.yaml
@@ -723,7 +723,7 @@
 
 ## kibanaの設定
 
-1. kibana-serviceのインストール
+1. kibana-serviceの作成
 
     ```
     $ kubectl apply -f logging/kibana-service.yaml
@@ -735,7 +735,7 @@
         service/kibana-logging created
         ```
 
-1. kibana-deploymentのインストール
+1. kibana-deploymentの作成
 
     ```
     $ kubectl apply -f logging/kibana-deployment.yaml
@@ -763,7 +763,7 @@
 
 ## curatorの設定
 
-1. curator-configmapのインストール
+1. curator-configmapの作成
 
     ```
     $ kubectl apply -f logging/curator-configmap.yaml
@@ -775,7 +775,7 @@
         configmap/curator-config created
         ```
 
-1. curator-cronjobのインストール
+1. curator-cronjobの作成
 
     ```
     $ kubectl apply -f logging/curator-cronjob.yaml

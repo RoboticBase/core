@@ -30,7 +30,7 @@
 
 ## minikubeにRabbitMQの設定
 
-1. rabbitmq-rbacのインストール
+1. rabbitmq-rbacの作成
 
     ```
     $ kubectl apply -f rabbitmq/rabbitmq-rbac.yaml
@@ -44,7 +44,7 @@
         rolebinding.rbac.authorization.k8s.io/endpoint-reader created
         ```
 
-1. rabbitmq-minikube-servicesのインストール
+1. rabbitmq-minikube-servicesの作成
 
     ```
     $ kubectl apply -f rabbitmq/rabbitmq-minikube-services.yaml
@@ -58,7 +58,7 @@
         service/rabbitmq created
         ```
 
-1. rabbitmq-minikube-statefulsetのインストール
+1. rabbitmq-minikube-statefulsetの作成
 
     ```
     $ kubectl apply -f rabbitmq/rabbitmq-minikube-statefulset.yaml
@@ -467,7 +467,7 @@
         secret/auth-tokens created
         ```
 
-1. auth-serviceのインストール
+1. auth-serviceの作成
 
     ```
     $ kubectl apply -f auth/auth-service.yaml
@@ -479,7 +479,7 @@
         service/auth created
         ```
 
-1. auth-deploymentのインストール
+1. auth-deploymentの作成
 
     ```
     $ kubectl apply -f auth/auth-deployment.yaml
@@ -519,7 +519,7 @@
         auth   ClusterIP   10.102.160.70   <none>        3000/TCP   68s
         ```
 
-1. minikubeにambassador-minikube-serviceのインストール
+1. minikubeにambassador-minikube-serviceの作成
 
     ```
     $ kubectl apply -f ambassador/ambassador-minikube-service.yaml
@@ -531,7 +531,7 @@
         service/ambassador created
         ```
 
-1. minikubeにambassador-deploymentのインストール
+1. minikubeにambassador-deploymentの作成
 
     ```
     $ kubectl apply -f ambassador/ambassador-deployment.yaml
@@ -617,7 +617,7 @@
 
 ## minikubeにfiware orionの設定
 
-1. orion-minikube-serviceのインストール
+1. orion-minikube-serviceの作成
 
     ```
     $ kubectl apply -f orion/orion-minikube-service.yaml
@@ -629,7 +629,7 @@
         service/orion created
         ```
 
-1. orion-deploymentのインストール
+1. orion-deploymentの作成
 
     ```
     $ kubectl apply -f orion/orion-deployment.yaml
@@ -750,7 +750,7 @@
         secret/iotagent-config created
         ```
 
-1. iotagent-ul-minikube-serviceのインストール
+1. iotagent-ul-minikube-serviceの作成
 
     ```
     $ kubectl apply -f idas/iotagent-ul-minikube-service.yaml
@@ -762,7 +762,7 @@
         service/iotagent-ul created
         ```
 
-1. iotagent-ul-deploymentのインストール
+1. iotagent-ul-deploymentの作成
 
     ```
     $ kubectl apply -f idas/iotagent-ul-deployment.yaml
@@ -825,7 +825,7 @@
 
 ## minikubeにfiware cygnusの設定
 
-1. cygnus-mongoのインストール
+1. cygnus-mongoの作成
 
     ```
     $ kubectl apply -f cygnus/cygnus-mongo-service.yaml
@@ -837,7 +837,7 @@
         service/cygnus-mongo created
         ```
 
-1. cygnus-mongo-deploymentのインストール
+1. cygnus-mongo-deploymentの作成
 
     ```
     $ kubectl apply -f cygnus/cygnus-mongo-deployment.yaml

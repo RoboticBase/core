@@ -765,7 +765,7 @@
 
 ## Role-based access control(RBAC)のインストール
 
-1. tiller-rbacのインストール
+1. tiller-rbacの作成
 
     ```
     $ kubectl apply -f tiller-rbac.yaml
@@ -789,7 +789,7 @@
         tiller                               1         79s
         ```
 
-1. default-rbacのインストール
+1. default-rbacの作成
 
     ```
     $ kubectl apply -f default-rbac.yaml

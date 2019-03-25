@@ -313,7 +313,7 @@
         secret/rabbitmq-certifications created
         ```
 
-1. rabbitmq-rbacのインストール
+1. rabbitmq-rbacの作成
 
     ```
     $ kubectl apply -f rabbitmq/rabbitmq-rbac.yaml
@@ -327,7 +327,7 @@
         rolebinding.rbac.authorization.k8s.io/endpoint-reader created
         ```
 
-1. rabbitmq-azure-servicesのインストール
+1. rabbitmq-azure-servicesの作成
 
     ```
     $ kubectl apply -f rabbitmq/rabbitmq-azure-services.yaml
@@ -342,7 +342,7 @@
         service/rabbitmq created
         ```
 
-1. rabbitmq-azure-statefulsetのインストール
+1. rabbitmq-azure-statefulsetの作成
 
     ```
     $ kubectl apply -f rabbitmq/rabbitmq-azure-statefulset.yaml
@@ -704,7 +704,7 @@
         secret/ambassador-certs created
         ```
 
-1. ambassador-azure-servicesのインストール
+1. ambassador-azure-servicesの作成
 
     ```
     $ kubectl apply -f ambassador/ambassador-azure-services.yaml
@@ -716,7 +716,7 @@
         service/ambassador created
         ```
 
-1. ambassador-deploymentのインストール
+1. ambassador-deploymentの作成
 
     ```
     $ kubectl apply -f ambassador/ambassador-deployment.yaml
@@ -883,7 +883,7 @@
         secret/auth-tokens created
         ```
 
-1. auth-serviceのインストール
+1. auth-serviceの作成
 
     ```
     $ kubectl apply -f auth/auth-service.yaml
@@ -895,7 +895,7 @@
         service/auth created
         ```
 
-1. auth-deploymentのインストール
+1. auth-deploymentの作成
 
     ```
     $ kubectl apply -f auth/auth-deployment.yaml
@@ -938,7 +938,7 @@
 
 ## AKSにfiware orionの設定
 
-1. orion-serviceのインストール
+1. orion-serviceの作成
 
     ```
     $ kubectl apply -f orion/orion-service.yaml
@@ -950,7 +950,7 @@
         service/orion created
         ```
 
-1. orion-deploymentのインストール
+1. orion-deploymentの作成
 
     ```
     $ kubectl apply -f orion/orion-deployment.yaml
@@ -1057,7 +1057,7 @@
         secret/iotagent-config created
         ```
 
-1. iotagent-ul-serviceのインストール
+1. iotagent-ul-serviceの作成
 
     ```
     $ kubectl apply -f idas/iotagent-ul-service.yaml
@@ -1069,7 +1069,7 @@
         service/iotagent-ul created
         ```
 
-1. iotagent-ul-deploymentのインストール
+1. iotagent-ul-deploymentの作成
 
     ```
     $ kubectl apply -f idas/iotagent-ul-deployment.yaml
@@ -1137,7 +1137,7 @@
 
 ## AKSにfiware cygnusの設定
 
-1. cygnus-mongoのインストール
+1. cygnus-mongoの作成
 
     ```
     $ kubectl apply -f cygnus/cygnus-mongo-service.yaml
@@ -1149,7 +1149,7 @@
         service/cygnus-mongo created
         ```
 
-1. cygnus-mongo-deploymentのインストール
+1. cygnus-mongo-deploymentの作成
 
     ```
     $ kubectl apply -f cygnus/cygnus-mongo-deployment.yaml

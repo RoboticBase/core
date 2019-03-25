@@ -120,6 +120,14 @@
 1. minikubeのインストール
 
     ```
+    $ curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-amd64 \
+  && chmod +x minikube
+    $ sudo mv minikube /usr/local/bin
+    ````
+
+1. minikubeの起動
+
+    ```
     $ minikube start --cpus 4 --memory 16384 --kubernetes-version v1.12.5 --bootstrapper=kubeadm --extra-config=kubelet.authentication-token-webhook=true --extra-config=kubelet.authorization-mode=Webhook --extra-config=scheduler.address=0.0.0.0 --extra-config=controller-manager.address=0.0.0.0 --profile ${MINIKUBE_NAME}
     ```
 
@@ -504,7 +512,7 @@
 
 ## Role-based access control(RBAC)のインストール
 
-1. tiller-rbacのインストール
+1. tiller-rbacの作成
 
     ```
     $ kubectl apply -f rbac/tiller-rbac.yaml
@@ -529,7 +537,7 @@
         tiller                               1         11m
         ```
 
-1. default-rbacのインストール
+1. default-rbacの作成
 
     ```
     $ kubectl apply -f rbac/default-rbac.yaml
