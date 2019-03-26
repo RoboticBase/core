@@ -1038,7 +1038,7 @@
     ※200以外のコードが出力された場合は、以下のコマンドを実行し、Ambassador全てのPodを再起動してください  
 
     ```
-    $ skubectl delete pods -l app=ambassador
+    $ kubectl delete pods -l app=ambassador
     ```
 
 ## AKSにfiware idasの設定  
@@ -1132,8 +1132,11 @@
         {"count":0,"services":[]}
         ```
 
-    ※「HTTP/1.1 200 OK」が表示されない場合は、ambassador全てのPodを再起動してください
+    ※200以外のコードが出力された場合は、以下のコマンドを実行し、Ambassador全てのPodを再起動してください  
 
+    ```
+    $ kubectl delete pods -l app=ambassador
+    ```
 
 ## AKSにfiware cygnusの設定
 

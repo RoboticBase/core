@@ -379,8 +379,106 @@
         ]
         ```
 
-
 ## minikubeのambassador設定
+
+1. minikubeにambassador-minikube-serviceの作成
+
+    ```
+    $ kubectl apply -f ambassador/ambassador-minikube-service.yaml
+    ```
+
+    - 実行結果（例）
+
+        ```
+        service/ambassador created
+        ```
+
+1. minikubeにambassador-deploymentの作成
+
+    ```
+    $ kubectl apply -f ambassador/ambassador-deployment.yaml
+    ```
+
+    - 実行結果（例）
+
+        ```
+        clusterrole.rbac.authorization.k8s.io/ambassador created
+        serviceaccount/ambassador created
+        clusterrolebinding.rbac.authorization.k8s.io/ambassador created
+        deployment.apps/ambassador created
+        ```
+
+1. ambassadorのpods状態確認
+
+    ```
+    $ kubectl get pods -l app=ambassador
+    ```
+
+    - 実行結果（例）
+
+        ```
+        NAME                          READY   STATUS    RESTARTS   AGE
+        ambassador-69dcd7cb7c-2xhns   2/2     Running   0          2m
+        ambassador-69dcd7cb7c-7w6w8   2/2     Running   0          2m
+        ambassador-69dcd7cb7c-gskqv   2/2     Running   0          2m
+        ```
+
+1. ambassadorのservices状態確認
+
+    ```
+    $ kubectl get services -l app=ambassador
+    ```
+
+    - 実行結果（例）
+
+        ```
+        NAME         TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+        ambassador   NodePort   10.96.42.125   <none>        80:32053/TCP   2m41s
+        ```
+
+## VirtualBoxのNAT設定
+
+1. ambassadorのポート確認
+
+    ```
+    $ HTTP_PORT=$(kubectl describe service ambassador | grep "NodePort:" | awk '{print $3}' | awk -F'/' '{print $1}');echo ${HTTP_PORT}
+    ```
+
+    - 実行結果（例）
+
+        ```
+        32053
+        ```
+
+1. VirtualBoxのNAT設定
+
+    ```
+    $ VBoxManage controlvm "${MINIKUBE_NAME}" natpf1 "http,tcp,0.0.0.0,8080,,${HTTP_PORT}"
+    $ VBoxManage showvminfo "${MINIKUBE_NAME}" | grep ${HTTP_PORT}
+    ```
+
+    - 実行結果（例）
+
+        ```
+        NIC 1 Rule(0):   name = http, protocol = tcp, host ip = 0.0.0.0, host port = 8080, guest ip = , guest port = 32053
+        ```
+
+1. VirtualBoxのNAT接続確認
+
+    ```
+    $ curl -i http://${HOST_IPADDR}:8080
+    ```
+
+    - 実行結果（例）
+
+        ```
+        HTTP/1.1 404 Not Found
+        date: Wed, 06 Mar 2019 04:22:04 GMT
+        server: envoy
+        content-length: 0
+        ```
+
+## minikubeのauth設定
 
 1. secrets/auth-tokens.jsonの作成
 
@@ -519,102 +617,6 @@
         auth   ClusterIP   10.102.160.70   <none>        3000/TCP   68s
         ```
 
-1. minikubeにambassador-minikube-serviceの作成
-
-    ```
-    $ kubectl apply -f ambassador/ambassador-minikube-service.yaml
-    ```
-
-    - 実行結果（例）
-
-        ```
-        service/ambassador created
-        ```
-
-1. minikubeにambassador-deploymentの作成
-
-    ```
-    $ kubectl apply -f ambassador/ambassador-deployment.yaml
-    ```
-
-    - 実行結果（例）
-
-        ```
-        clusterrole.rbac.authorization.k8s.io/ambassador created
-        serviceaccount/ambassador created
-        clusterrolebinding.rbac.authorization.k8s.io/ambassador created
-        deployment.apps/ambassador created
-        ```
-
-1. ambassadorのpods状態確認
-
-    ```
-    $ kubectl get pods -l app=ambassador
-    ```
-
-    - 実行結果（例）
-
-        ```
-        NAME                          READY   STATUS    RESTARTS   AGE
-        ambassador-69dcd7cb7c-2xhns   2/2     Running   0          2m
-        ambassador-69dcd7cb7c-7w6w8   2/2     Running   0          2m
-        ambassador-69dcd7cb7c-gskqv   2/2     Running   0          2m
-        ```
-
-1. ambassadorのservices状態確認
-
-    ```
-    $ kubectl get services -l app=ambassador
-    ```
-
-    - 実行結果（例）
-
-        ```
-        NAME         TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-        ambassador   NodePort   10.96.42.125   <none>        80:32053/TCP   2m41s
-        ```
-
-1. ambassadorのポート確認
-
-    ```
-    $ HTTP_PORT=$(kubectl describe service ambassador | grep "NodePort:" | awk '{print $3}' | awk -F'/' '{print $1}');echo ${HTTP_PORT}
-    ```
-
-    - 実行結果（例）
-
-        ```
-        32053
-        ```
-
-1. VirtualBoxのNAT設定
-
-    ```
-    $ VBoxManage controlvm "${MINIKUBE_NAME}" natpf1 "http,tcp,0.0.0.0,8080,,${HTTP_PORT}"
-    $ VBoxManage showvminfo "${MINIKUBE_NAME}" | grep ${HTTP_PORT}
-    ```
-
-    - 実行結果（例）
-
-        ```
-        NIC 1 Rule(0):   name = http, protocol = tcp, host ip = 0.0.0.0, host port = 8080, guest ip = , guest port = 32053
-        ```
-
-1. VirtualBoxのNAT接続確認
-
-    ```
-    $ curl -i http://${HOST_IPADDR}:8080
-    ```
-
-    - 実行結果（例）
-
-        ```
-        HTTP/1.1 404 Not Found
-        date: Wed, 06 Mar 2019 04:22:04 GMT
-        server: envoy
-        content-length: 0
-        ```
-
-
 ## minikubeにfiware orionの設定
 
 1. orion-minikube-serviceの作成
@@ -731,7 +733,7 @@
     ※200以外のコードが出力された場合は、以下のコマンドを実行し、Ambassador全てのPodを再起動してください  
 
     ```
-    kubectl delete pods -l app=ambassador
+    $ kubectl delete pods -l app=ambassador
     ```
 
 ## minikubeにfiware idasの設定
@@ -822,6 +824,12 @@
 
             []
         ```
+
+    ※200以外のコードが出力された場合は、以下のコマンドを実行し、Ambassador全てのPodを再起動してください  
+
+    ```
+    $ kubectl delete pods -l app=ambassador
+    ```
 
 ## minikubeにfiware cygnusの設定
 
