@@ -7,7 +7,7 @@
 - kubectl 1.13.4
 - kubeadm 1.13.4
 - kubelet 1.13.4
-- minikube v0.28.2
+- minikube 0.34.1
 - ipcalc 0.41-5
 - docker-ce 18.09.3~3-0~ubuntu-xenial
 - docker-ce-cli 18.09.3~3-0~ubuntu-xenial
@@ -120,7 +120,7 @@
 1. minikubeのインストール
 
     ```
-    $ curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.28.2/minikube-darwin-amd64 \　&& chmod +x minikube
+    $ curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.34.1/minikube-darwin-amd64 \　&& chmod +x minikube
     $ sudo mv minikube /usr/local/bin
     ````
 

@@ -173,7 +173,7 @@
         Please deploy a DNS TXT record under the name
         _acme-challenge.fiware-test.work with the following value:
 
-        u0fDrT4NZ4htG4iVNLKff2ogz42vKwCqBCyg2ja4qbY
+        XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
         Before continuing, verify the record is deployed.
         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -183,7 +183,7 @@
 1. 別ターミナルで表示されたDNS TXT recordを環境変数に設定
 
     ```
-    $ export DNS_TXT="u0fDrT4NZ4htG4iVNLKff2ogz42vKwCqBCyg2ja4qbY"
+    $ export DNS_TXT="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
     ```
 
@@ -211,7 +211,7 @@
         "txtRecords": [
             {
             "value": [
-                "u0fDrT4NZ4htG4iVNLKff2ogz42vKwCqBCyg2ja4qbY"
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
             ]
             }
         ],
