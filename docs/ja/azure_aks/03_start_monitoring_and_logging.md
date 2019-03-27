@@ -640,6 +640,26 @@
 
     ![grafana009](images/grafana/grafana009.png)
 
+1. 「+」「Import」をクリック
+
+    ![grafana010](images/grafana/grafana010.png)
+
+1. 「Upload .json File」をクリック
+
+     ![grafana011](images/grafana/grafana011.png)
+
+1. 「monitoring/dashboard_persistent_volumes.json」を選択し「開く」をクリック
+
+    ![grafana012](images/grafana/grafana012.png)
+
+1. 「Import」をクリック
+
+    ![grafana013](images/grafana/grafana013.png)
+
+1. Persist Volumeのダッシュボード画面が表示されることを確認
+
+    ![grafana014](images/grafana/grafana014.png)
+
 1. ブラウザを終了
 
 1. port-forwardingを閉じる

@@ -509,7 +509,7 @@
         ```
 
 
-## Role-based access control(RBAC)のインストール
+## Role-based access control(RBAC)のセットアップ
 
 1. tiller-rbacの作成
 

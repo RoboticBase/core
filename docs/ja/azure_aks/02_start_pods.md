@@ -2,9 +2,8 @@
 
 ## 構築環境(2019年2月20日現在)
 
-- docker-ce 18.09.2
-- docker-ce 18.09.2
-- mongodb v4.0.6
+- docker-ce 18.09.3
+- docker-ce-cli 18.09.3
 - ca-certificates 20170717~16.0  
 - mosquitto 1.5.7-0mosquitto1~xenial1  
 - mosquitto-clients 1.5.7-0mosquitto1~xenial1
@@ -28,7 +27,7 @@
 1. 環境設定の読み込み
 
     ```
-    $ source ${CORE_ROOT}/docs/minikube/env
+    $ source ${CORE_ROOT}/docs/azure_aks/env
     ```
 
 ## Azureにログイン
@@ -47,13 +46,13 @@
         [
         {
             "cloudName": "AzureCloud",
-            "id": "38ac45e2-5c75-438f-9498-b1a854b2a535",
+            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
             "isDefault": true,
             "name": "Microsoft Azure",
             "state": "Enabled",
-            "tenantId": "tisstc01.onmicrosoft.com",
+            "tenantId": "example.onmicrosoft.com",
             "user": {
-            "name": "example0@example.com",
+            "name": "example@example.com",
             "type": "user"
             }
         }
@@ -157,7 +156,7 @@
 1. Let's encrypt用のTLS証明書作成
 
     ```
-    $ docker run -it -v /home/fiware/core/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain *.api.fiware-test.work --email exampe@example.com --no-eff-email --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns-01 --server https://acme-v02.api.letsencrypt.org/directory
+    $ docker run -it -v /home/fiware/core/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain *.api.example.com --email exampe@example.com --no-eff-email --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns-01 --server https://acme-v02.api.letsencrypt.org/directory
     ```
 
     - 実行結果（例）
@@ -167,11 +166,11 @@
         Plugins selected: Authenticator manual, Installer None
         Obtaining a new certificate
         Performing the following challenges:
-        dns-01 challenge for fiware-test.work
+        dns-01 challenge for example.com
 
         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         Please deploy a DNS TXT record under the name
-        _acme-challenge.fiware-test.work with the following value:
+        _acme-challenge.example.com with the following value:
 
         XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -197,9 +196,9 @@
 
         ```
         {
-        "etag": "d98d80f3-4b01-4c90-b7f8-dad545074c3d",
-        "fqdn": "_acme-challenge.fiware-test.work.",
-        "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/fiware-test.work/TXT/_acme-challenge",
+        "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "fqdn": "_acme-challenge.example.com.",
+        "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com/TXT/_acme-challenge",
         "metadata": null,
         "name": "_acme-challenge",
         "provisioningState": "Succeeded",
@@ -227,9 +226,9 @@
 
     IMPORTANT NOTES:
     - Congratulations! Your certificate and chain have been saved at:
-      /etc/letsencrypt/live/fiware-test.work/fullchain.pem
+      /etc/letsencrypt/live/example.com/fullchain.pem
       Your key file has been saved at:
-      /etc/letsencrypt/live/fiware-test.work/privkey.pem
+      /etc/letsencrypt/live/example.com/privkey.pem
       Your cert will expire on 2019-05-21. To obtain a new or tweaked
       version of this certificate in the future, simply run certbot
       again. To non-interactively renew *all* of your certificates, run
@@ -482,9 +481,9 @@
                 "ipv4Address": "23.102.75.46"
                 }
             ],
-            "etag": "bdba0c2a-9c39-4e09-9cda-70abd603e5a3",
-            "fqdn": "mqtt.fiware-test.work.",
-            "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/fiware-test.work/A/mqtt",
+            "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "fqdn": "mqtt.example.com.",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com/A/mqtt",
             "metadata": null,
             "name": "mqtt",
             "provisioningState": "Succeeded",
@@ -510,7 +509,7 @@
         Address:        127.0.1.1#53
 
         Non-authoritative answer:
-        Name:   mqtt.fiware-test.work
+        Name:   mqtt.example.com
         Address: 23.102.75.46
         ```
 
@@ -784,9 +783,9 @@
                     "ipv4Address": "104.41.182.148"
                 }
             ],
-            "etag": "5dc14258-3d1e-454a-924c-973e691342f6",
-            "fqdn": "api.fiware-test.work.",
-            "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/fiware-test.work/A/api",
+            "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "fqdn": "api.example.com.",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com/A/api",
             "metadata": null,
             "name": "api",
             "provisioningState": "Succeeded",
@@ -812,7 +811,7 @@
         Address:        127.0.1.1#53
 
         Non-authoritative answer:
-        Name:   api.fiware-test.work
+        Name:   api.example.com
         Address: 104.41.182.148
         ```
 

@@ -31,7 +31,7 @@
 1. Azure CLIリポジトリの公開鍵を登録
 
     ```
-    $ sudo apt-key --keyring /etc/apt/trusted.gpg.d/Microsoft.gpg adv --keyserver packages.microsoft.com --recv-keys BC528686B50D79E339D3721CEB3E94ADBE1229CF
+    $ sudo apt-key --keyring /etc/apt/trusted.gpg.d/Microsoft.gpg adv --keyserver packages.microsoft.com --recv-keys xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     ```
 
 1. パッケージリスト更新
@@ -118,9 +118,9 @@
     $ vi env
     #!/bin/bash
 
-    export TENANT="tenant.onmicrosoft.com"; echo "TENANT=${TENANT}"
-    export DOMAIN="fiware-test.work"; echo "DOMAIN=${DOMAIN}"
-    export EMAIL="nobody@fiware-test.work"; echo "EMAIL=${EMAIL}"
+    export TENANT="example.onmicrosoft.com"; echo "TENANT=${TENANT}"
+    export DOMAIN="example.com"; echo "DOMAIN=${DOMAIN}"
+    export EMAIL="nobody@example.com"; echo "EMAIL=${EMAIL}"
     export SSH_KEY="$HOME/.ssh/azure.pub"; echo "SSH_KEY=${SSH_KEY}"
     export NODE_COUNT=4; echo "NODE_COUNT=${NODE_COUNT}"
     export MQTT__iotagent="password_of_iotagent";echo "MQTT__iotagent=${MQTT__iotagent}"
@@ -170,13 +170,13 @@
     [
       {
         "cloudName": "AzureCloud",
-        "id": "38ac45e2-5c75-438f-9498-b1a854b2a535",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
         "isDefault": true,
         "name": "Microsoft Azure",
         "state": "Enabled",
-        "tenantId": "tisstc01.onmicrosoft.com",
+        "tenantId": "example.onmicrosoft.com",
         "user": {
-          "name": "matsui0000@yahoo.co.jp",
+          "name": "nobody@example.com",
           "type": "user"
         }
       }
@@ -194,13 +194,13 @@
         ```
         {
             "environmentName": "AzureCloud",
-            "id": "38ac45e2-5c75-438f-9498-b1a854b2a535",
+            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
             "isDefault": true,
             "name": "Microsoft Azure",
             "state": "Enabled",
-            "tenantId": "tisstc01.onmicrosoft.com",
+            "tenantId": "example.onmicrosoft.com",
             "user": {
-                "name": "matsui0000@yahoo.co.jp",
+                "name": "nobody@example.com",
                 "type": "user"
             }
         }
@@ -225,7 +225,7 @@
 
         ```
         {
-            "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourceGroups/dns-zone",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone",
             "location": "japaneast",
             "managedBy": null,
             "name": "dns-zone",
@@ -248,16 +248,16 @@
         ```
         az network dns zone create --resource-group ${DNS_ZONE_RG} --name "${DOMAIN}"
         {
-            "etag": "00000002-0000-0000-fc9e-1d270fc8d401",
-            "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/fiware-test.work",
+            "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com",
             "location": "global",
             "maxNumberOfRecordSets": 5000,
-            "name": "fiware-test.work",
+            "name": "example.com",
             "nameServers": [
-                "ns1-06.azure-dns.com.",
-                "ns2-06.azure-dns.net.",
-                "ns3-06.azure-dns.org.",
-                "ns4-06.azure-dns.info."
+                "ns1-xx.azure-dns.com.",
+                "ns2-xx.azure-dns.net.",
+                "ns3-xx.azure-dns.org.",
+                "ns4-xx.azure-dns.info."
             ],
             "numberOfRecordSets": 2,
             "registrationVirtualNetworks": null,
@@ -279,10 +279,10 @@
 
         ```
         [
-            "ns1-08.azure-dns.com.",
-            "ns2-08.azure-dns.net.",
-            "ns3-08.azure-dns.org.",
-            "ns4-08.azure-dns.info."
+            "ns1-xx.azure-dns.com.",
+            "ns2-xx.azure-dns.net.",
+            "ns3-xx.azure-dns.org.",
+            "ns4-xx.azure-dns.info."
         ]
         ```
 
@@ -299,7 +299,7 @@
 
         ```
         {
-            "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourceGroups/rbcore",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/rbcore",
             "location": "japaneast",
             "managedBy": null,
             "name": "rbcore",
@@ -325,7 +325,7 @@
         {
             "adminUserEnabled": false,
             "creationDate": "2019-02-14T01:07:34.738571+00:00",
-            "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourceGroups/rbcore/providers/Microsoft.ContainerRegistry/registries/rbcacr",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/rbcore/providers/Microsoft.ContainerRegistry/registries/rbcacr",
             "location": "japaneast",
             "loginServer": "rbcacr.azurecr.io",
             "name": "rbcacr",
@@ -385,7 +385,7 @@
         Your identification has been saved in /home/fiware/.ssh/azure.
         Your public key has been saved in /home/fiware/.ssh/azure.pub.
         The key fingerprint is:
-        SHA256:T+qvQEptdjr4yExLTTW0CAQmxffCAF71I6aaS8jS8Xg fiware@FIWARE-PC
+        SHA256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx fiware@FIWARE-PC
         The key's randomart image is:
         +---[RSA 2048]----+
         |o++++.  .        |
@@ -498,14 +498,14 @@
             "dnsPrefix": "rbcaks-rbcore-38ac45",
             "enableRbac": true,
             "fqdn": "rbcaks-rbcore-38ac45-66347681.hcp.japaneast.azmk8s.io",
-            "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourcegroups/rbcore/providers/Microsoft.ContainerService/managedClusters/rbcaks",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/rbcore/providers/Microsoft.ContainerService/managedClusters/rbcaks",
             "kubernetesVersion": "1.12.5",
             "linuxProfile": {
                 "adminUsername": "azureuser",
                 "ssh": {
                 "publicKeys": [
                     {
-                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC20Lv1HaPdSaFep05hjo1syhM/1XNIEYsbLi0bM5eOn/BGgZF+1TwMktynf6iERHowwgTGKFMbLDVc4mVpa3EoyyTtjPgcP8CENV8TxezQPqa+xljpgW8CsMmE3xCDWOHtqcRa6DW5pgiz+B/TfT4qUTFoRUWZzw1UfPvpwb59rQX6t7YoUtf4wjfttTDprYDpdABZqm1AYAPfjd2ZprUKxk7Hh8ZXM6mTBSvb+F47QIM+57dNME7/nBaT9TvJGCv8f2uCfArUQ4/FP12+v5C7YIoURGuJQmbUnduycqyGuji5SXcMsTlgXaDLk/Ti8qQxvPdlMPBxnV3c4dQdvGcJ fiware@FIWARE-PC\n"
+                    "keyData": "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx fiware@FIWARE-PC\n"
                     }
                 ]
                 }
@@ -580,7 +580,7 @@
               "ssh": {
                 "publicKeys": [
                   {
-                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC20Lv1HaPdSaFep05hjo1syhM/1XNIEYsbLi0bM5eOn/BGgZF+1TwMktynf6iERHowwgTGKFMbLDVc4mVpa3EoyyTtjPgcP8CENV8TxezQPqa+xljpgW8CsMmE3xCDWOHtqcRa6DW5pgiz+B/TfT4qUTFoRUWZzw1UfPvpwb59rQX6t7YoUtf4wjfttTDprYDpdABZqm1AYAPfjd2ZprUKxk7Hh8ZXM6mTBSvb+F47QIM+57dNME7/nBaT9TvJGCv8f2uCfArUQ4/FP12+v5C7YIoURGuJQmbUnduycqyGuji5SXcMsTlgXaDLk/Ti8qQxvPdlMPBxnV3c4dQdvGcJ fiware@FIWARE-PC\n"
+                    "keyData": "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx fiware@FIWARE-PC\n"
                   }
                 ]
               }
@@ -599,7 +599,7 @@
             "provisioningState": "Succeeded",
             "resourceGroup": "rbcore",
             "servicePrincipalProfile": {
-              "clientId": "2672c451-f5d7-4ec0-85da-6aa30960de12",
+              "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
               "secret": null
             },
             "tags": null,
@@ -640,12 +640,12 @@
         ```
         {
             "canDelegate": null,
-            "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourceGroups/rbcore/providers/Microsoft.ContainerRegistry/registries/rbcacr/providers/Microsoft.Authorization/roleAssignments/0ee39ef3-e228-4af1-b49d-fb856e01a8d3",
-            "name": "0ee39ef3-e228-4af1-b49d-fb856e01a8d3",
-            "principalId": "36685c79-71c5-4343-a755-4946251515bc",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/rbcore/providers/Microsoft.ContainerRegistry/registries/rbcacr/providers/Microsoft.Authorization/roleAssignments/0ee39ef3-e228-4af1-b49d-fb856e01a8d3",
+            "name": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "principalId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
             "resourceGroup": "rbcore",
-            "roleDefinitionId": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/providers/Microsoft.Authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7",
-            "scope": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourceGroups/rbcore/providers/Microsoft.ContainerRegistry/registries/rbcacr",
+            "roleDefinitionId": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/providers/Microsoft.Authorization/roleDefinitions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "scope": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/rbcore/providers/Microsoft.ContainerRegistry/registries/rbcacr",
             "type": "Microsoft.Authorization/roleAssignments"
         }
         ```
@@ -763,7 +763,7 @@
         kubernetes-dashboard                 1         61m
         ```
 
-## Role-based access control(RBAC)のインストール
+## Role-based access control(RBAC)のセットアップ
 
 1. tiller-rbacの作成
 
