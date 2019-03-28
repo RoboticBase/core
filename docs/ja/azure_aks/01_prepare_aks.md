@@ -524,7 +524,7 @@
             "provisioningState": "Succeeded",
             "resourceGroup": "rbcore",
             "servicePrincipalProfile": {
-                "clientId": "2672c451-f5d7-4ec0-85da-6aa30960de12",
+                "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                 "secret": null
             },
             "tags": null,
@@ -573,7 +573,7 @@
             "dnsPrefix": "rbcaks-rbcore-38ac45",
             "enableRbac": true,
             "fqdn": "rbcaks-rbcore-38ac45-ed59dae0.hcp.japaneast.azmk8s.io",
-            "id": "/subscriptions/38ac45e2-5c75-438f-9498-b1a854b2a535/resourcegroups/rbcore/providers/Microsoft.ContainerService/managedClusters/rbcaks",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/rbcore/providers/Microsoft.ContainerService/managedClusters/rbcaks",
             "kubernetesVersion": "1.12.5",
             "linuxProfile": {
               "adminUsername": "azureuser",
@@ -762,8 +762,6 @@
         ```
         kubernetes-dashboard                 1         61m
         ```
-
-## Role-based access control(RBAC)のセットアップ
 
 1. tiller-rbacの作成
 
