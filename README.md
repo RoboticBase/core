@@ -14,7 +14,7 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |:--|:--|
 |[kubernetes](https://kubernetes.io/)|Container Orchestration Platform|
 |[ambassador](https://www.getambassador.io/)|API Gateway|
-|fiware-ambssador-auth|Authorization and Authentication component working with ambassador|
+|[fiware-ambassador-auth](https://github.com/RoboticBase/fiware-ambassador-auth)|Authorization and Authentication component working with ambassador|
 |[FIWARE orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)|Publish/Subscribe Context Broker|
 |[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|
 |[FIWARE iotagent-ul](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|
