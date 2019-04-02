@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cygnus-mongo
+  labels:
+    app: cygnus-mongo
+spec:
+  type: ClusterIP
+  selector:
+    app: cygnus-mongo
+  ports:
+  - port: 5050
+    name: cygnus-mongo-service
+  - port: 8081
+    name: cygnus-mongo-api

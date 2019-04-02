@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iotagent-ul
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: iotagent-ul
+  template:
+    metadata:
+      labels:
+        app: iotagent-ul
+    spec:
+      containers:
+      - name: iotagent-ul
+        image: fiware/iotagent-ul:1.8.0
+        imagePullPolicy: Always
+        args: ["--", "rb-config.js"]
+        volumeMounts:
+          - name: config-volume
+            mountPath: "/opt/iotaul/rb-config.js"
+            subPath: "rb-config.js"
+      volumes:
+        - name: config-volume
+          secret:
+            secretName: iotagent-config

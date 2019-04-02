@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: roboticbase/fiware-ambassador-auth:0.2.0
+        imagePullPolicy: Always
+        env:
+        - name: LISTEN_PORT
+          value: "3000"
+        - name: AUTH_TOKENS
+          valueFrom:
+            secretKeyRef:
+              name: "auth-tokens"
+              key: "auth-tokens.json"
+        ports:
+          - name: auth
+            containerPort: 3000

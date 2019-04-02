@@ -1,40 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_ELASTICSEARCH",
-      "label": "elasticsearch",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "elasticsearch",
-      "pluginName": "Elasticsearch"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "datasource",
-      "id": "elasticsearch",
-      "name": "Elasticsearch",
-      "version": "5.0.0"
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "5.2.2"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": "5.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": "5.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -51,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1536039721255,
+  "id": 11,
+  "iteration": 1550213565677,
   "links": [],
   "panels": [
     {
@@ -60,7 +24,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_ELASTICSEARCH}",
+      "datasource": "elasticsearch",
       "fill": 1,
       "gridPos": {
         "h": 9,
@@ -117,6 +81,7 @@
       ],
       "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
       "title": "log count",
       "tooltip": {
@@ -166,15 +131,11 @@
           "value": "kubernetes.container_name"
         },
         {
-          "text": "MESSAGE",
-          "value": "MESSAGE"
-        },
-        {
-          "text": "log",
-          "value": "log"
+          "text": "message",
+          "value": "message"
         }
       ],
-      "datasource": "${DS_ELASTICSEARCH}",
+      "datasource": "elasticsearch",
       "fontSize": "100%",
       "gridPos": {
         "h": 9,
@@ -249,6 +210,7 @@
         "hide": 0,
         "label": "",
         "name": "Filters",
+        "skipUrlSync": false,
         "type": "adhoc"
       }
     ]

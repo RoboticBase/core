@@ -14,7 +14,7 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |:--|:--|
 |[kubernetes](https://kubernetes.io/)|Container Orchestration Platform|
 |[ambassador](https://www.getambassador.io/)|API Gateway|
-|fiware-ambssador-auth|Authorization and Authentication component working with ambassador|
+|[fiware-ambassador-auth](https://github.com/RoboticBase/fiware-ambassador-auth)|Authorization and Authentication component working with ambassador|
 |[FIWARE orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)|Publish/Subscribe Context Broker|
 |[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|
 |[FIWARE iotagent-ul](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|
@@ -43,7 +43,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 |:--|:--|
 |OS|macOS Sierra 10.12.6|
 |azure cli|2.0.45|
-|kubectl|1.11.2|
+|kubectl|1.12.2|
 |helm|2.10.0|
 |envsubst|0.19.8.1|
 
@@ -54,8 +54,8 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 |:--|:--|
 |OS|macOS Sierra 10.12.6|
 |VirtualBox|5.2.12 r122591|
-|minikube|0.28.2|
-|kubernetes|1.10.0|
+|minikube|0.34.1|
+|kubernetes|1.12.5|
 
 ### When you use Ubuntu,
 * kubernetes client PC
@@ -64,7 +64,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 |:--|:--|
 |OS|Ubuntu 16.04|
 |kubectl|1.12.2|
-|helm|2.11.0|
+|helm|2.10.0|
 |envsubst|0.19.7|
 
 * minikube
@@ -74,8 +74,8 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 |:--|:--|
 |OS|Ubuntu 16.04|
 |VirtualBox|5.2.14 r123301|
-|minikube|0.28.2|
-|kubernetes|1.10.0|
+|minikube|0.34.1|
+|kubernetes|1.12.5|
 
 
 * Azure AKS
@@ -84,7 +84,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 ||version|
 |:--|:--|
 |region|japaneast|
-|kubernetes|1.11.2|
+|kubernetes|1.12.5|
 
 ## getting started
 
@@ -100,7 +100,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
     $ ./start_jupyter_notebook.sh
     ```
 
-### Microsoft Azure AKS
+### Microsoft Azure AKS using macOS
 
 1. setup environment variables
 
@@ -108,16 +108,21 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
     $ cp azure_aks/env.template azure_aks/env
     $ vi env
     ```
-1. prepare Microsoft Azure AKS -- [/docs/azure_aks/01_prepare_aks.ipynb](/docs/azure_aks/01_prepare_aks.ipynb).
-1. start pods on Azure AKS -- [/docs/azure_aks/02_start_pods.ipynb](/docs/azure_aks/02_start_pods.ipynb).
-1. register iot device & robot to FIWARE  -- [/docs/azure_aks/03_register_device.ipynb](/docs/azure_aks/03_register_device.ipynb).
-1. register business logic to FIWARE -- [/docs/azure_aks/04_register_business_logic.ipynb](/docs/azure_aks/04_register_business_logic.ipynb).
-1. start monitoring and logging on Azure AKS -- [/doss/azure_aks/05_start_monitoring_and_logging.ipynb](/docs/azure_aks/05_start_monitoring_and_logging.ipynb).
-1. prepare minikube in turtlebot3, and start `mqtt-kube-operator` in order to enable remote deployment -- [/docs/azure_aks/06_prepare_remote_deploy.ipynb](/docs/azure_aks/06_prepare_remote_deploy.ipynb).
-1. deploy programs to turtlebot3 through FIWARE -- [/docs/azure_aks/07_deploy_containers_to_turtlebot3.ipynb](/docs/azure_aks/07_deploy_containers_to_turtlebot3.ipynb).
-1. operate turtlebot3 step by step using [/docs/azure_aks/08_operate_turtlebot3.ipynb](/docs/azure_aks/08_operate_turtlebot3.ipynb).
-1. visualize the data of turtlebot3 step by step using [/docs/azure_aks/09_visualize_data.ipynb](/docs/azure_aks/09_visualize_data.ipynb).
-1. delete programs from turtlebot3 through FIWARE -- [/docs/azure_aks/10_delete_containers_from_turtlebot3.ipynb](/docs/azure_aks/10_delete_containers_from_turtlebot3.ipynb).
+1. prepare Microsoft Azure AKS -- [/docs/azure_aks/macOS/01_prepare_aks.ipynb](/docs/azure_aks/macOS/01_prepare_aks.ipynb).
+1. start pods on Azure AKS -- [/docs/azure_aks/macOS/02_start_pods.ipynb](/docs/azure_aks/macOS/02_start_pods.ipynb).
+1. start monitoring and logging on Azure AKS -- [/doss/azure_aks/macOS/03_start_monitoring_and_logging.ipynb](/docs/azure_aks/macOS/03_start_monitoring_and_logging.ipynb).
+
+### Microsoft Azure AKS using Ubuntu
+
+1. setup environment variables
+
+    ```bash
+    $ cp azure_aks/env.template azure_aks/env
+    $ vi env
+    ```
+    1. prepare Microsoft Azure AKS -- [/docs/azure_aks/macOS/01_prepare_aks.ipynb](/docs/azure_aks/macOS/01_prepare_aks.ipynb).
+    1. start pods on Azure AKS -- [/docs/azure_aks/macOS/02_start_pods.ipynb](/docs/azure_aks/macOS/02_start_pods.ipynb).
+    1. start monitoring and logging on Azure AKS -- [/doss/azure_aks/macOS/03_start_monitoring_and_logging.ipynb](/docs/azure_aks/macOS/03_start_monitoring_and_logging.ipynb).
 
 ### minikube on macOS
 
@@ -130,6 +135,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 1. prepare minikube -- [/docs/minikube/macOS/01_prepare_minikube.ipynb](/docs/minikube/macOS/01_prepare_minikube.ipynb).
 1. start pods on minikube -- [/docs/minikube/macOS/02_start_pods.ipynb](/docs/minikube/macOS/02_start_pods.ipynb).
 1. start monitoring and logging on minikube -- [/docs/minikube/macOS/03_start_monitoring_and_logging.ipynb](/docs/minikube/macOS/03_start_monitoring_and_logging.ipynb).
+
 
 ### minikube on Ubuntu
 
@@ -156,31 +162,9 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
         * In this demonstration, historical data are stored to mongodb.
 
 ### Support components
-* [tech-sketch/fiware-ambassador-auth](https://github.com/tech-sketch/fiware-ambassador-auth)
+* [RoboticBase/fiware-ambassador-auth](https://github.com/RoboticBase/fiware-ambassador-auth)
     * A REST API component working with [Ambassador](https://www.getambassador.io/) on Kubernetes in order to authorize and authanticate the client.
     * Bearar Authenticaton and Basic Authentication are supported.
-
-## Related Repositories (Device & Robot)
-### gamepad controller
-* [tech-sketch/fiware-gamepad-controller](https://github.com/tech-sketch/fiware-gamepad-controller)
-    * A python3.6 application in order to receive gamepad events and to send a command corresponding the event to FIWARE.
-
-### android application for Xperia Hello!
-* [tech-sketch/fiware_xperiahello](https://github.com/tech-sketch/fiware_xperiahello)
-    * An android application for Xperia Hello! It connect to FIWARE using MQTT(S).
-
-### ROS package
-* [tech-sketch/fiware_ros_turtlebot3_bridge](https://github.com/tech-sketch/fiware_ros_turtlebot3_bridge)
-    * A [ROS](http://wiki.ros.org/) pakage witten by python2 in order to act as a bridge between FIWARE and ROS nodes.
-    * When a MQTT message is received from a MQTT topic, this package create ROS message and publish a ROS message to a ROS topic.
-    * At the opposite, when a ROS message is received from a ROS topic, this package publish a MQTT message to a MQTT topic.
-* [tech-sketch/fiware_ros_turtlebot3_operator](https://github.com/tech-sketch/fiware_ros_turtlebot3_operator)
-    * A [ROS](http://wiki.ros.org/) pakage witten by python2 in order to control "turtlebot3" and receive its odometries.
-    * You can use this package with either actual robot or simulator.
-
-### Support components
-* [tech-sketch/mqtt-kube-operator](https://github.com/tech-sketch/mqtt-kube-operator)
-    * A MQTT client to deploy (or delete) a resource to its own Kubernetes.
 
 ## License
 
