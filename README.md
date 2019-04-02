@@ -43,7 +43,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 |:--|:--|
 |OS|macOS Sierra 10.12.6|
 |azure cli|2.0.45|
-|kubectl|1.11.2|
+|kubectl|1.12.2|
 |helm|2.10.0|
 |envsubst|0.19.8.1|
 
@@ -64,7 +64,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 |:--|:--|
 |OS|Ubuntu 16.04|
 |kubectl|1.12.2|
-|helm|2.11.0|
+|helm|2.10.0|
 |envsubst|0.19.7|
 
 * minikube
