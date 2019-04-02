@@ -4,6 +4,7 @@
 * We will employ "wirecloud" as a core component of RoboticBase-core
 * We will employ`"sth-comet" as a core component of RoboticBase-core
 * We will employ`"kurento" as a core component of RoboticBase-core
+* We will update components and documents to adjust [FIWARE Release 7.6](https://github.com/Fiware/catalogue/releases)
 
 ## [0.4.0]
 ### Changed
