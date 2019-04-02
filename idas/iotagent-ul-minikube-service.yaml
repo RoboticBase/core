@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: iotagent-ul
+  labels:
+    app: iotagent-ul
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  iotagent-ul-manage-mapping
+      prefix: /idas/ul20/manage/
+      host_regex: true
+      service: http://iotagent-ul:4041
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  iotagent-ul-http-mapping
+      prefix: /idas/ul20/data/
+      host_regex: true
+      service: http://iotagent-ul:7896
+spec:
+  type: ClusterIP
+  selector:
+    app: iotagent-ul
+  ports:
+  - port: 4041
+    name: iotagent-ul-manage-binding
+  - port: 7896
+    name: iotagent-ul-http-binding
