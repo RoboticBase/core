@@ -4,7 +4,7 @@ global:
 alertmanager:
   image:
     repository: quay.io/prometheus/alertmanager
-    tag: v0.16.1
+    tag: v0.16.2
   storageSpec:
     volumeClaimTemplate:
       metadata:
@@ -20,7 +20,7 @@ alertmanager:
 prometheus:
   image:
     repository: quay.io/prometheus/prometheus
-    tag: v2.7.1
+    tag: v2.9.1
   storageSpec:
     volumeClaimTemplate:
       metadata:
@@ -36,7 +36,7 @@ prometheus:
 grafana:
   image:
     repository: grafana/grafana
-    tag: 5.4.3
+    tag: 6.1.4
   auth:
     anonymous:
       enabled: "false"
