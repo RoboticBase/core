@@ -630,27 +630,27 @@
 
     ![grafana006](images/grafana/grafana006.png)
 
-1. 「URL」のテキストボックスに「 http://kp-prometheus:9090 」を入力
+1. 「URL」のテキストボックスに「 http://kp-prometheus:9090 」を入力し、「Save & Test」をクリック
 
     ![grafana007](images/grafana/grafana007.png)
 
-1. 最後部の「Save & Test」をクリック
+1. 「Data source is working」が表示されたことを確認
 
     ![grafana008](images/grafana/grafana008.png)
 
-1. 「Data source is working」が表示されたことを確認
+1. 「+」「Import」をクリック
 
     ![grafana009](images/grafana/grafana009.png)
 
-1. 「+」「Import」をクリック
-
-    ![grafana010](images/grafana/grafana010.png)
-
 1. 「Upload .json File」をクリック
 
-     ![grafana011](images/grafana/grafana011.png)
+     ![grafana010](images/grafana/grafana010.png)
 
 1. 「monitoring/dashboard_persistent_volumes.json」を選択し「開く」をクリック
+
+    ![grafana011](images/grafana/grafana011.png)
+
+1. prometheusに「prometheus」を選択
 
     ![grafana012](images/grafana/grafana012.png)
 
@@ -955,6 +955,8 @@
 
 1. 「Discover」をクリックすると、Kubernetesやコンテナのログが表示される
 
+    ![kibana008](images/kibana/kibana008.png)
+
 1. ブラウザを終了
 
 1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
@@ -1014,31 +1016,29 @@
 
     ![grafana2-005](images/grafana2/grafana2-005.png)
 
-    ![grafana2-006](images/grafana2/grafana2-006.png)
-
 1. 「Datasource Updated」と表示されることを確認
 
-    ![grafana2-007](images/grafana2/grafana2-007.png)
+    ![grafana2-006](images/grafana2/grafana2-006.png)
 
 1. 「+」「Import」をクリック
 
-    ![grafana2-008](images/grafana2/grafana2-008.png)
+    ![grafana2-007](images/grafana2/grafana2-007.png)
 
 1. 「Upload .json File」をクリック
 
-     ![grafana2-009](images/grafana2/grafana2-009.png)
+    ![grafana2-008](images/grafana2/grafana2-008.png)
 
 1. 「monitoring/dashboard_elasticsearch.json」を選択し「開く」をクリック
 
-     ![grafana2-010](images/grafana2/grafana2-010.png)
+    ![grafana2-009](images/grafana2/grafana2-009.png)
 
 1. 「Import」をクリック
 
+    ![grafana2-010](images/grafana2/grafana2-010.png)
+
+1. ElasticSeartchのログ件数のグラフとログ内容のテーブルが表示されることを確認
+
     ![grafana2-011](images/grafana2/grafana2-011.png)
-
-1. ElasticSeartchのダッシュボード画面が表示されることを確認
-
-    ![grafana2-012](images/grafana2/grafana2-012.png)
 
 1. ブラウザを終了
 
