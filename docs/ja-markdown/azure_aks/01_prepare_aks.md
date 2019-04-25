@@ -1,4 +1,4 @@
-﻿# RoboticBase Coreインストールマニュアル #1
+# RoboticBase Coreインストールマニュアル #1
 
 ## 構築環境(2019年4月26日現在)
 ### macOS
@@ -254,8 +254,7 @@
 
 1. 環境ファイルの設定
 
-    ```
-    $ vi env
+    ```bash
     #!/bin/bash
 
     export TENANT="example.onmicrosoft.com"; echo "TENANT=${TENANT}"
@@ -306,7 +305,7 @@
 
     ※その後、対象のアカウントを選択、一定時間経過後、ターミナル側に下記のID一覧が表示されます
 
-    ```
+    ```json
     [
       {
         "cloudName": "AzureCloud",
@@ -331,7 +330,7 @@
 
     - 実行結果（例）
 
-        ```
+        ```json
         {
             "environmentName": "AzureCloud",
             "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -356,7 +355,7 @@
 
     - 実行結果（例）
 
-        ```
+        ```json
         {
             "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone",
             "location": "japaneast",
@@ -378,8 +377,7 @@
 
     - 実行結果（例）
 
-        ```
-        az network dns zone create --resource-group ${DNS_ZONE_RG} --name "${DOMAIN}"
+        ```json
         {
             "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
             "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com",
@@ -410,7 +408,7 @@
 
     - 実行結果（例）
 
-        ```
+        ```json
         [
             "ns1-xx.azure-dns.com.",
             "ns2-xx.azure-dns.net.",
@@ -430,7 +428,7 @@
 
     - 実行結果（例）
 
-        ```
+        ```json
         {
             "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/rbcore",
             "location": "japaneast",
@@ -454,7 +452,7 @@
 
     - 実行結果（例）
 
-        ```
+        ```json
         {
             "adminUserEnabled": false,
             "creationDate": "2019-02-14T01:07:34.738571+00:00",
@@ -634,7 +632,7 @@
 
     - 実行結果（例）
 
-      ```
+      ```json
       {
         "aadProfile": null,
         "addonProfiles": null,
@@ -717,7 +715,7 @@
 
     - 実行結果（例）
 
-        ```
+        ```json
         {
             "canDelegate": null,
             "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/rbcore/providers/Microsoft.ContainerRegistry/registries/rbcacr/providers/Microsoft.Authorization/roleAssignments/0ee39ef3-e228-4af1-b49d-fb856e01a8d3",

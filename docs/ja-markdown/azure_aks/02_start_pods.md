@@ -1,4 +1,4 @@
-﻿# RoboticBase Coreインストールマニュアル #2
+# RoboticBase Coreインストールマニュアル #2
 
 ## 構築環境(2019年4月26日現在)
 
@@ -174,7 +174,7 @@
         fiware@FIWARE-PC:/tmp$ az login --tenant ${TENANT}
         To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code GVG5YS2HA to authenticate.
         [
-        {
+          {
             "cloudName": "AzureCloud",
             "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
             "isDefault": true,
@@ -182,10 +182,10 @@
             "state": "Enabled",
             "tenantId": "example.onmicrosoft.com",
             "user": {
-            "name": "example@example.com",
-            "type": "user"
+              "name": "example@example.com",
+              "type": "user"
             }
-        }
+          }
         ]
         ```
 
@@ -239,27 +239,27 @@
 
     - 実行結果（例）
 
-        ```
+        ```json
         {
-        "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "fqdn": "_acme-challenge.example.com.",
-        "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com/TXT/_acme-challenge",
-        "metadata": null,
-        "name": "_acme-challenge",
-        "provisioningState": "Succeeded",
-        "resourceGroup": "dns-zone",
-        "targetResource": {
+          "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "fqdn": "_acme-challenge.example.com.",
+          "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com/TXT/_acme-challenge",
+          "metadata": null,
+          "name": "_acme-challenge",
+          "provisioningState": "Succeeded",
+          "resourceGroup": "dns-zone",
+          "targetResource": {
             "id": null
-        },
-        "ttl": 3600,
-        "txtRecords": [
+          },
+          "ttl": 3600,
+          "txtRecords": [
             {
-            "value": [
+              "value": [
                 "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-            ]
+              ]
             }
-        ],
-        "type": "Microsoft.Network/dnszones/TXT"
+          ],
+          "type": "Microsoft.Network/dnszones/TXT"
         }
         ```
 
@@ -535,7 +535,7 @@
 
     - 実行結果（例）
 
-        ```
+        ```json
         {
             "arecords": [
                 {
@@ -813,7 +813,7 @@
 
     - 実行結果（例）
 
-        ```
+        ```json
         {
             "arecords": [
                 {
@@ -874,7 +874,7 @@
     * macOS
 
       ```
-      cat << __EOS__ > secrets/auth-tokens.json
+      $ cat << __EOS__ > secrets/auth-tokens.json
       [
           {
               "host": "api\\\\..+$",
