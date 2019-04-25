@@ -1,6 +1,6 @@
 ﻿# RoboticBase Coreインストールマニュアル #3
 
-## 環境構築(2019年2月26日現在)
+## 環境構築(2019年4月26日現在)
 
 
 # AKSでモニターリング＆ロギングの開始
@@ -16,7 +16,7 @@
 1. 環境設定の読み込み
 
     ```
-    $ source ${CORE_ROOT}/docs/azure_aks/env
+    $ source ${CORE_ROOT}/docs/environments/azure_aks/env
     ```
 
 ## cygnus-elasticsearchの設定
@@ -64,7 +64,7 @@
 
     ```
     $ kubectl get services -l app=cygnus-elasticsearch
-    ````
+    ```
 
     - 実行結果（例）
 
@@ -98,36 +98,40 @@
 
       ```
       NAME:   po
-      LAST DEPLOYED: Thu Feb 21 16:41:53 2019
+      LAST DEPLOYED: Thu Apr 25 17:20:51 2019
       NAMESPACE: monitoring
       STATUS: DEPLOYED
 
       RESOURCES:
-      ==> v1beta1/Deployment
-      NAME                    DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
-      po-prometheus-operator  1        1        1           1          2m
-
-      ==> v1beta1/PodSecurityPolicy
-      NAME                    PRIV   CAPS  SELINUX   RUNASUSER  FSGROUP    SUPGROUP   READONLYROOTFS  VOLUMES
-      po-prometheus-operator  false  []    RunAsAny  RunAsAny   MustRunAs  MustRunAs  false           [configMap emptyDir projected secret downwardAPI persistentVolumeClaim]
-
       ==> v1/ConfigMap
       NAME                    DATA  AGE
-      po-prometheus-operator  1     2m
+      po-prometheus-operator  1     64s
+
+      ==> v1/Pod(related)
+      NAME                                     READY  STATUS   RESTARTS  AGE
+      po-prometheus-operator-67544678b6-6lnrm  1/1    Running  0         64s
 
       ==> v1/ServiceAccount
       NAME                    SECRETS  AGE
-      po-prometheus-operator  1        2m
+      po-prometheus-operator  1        64s
 
       ==> v1beta1/ClusterRole
       NAME                        AGE
-      psp-po-prometheus-operator  2m
-      po-prometheus-operator      2m
+      po-prometheus-operator      64s
+      psp-po-prometheus-operator  64s
 
       ==> v1beta1/ClusterRoleBinding
       NAME                        AGE
-      psp-po-prometheus-operator  2m
-      po-prometheus-operator      2m
+      po-prometheus-operator      64s
+      psp-po-prometheus-operator  64s
+
+      ==> v1beta1/Deployment
+      NAME                    READY  UP-TO-DATE  AVAILABLE  AGE
+      po-prometheus-operator  1/1    1           1          64s
+
+      ==> v1beta1/PodSecurityPolicy
+      NAME                    PRIV   CAPS      SELINUX   RUNASUSER  FSGROUP    SUPGROUP  READONLYROOTFS  VOLUMES
+      po-prometheus-operator  false  RunAsAny  RunAsAny  MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim
 
       NOTES:
       The Prometheus Operator has been installed. Check its status by running:
@@ -312,10 +316,10 @@
     - 実行結果（例）
 
       ```
-      NAME                     DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-      kp-exporter-kube-state   1         1         1            1           54s
-      kp-grafana               1         1         1            1           54s
-      po-prometheus-operator   1         1         1            1           3m
+      NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+      kp-exporter-kube-state   1/1     1            1           70s
+      kp-grafana               1/1     1            1           70s
+      po-prometheus-operator   1/1     1            1           6m
       ```
 
 1. monitoringネームスペースのstatefulsetsを確認
@@ -327,9 +331,9 @@
     - 実行結果（例）
 
       ```
-      NAME                       DESIRED   CURRENT   AGE
-      alertmanager-kp            1         1         8m27s
-      prometheus-kp-prometheus   1         1         8m26s
+      NAME                       READY   AGE
+      alertmanager-kp            1/1     2m17s
+      prometheus-kp-prometheus   1/1     2m17s
       ```
 
 1. monitoringネームスペースのpods状態確認
@@ -341,18 +345,16 @@
     - 実行結果（例）
 
       ```
-      NAME                                         READY   STATUS      RESTARTS   AGE
-      alertmanager-kp-0                            2/2     Running     0          11m
-      kp-exporter-kube-state-665bdbdd97-75cvw      2/2     Running     0          10m
-      kp-exporter-node-6zprs                       1/1     Running     0          11m
-      kp-exporter-node-hg4n4                       1/1     Running     0          11m
-      kp-exporter-node-tq5rw                       1/1     Running     0          11m
-      kp-exporter-node-w58rh                       1/1     Running     0          11m
-      kp-grafana-6df99fd77f-bp97q                  2/2     Running     0          11m
-      po-prometheus-operator-56956994f-tnqth       1/1     Running     0          37m
-      po-prometheus-operator-create-sm-job-svtq7   0/1     Completed   0          37m
-      po-prometheus-operator-get-crd-wbggw         0/1     Completed   0          36m
-      prometheus-kp-prometheus-0                   3/3     Running     1          11m
+      NAME                                      READY   STATUS    RESTARTS   AGE
+      alertmanager-kp-0                         2/2     Running   0          3m5s
+      kp-exporter-kube-state-5d7d894994-sz5pm   2/2     Running   0          2m46s
+      kp-exporter-node-n7j59                    1/1     Running   0          3m5s
+      kp-exporter-node-pvrjg                    1/1     Running   0          3m5s
+      kp-exporter-node-sjl8j                    1/1     Running   0          3m5s
+      kp-exporter-node-zkl9h                    1/1     Running   0          3m5s
+      kp-grafana-7845d4c4cc-vn5d9               2/2     Running   0          3m5s
+      po-prometheus-operator-67544678b6-6lnrm   1/1     Running   0          7m55s
+      prometheus-kp-prometheus-0                3/3     Running   1          3m5s
       ```
 
 1. monitoringネームスペースのservices状態確認
@@ -527,13 +529,7 @@
 
 ## prometheusの確認
 
-1. コマンドの作成
-
-    ```
-    $ echo 'kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l prometheus=kube-prometheus -l app=prometheus -o template --template "{{(index .items 0).metadata.name}}") 9090:9090'
-    ```
-
-1. 別ターミナルでprometheusのポートフォワーディングを開始
+1. 別ターミナルを開き、prometheusのポートフォワーディングを開始
 
     ```
     $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l prometheus=kube-prometheus -l app=prometheus -o template --template "{{(index .items 0).metadata.name}}") 9090:9090
@@ -547,6 +543,12 @@
       ```
 
 1. ブラウザでprometheusにアクセス
+  * macOS
+
+    ```
+    $ open http://localhost:9090
+    ```
+  * Ubuntu
 
     ```
     $ xdg-open http://localhost:9090
@@ -574,18 +576,12 @@
 
 1. ブラウザを終了
 
-1. port-forwardingを閉じる
+1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
 ## grafanaのData Sources追加
 
-1. コマンドの作成
-
-    ```
-    $ echo 'kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000'
-    ```
-
-1. 別ターミナルでgrafanaのポートフォワーディングを開始
+1. 別ターミナルを開き、grafanaのポートフォワーディングを開始
 
     ```
     $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000
@@ -599,6 +595,12 @@
       ```
 
 1. ブラウザでgrafanaにアクセス
+  * macOS
+
+    ```
+    $ open http://localhost:3000
+    ```
+  * Ubuntu
 
     ```
     $ xdg-open http://localhost:3000
@@ -628,7 +630,7 @@
 
     ![grafana006](images/grafana/grafana006.png)
 
-1. 「URL」のテキストボックスに「http://kp-prometheus:9090」を入力
+1. 「URL」のテキストボックスに「 http://kp-prometheus:9090 」を入力
 
     ![grafana007](images/grafana/grafana007.png)
 
@@ -662,7 +664,7 @@
 
 1. ブラウザを終了
 
-1. port-forwardingを閉じる
+1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
 ## Elasticsearchの設定
@@ -703,8 +705,8 @@
     - 実行結果（例）
 
       ```
-      NAME                    DESIRED   CURRENT   AGE
-      elasticsearch-logging   2         2         2m24s
+      NAME                    READY   AGE
+      elasticsearch-logging   2/2     11m
       ```
 
 1. elasticsearch-loggingのpods状態確認
@@ -717,8 +719,8 @@
 
       ```
       NAME                      READY   STATUS    RESTARTS   AGE
-      elasticsearch-logging-0   1/1     Running   0          4m46s
-      elasticsearch-logging-1   1/1     Running   0          2m26s
+      elasticsearch-logging-0   1/1     Running   0          11m
+      elasticsearch-logging-1   1/1     Running   0          9m43s
       ```
 
 1. elasticsearch-loggingのservices状態確認
@@ -744,11 +746,11 @@
 
       ```
       NAME                                            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS      AGE
-      elasticsearch-logging-elasticsearch-logging-0   Bound    pvc-8e751ff8-38c0-11e9-a6d0-3eb5d27c5279   64Gi       RWO            managed-premium   7m55s
-      elasticsearch-logging-elasticsearch-logging-1   Bound    pvc-e1b53352-38c0-11e9-a6d0-3eb5d27c5279   64Gi       RWO            managed-premium   5m35s
+      elasticsearch-logging-elasticsearch-logging-0   Bound    pvc-e71fe0c9-6735-11e9-935a-c2d9cfbaf97d   64Gi       RWO            managed-premium   12m
+      elasticsearch-logging-elasticsearch-logging-1   Bound    pvc-31feed6c-6736-11e9-935a-c2d9cfbaf97d   64Gi       RWO            managed-premium   10m
       ```
 
-1. elasticsearch-loggingの接続確認
+1. elasticsearchのクラスタ設定の変更
 
     ```
     $ kubectl exec -it elasticsearch-logging-0 --namespace monitoring -- curl -H "Content-Type: application/json" -X PUT http://elasticsearch-logging:9200/_cluster/settings -d '{"transient": {"cluster.routing.allocation.enable":"all"}}'
@@ -899,12 +901,6 @@
 
 ## KibanaにIndex Patternsの設定
 
-1. コマンドの作成
-
-    ```
-    $ echo 'kubectl --namespace monitoring port-forward $(kubectl get pod -l k8s-app=kibana-logging --namespace monitoring -o template --template "{{(index .items 0).metadata.name}}") 5601:5601'
-    ```
-
 1. 別ターミナルでKibanaのポートフォワーディングを開始
 
     ```
@@ -919,7 +915,12 @@
       ```
 
 1. ブラウザでkibanaにアクセス
+  * macOS
+    ```
+    $ open http://localhost:5601/
+    ```
 
+  * Ubuntu
     ```
     $ xdg-open http://localhost:5601/
     ```
@@ -952,18 +953,14 @@
 
     ![kibana007](images/kibana/kibana007.png)
 
+1. 「Discover」をクリックすると、Kubernetesやコンテナのログが表示される
+
 1. ブラウザを終了
 
-1. port-forwardingを閉じる
+1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
 ## grafanaにelasticsearch dashboardの追加
-
-1. コマンドの作成
-
-    ```
-    $ echo 'kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000'
-    ```
 
 1. 別ターミナルでgrafanaのポートフォワーディングを開始
 
@@ -979,6 +976,12 @@
       ```
 
 1. ブラウザでgrafanaにアクセス
+  * macOS
+
+    ```
+    $ open http://localhost:3000
+    ```
+  * Ubuntu
 
     ```
     $ xdg-open http://localhost:3000
@@ -1002,10 +1005,10 @@
 
 1. 下記の設定値を入力し、「Save & Test」をクリック
 
-    Name : cygnus-fiwaredemo-deployer  
+    Name : elasticsearch  
     URL : http://elasticsearch-logging:9200  
     Access : Server(Default)  
-    Index name : logstash-* 
+    Index name : logstash-*  
     Time field name : @timestamp  
     Version : 6.0+
 
@@ -1039,4 +1042,4 @@
 
 1. ブラウザを終了
 
-1. port-forwardingを閉じる
+1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる

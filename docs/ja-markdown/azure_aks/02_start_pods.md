@@ -1,6 +1,6 @@
 ﻿# RoboticBase Coreインストールマニュアル #2
 
-## 構築環境(2019年2月20日現在)
+## 構築環境(2019年4月26日現在)
 
 - docker-ce 18.09.3
 - docker-ce-cli 18.09.3
@@ -8,60 +8,20 @@
 - mosquitto 1.5.7-0mosquitto1~xenial1  
 - mosquitto-clients 1.5.7-0mosquitto1~xenial1
 
-# Azure AKSでpodsの開始
-
-
-1. 環境変数の設定
-
-    ```
-    $ export CORE_ROOT="${HOME}/core"
-    $ cd ${CORE_ROOT};pwd
-    ```
-
-    - 実行結果（例）
-
-        ```
-        /home/fiware/core
-        ```
-
-1. 環境設定の読み込み
-
-    ```
-    $ source ${CORE_ROOT}/docs/azure_aks/env
-    ```
-
-## Azureにログイン
-
-1. テナントIDを指定してのAKSログイン
-
-    ```
-    $ az login --tenant ${TENANT}
-    ```
-
-    - 実行結果（例）
-
-        ```
-        fiware@FIWARE-PC:/tmp$ az login --tenant ${TENANT}
-        To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code GVG5YS2HA to authenticate.
-        [
-        {
-            "cloudName": "AzureCloud",
-            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            "isDefault": true,
-            "name": "Microsoft Azure",
-            "state": "Enabled",
-            "tenantId": "example.onmicrosoft.com",
-            "user": {
-            "name": "example@example.com",
-            "type": "user"
-            }
-        }
-        ]
-        ```
-
 
 ## docker-ceのインストール
+### macOS
+1. Docker CE for Macを公式サイトからダウンロード
 
+    ```
+    $ wget https://download.docker.com/mac/stable/Docker.dmg
+    ```
+
+1. `Docker.dmg` をダブルクリックし、 `Docker.app` をApplicationsフォルダへ移動
+1. `Docker.app` をダブルクリックしてDockerを起動
+
+
+### Ubuntu
 1. 前提ファイルのインストール
 
     ```
@@ -145,6 +105,91 @@
                 mq9138 /usr/bin/dockerd -H fd://
         ```
 
+## MQTT clientのインストール
+### macOS
+1. `mosquitto` のインストール
+
+    ```
+    $ brew update && brew install mosquitto
+    ```
+
+### Ubuntu
+1. `mosquitto` のリポジトリ登録
+
+    ```
+    $ sudo add-apt-repository ppa:mosquitto-dev/mosquitto-ppa
+    ```
+
+1. パッケージリストの更新
+
+    ```
+    $ sudo apt-get update -y
+    ```
+
+1. `mosquitto-clients` のインストール
+
+    ```
+    $ sudo apt-get install mosquitto mosquitto-clients
+    ```
+
+1. `mosquitto-clients `のインストール確認
+
+    ```
+    $ dpkg -l | grep mosquitto
+    ```
+
+# Azure AKSでpodsの開始
+
+
+1. 環境変数の設定
+
+    ```
+    $ export CORE_ROOT="${HOME}/core"
+    $ cd ${CORE_ROOT};pwd
+    ```
+
+    - 実行結果（例）
+
+        ```
+        /home/fiware/core
+        ```
+
+1. 環境設定の読み込み
+
+    ```
+    $ source ${CORE_ROOT}/docs/environments/azure_aks/env
+    ```
+
+## Azureにログイン
+
+1. テナントIDを指定してのAKSログイン
+
+    ```
+    $ az login --tenant ${TENANT}
+    ```
+
+    - 実行結果（例）
+
+        ```
+        fiware@FIWARE-PC:/tmp$ az login --tenant ${TENANT}
+        To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code GVG5YS2HA to authenticate.
+        [
+        {
+            "cloudName": "AzureCloud",
+            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "isDefault": true,
+            "name": "Microsoft Azure",
+            "state": "Enabled",
+            "tenantId": "example.onmicrosoft.com",
+            "user": {
+            "name": "example@example.com",
+            "type": "user"
+            }
+        }
+        ]
+        ```
+
+
 ## ワイルドカードTLS証明書の作成
 
 1. dockerコンテナ起動用コマンドの作成
@@ -153,7 +198,7 @@
     $ echo "docker run -it -v ${CORE_ROOT}/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain *.${DOMAIN} --email ${EMAIL} --no-eff-email --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns-01 --server https://acme-v02.api.letsencrypt.org/directory"
     ```
 
-1. Let's encrypt用のTLS証明書作成
+1. 別ターミナルを開いて生成されたコマンドを実行し、Let's encrypt用のTLS証明書作成
 
     ```
     $ docker run -it -v /home/fiware/core/secrets:/etc/letsencrypt certbot/certbot certonly --manual --domain *.api.example.com --email exampe@example.com --no-eff-email --agree-tos --manual-public-ip-logging-ok --preferred-challenges dns-01 --server https://acme-v02.api.letsencrypt.org/directory
@@ -179,14 +224,14 @@
         Press Enter to Continue
         ```
 
-1. 別ターミナルで表示されたDNS TXT recordを環境変数に設定
+1. 別ターミナルで表示されたDNS TXT recordを、元のターミナル上で環境変数に設定
 
     ```
     $ export DNS_TXT="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
     ```
 
-1. DNSゾーンにTXTレコードの登録
+1. 元のターミナル上で、DNSゾーンにTXTレコードの登録
 
     ```
     $ az network dns record-set txt add-record --resource-group ${DNS_ZONE_RG} --zone-name "${DOMAIN}" --record-set-name "_acme-challenge" --value "${DNS_TXT}"
@@ -218,7 +263,7 @@
         }
         ```
 
-1. 元ターミナルでEnterキーを押下しLet's encryptの認証が成功したことを確認
+1. 別ターミナルでEnterキーを押下し、Let's encryptの認証が成功したことを確認
 
     ```
     Waiting for verification...
@@ -239,66 +284,69 @@
       Donating to EFF:                    https://eff.org/donate-le
     ```
 
-1. DNSリソースグループのDNS record削除
+1.  別ターミナルを閉じる
+
+1. 元のターミナル上でDNSリソースグループのDNS record削除
 
     ```
     $ az network dns record-set txt remove-record --resource-group ${DNS_ZONE_RG} --zone-name "${DOMAIN}" --record-set-name "_acme-challenge" --value "${DNS_TXT}"
     ```
 
-1. secretsのユーザーグループ確認
-
-    ```
-    $ sudo ls -la secrets/
-    ```
-
-    - 実行結果（例）
+1. Ubuntuの場合、生成されたTLS証明書のユーザーを変更
+    1. secretsのユーザーグループ確認
 
         ```
-        合計 44
-        drwxrwxr-x  9 fiware fiware 4096  2月 20 16:32 .
-        drwxrwxr-x 15 fiware fiware 4096  2月 18 16:27 ..
-        -rw-rw-r--  1 fiware fiware 1200  2月 18 16:26 DST_Root_CA_X3.pem
-        drwx------  3 root   root   4096  2月 20 15:13 accounts
-        drwx------  3 root   root   4096  2月 20 15:24 archive
-        -rw-rw-r--  1 fiware fiware 1163  2月 20 16:32 auth-tokens.json
-        drwxr-xr-x  2 root   root   4096  2月 20 15:22 csr
-        drwx------  2 root   root   4096  2月 20 15:22 keys
-        drwx------  3 root   root   4096  2月 20 15:24 live
-        drwxr-xr-x  2 root   root   4096  2月 20 15:24 renewal
-        drwxr-xr-x  5 root   root   4096  2月 20 15:13 renewal-hooks
+        $ sudo ls -la secrets/
         ```
 
-1. secretsのユーザーグループを現在のユーザに変更
+        - 実行結果（例）
 
-    ```
-    $ sudo chown -hR ${USER}:${USER} secrets/
-    ```
+            ```
+            合計 44
+            drwxrwxr-x  9 fiware fiware 4096  2月 20 16:32 .
+            drwxrwxr-x 15 fiware fiware 4096  2月 18 16:27 ..
+            -rw-rw-r--  1 fiware fiware 1200  2月 18 16:26 DST_Root_CA_X3.pem
+            drwx------  3 root   root   4096  2月 20 15:13 accounts
+            drwx------  3 root   root   4096  2月 20 15:24 archive
+            -rw-rw-r--  1 fiware fiware 1163  2月 20 16:32 auth-tokens.json
+            drwxr-xr-x  2 root   root   4096  2月 20 15:22 csr
+            drwx------  2 root   root   4096  2月 20 15:22 keys
+            drwx------  3 root   root   4096  2月 20 15:24 live
+            drwxr-xr-x  2 root   root   4096  2月 20 15:24 renewal
+            drwxr-xr-x  5 root   root   4096  2月 20 15:13 renewal-hooks
+            ```
 
-1. secretsのユーザーグループ確認
-
-    ```
-    $ ls -la secrets/
-    ```
-
-    - 実行結果（例）
+    1. secretsのユーザーグループを現在のユーザに変更
 
         ```
-        合計 44
-        drwxrwxr-x  9 fiware fiware 4096  2月 20 16:32 .
-        drwxrwxr-x 15 fiware fiware 4096  2月 18 16:27 ..
-        -rw-rw-r--  1 fiware fiware 1200  2月 18 16:26 DST_Root_CA_X3.pem
-        drwx------  3 fiware fiware 4096  2月 20 15:13 accounts
-        drwx------  3 fiware fiware 4096  2月 20 15:24 archive
-        -rw-rw-r--  1 fiware fiware 1163  2月 20 16:32 auth-tokens.json
-        drwxr-xr-x  2 fiware fiware 4096  2月 20 15:22 csr
-        drwx------  2 fiware fiware 4096  2月 20 15:22 keys
-        drwx------  3 fiware fiware 4096  2月 20 15:24 live
-        drwxr-xr-x  2 fiware fiware 4096  2月 20 15:24 renewal
-        drwxr-xr-x  5 fiware fiware 4096  2月 20 15:13 renewal-hooks
+        $ sudo chown -hR ${USER}:${USER} secrets/
         ```
 
+    1. secretsのユーザーグループ確認
 
-## AKSにRabbitMQの設定
+        ```
+        $ ls -la secrets/
+        ```
+
+        - 実行結果（例）
+
+            ```
+            合計 44
+            drwxrwxr-x  9 fiware fiware 4096  2月 20 16:32 .
+            drwxrwxr-x 15 fiware fiware 4096  2月 18 16:27 ..
+            -rw-rw-r--  1 fiware fiware 1200  2月 18 16:26 DST_Root_CA_X3.pem
+            drwx------  3 fiware fiware 4096  2月 20 15:13 accounts
+            drwx------  3 fiware fiware 4096  2月 20 15:24 archive
+            -rw-rw-r--  1 fiware fiware 1163  2月 20 16:32 auth-tokens.json
+            drwxr-xr-x  2 fiware fiware 4096  2月 20 15:22 csr
+            drwx------  2 fiware fiware 4096  2月 20 15:22 keys
+            drwx------  3 fiware fiware 4096  2月 20 15:24 live
+            drwxr-xr-x  2 fiware fiware 4096  2月 20 15:24 renewal
+            drwxr-xr-x  5 fiware fiware 4096  2月 20 15:13 renewal-hooks
+            ```
+
+
+## AKSでRabbitMQを起動
 
 1. secretsに証明書ファイルを登録 
 
@@ -369,7 +417,7 @@
         rabbitmq-2   1/1     Running   0          3h19m
         ```
 
-1. rabbitmqのcluster_status状態確認
+1. rabbitmqのクラスタ状態確認
 
     ```
     $ kubectl exec rabbitmq-0 -- rabbitmqctl cluster_status
@@ -392,8 +440,21 @@
                 {'rabbit@rabbitmq-0.rabbitmq.default.svc.cluster.local',[]}]}]
         ```
 
-## ゲストパスワードの変更
+## RabbitMQのゲストパスワードの変更
+### macOS
+1. ゲストパスワードの変更
 
+    ```
+    $ kubectl exec rabbitmq-0 -- rabbitmqctl change_password guest $(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)
+    ```
+
+    - 実行結果（例）
+
+        ```
+        Changing password for user "guest" ...
+        ```
+
+### Ubuntu
 1. ゲストパスワードの変更
 
     ```
@@ -429,7 +490,7 @@
         Setting permissions for user "iotagent" in vhost "/" ...
         ```
 
-1. RabbitMQのlist_users状態確認
+1. RabbitMQのユーザ状態確認
 
     ```
     $ kubectl exec rabbitmq-0 -- rabbitmqctl list_users
@@ -445,7 +506,7 @@
         ```
 
 
-## グローバルIPをRabbitMQのAレコードに登録
+## RabbitMQのグローバルIPをDNSに登録
 
 1. rabbitmqのservices状態確認
 
@@ -456,8 +517,8 @@
     - 実行結果（例）
 
         ```
-        NAME             TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)          AGE
-        rabbitmq-mqtts   LoadBalancer   10.0.226.238   23.102.75.46   8883:31693/TCP   21m
+        NAME             TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+        rabbitmq-mqtts   LoadBalancer   10.0.226.238   XX.XX.XX.XX   8883:31693/TCP   21m
         ```
 
 1. RabbitMQのグローバルIPアドレスを取得
@@ -466,7 +527,7 @@
     $ MQTTS_IPADDR=$(kubectl get services -l app=rabbitmq -l service=mqtts -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}')
     ```
 
-1. mqttサブドメインのDNSレコードを追加
+1. RabbitMQのサブドメイン（ `mqtt` ）をDNSに追加
 
     ```
     $ az network dns record-set a add-record --resource-group ${DNS_ZONE_RG} --zone-name "${DOMAIN}" --record-set-name "mqtt" --ipv4-address "${MQTTS_IPADDR}"
@@ -478,7 +539,7 @@
         {
             "arecords": [
                 {
-                "ipv4Address": "23.102.75.46"
+                "ipv4Address": "XX.XX.XX.XX"
                 }
             ],
             "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -513,30 +574,6 @@
         Address: 23.102.75.46
         ```
 
-1. mosquitto_pubのリポジトリ登録
-
-    ```
-    $ sudo add-apt-repository ppa:mosquitto-dev/mosquitto-ppa
-    ```
-
-1. パッケージリストの更新
-
-    ```
-    $ sudo apt-get update -y
-    ```
-
-1. mosquitto_pubのインストール
-
-    ```
-    $ sudo apt-get install mosquitto mosquitto-clients
-    ```
-
-1. mosquitto_pubのインストール確認
-
-    ```
-    $ dpkg -l | grep mosquitto
-    ```
-
 1. mqttの疎通確認
 
     ```
@@ -553,7 +590,7 @@
         ```
 
 
-## AKSにmongodbの設定
+## AKSでmongodbを起動
 
 1. mongodbのインストール
 
@@ -626,8 +663,8 @@
     - 実行結果（例）
 
         ```
-        NAME      DESIRED   CURRENT   AGE
-        mongodb   3         3         13m
+        NAME      READY   AGE
+        mongodb   3/3     5m32s
         ```
 
 1. mongodbのpods状態確認
@@ -668,28 +705,28 @@
     - 実行結果（例）
 
         ```
-        MongoDB shell version v4.0.6
-        connecting to: mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb
-        Implicit session: session { "id" : UUID("19bbba43-0bdb-41af-87cf-9433ace6ef0c") }
-        MongoDB server version: 4.0.6
+        MongoDB shell version v4.1.10
+        connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+        Implicit session: session { "id" : UUID("8b7bb307-9524-4fc4-a4cd-3e37d0b5dea0") }
+        MongoDB server version: 4.1.10
         [
-                {
-                        "name" : "mongodb-0.mongodb.default.svc.cluster.local:27017",
-                        "stateStr" : "PRIMARY"
-                },
-                {
-                        "name" : "mongodb-1.mongodb.default.svc.cluster.local:27017",
-                        "stateStr" : "SECONDARY"
-                },
-                {
-                        "name" : "mongodb-2.mongodb.default.svc.cluster.local:27017",
-                        "stateStr" : "SECONDARY"
-                }
+          {
+            "name" : "mongodb-0.mongodb.default.svc.cluster.local:27017",
+            "stateStr" : "PRIMARY"
+          },
+          {
+            "name" : "mongodb-1.mongodb.default.svc.cluster.local:27017",
+            "stateStr" : "SECONDARY"
+          },
+          {
+            "name" : "mongodb-2.mongodb.default.svc.cluster.local:27017",
+            "stateStr" : "SECONDARY"
+          }
         ]
         ```
 
 
-## AKSのambassador設定
+## AKSでambassadorを起動
 
 1. secret/ambassador-certsの登録
 
@@ -746,7 +783,7 @@
         ambassador-69dcd7cb7c-tfrfv   2/2     Running   0          104s
         ```
 
-1. グローバルIPが割り当て確認
+1. ambassadorのservices状態確認
 
     ```
     $ kubectl get services -l app=ambassador
@@ -760,15 +797,15 @@
         ```
 
 
-## ambassadorのDNSゾーンにAレコード登録
+## ambassadorのグローバルIPをDNSに登録
 
-1. HTTPS_IPADDRの設定
+1. ambassadorのグローバルIPアドレスを取得
 
     ```
     $ HTTPS_IPADDR=$(kubectl get services -l app=ambassador -o json | jq '.items[0].status.loadBalancer.ingress[0].ip' -r)
     ```
 
-1. apiにDNSレコードを追加
+1. ambassadorのサブドメイン（ `api` ）をDNSレコードを追加
 
     ```
     $ az network dns record-set a add-record --resource-group ${DNS_ZONE_RG} --zone-name "${DOMAIN}" --record-set-name "api" --ipv4-address "${HTTPS_IPADDR}"
@@ -831,44 +868,81 @@
         ```
 
 
-## AKS上にて認証/承認サービスを作成
+## AKSで認証/承認サービスを起動
 
 1. secrets/auth-tokens.jsonの作成
+    * macOS
 
-    ```
-    $ cat << __EOS__ > secrets/auth-tokens.json
-    [
-        {
-            "host": "api\\\\..+$",
-            "settings": {
-                "bearer_tokens": [
-                    {
-                        "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
-                        "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
-                    }, {
-                        "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
-                        "allowed_paths": ["^/visualizer/positions/$"]
-                    }
-                ],
-                "basic_auths": [
-                    {
-                        "username": "user1",
-                        "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
-                        "allowed_paths": ["/controller/web/"]
-                    }, {
-                        "username": "visualizer",
-                        "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
-                        "allowed_paths": ["/visualizer/locus/"]
-                    }
-                ],
-                "no_auths": {
-                    "allowed_paths": ["^.*/static/.*$"]
-                }
-            }
-        }
-    ]
-    __EOS__
-    ```
+      ```
+      cat << __EOS__ > secrets/auth-tokens.json
+      [
+          {
+              "host": "api\\\\..+$",
+              "settings": {
+                  "bearer_tokens": [
+                      {
+                          "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
+                          "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
+                      }, {
+                          "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
+                          "allowed_paths": ["^/visualizer/positions/$"]
+                      }
+                  ],
+                  "basic_auths": [
+                      {
+                          "username": "user1",
+                          "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
+                          "allowed_paths": ["/controller/web/"]
+                      }, {
+                          "username": "visualizer",
+                          "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
+                          "allowed_paths": ["/visualizer/locus/"]
+                      }
+                  ],
+                  "no_auths": {
+                      "allowed_paths": ["^.*/static/.*$"]
+                  }
+              }
+          }
+      ]
+      __EOS__
+      ```
+    * Ubuntu
+
+      ```
+      $ cat << __EOS__ > secrets/auth-tokens.json
+      [
+          {
+              "host": "api\\\\..+$",
+              "settings": {
+                  "bearer_tokens": [
+                      {
+                          "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
+                          "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
+                      }, {
+                          "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
+                          "allowed_paths": ["^/visualizer/positions/$"]
+                      }
+                  ],
+                  "basic_auths": [
+                      {
+                          "username": "user1",
+                          "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
+                          "allowed_paths": ["/controller/web/"]
+                      }, {
+                          "username": "visualizer",
+                          "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
+                          "allowed_paths": ["/visualizer/locus/"]
+                      }
+                  ],
+                  "no_auths": {
+                      "allowed_paths": ["^.*/static/.*$"]
+                  }
+              }
+          }
+      ]
+      __EOS__
+      ```
 
 1. secrets/auth-tokens.jsonを登録
 
@@ -935,7 +1009,7 @@
         ```
 
 
-## AKSにfiware orionの設定
+## AKSでfiware orionを起動
 
 1. orion-serviceの作成
 
@@ -1007,7 +1081,7 @@
         server: envoy
         ```
 
-1. 認証トークンの環境設定
+1. 認証トークンを取得
 
     ```
     $ TOKEN=$(cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[0].settings.bearer_tokens[0].token' -r)
@@ -1040,12 +1114,12 @@
     $ kubectl delete pods -l app=ambassador
     ```
 
-## AKSにfiware idasの設定  
+## AKSでfiware idas(iotagent-ul)を起動
 
 1. iotagent-configのインストール
 
     ```
-    $ env IOTA_PASSWORD=${MQTT__iotagent} envsubst < idas/rb-config.js > /
+    $ env IOTA_PASSWORD=${MQTT__iotagent} envsubst < idas/rb-config.js > /tmp/rb-config.js
     $ kubectl create secret generic iotagent-config --from-file /tmp/rb-config.js
     $ rm /tmp/rb-config.js
     ```
@@ -1108,7 +1182,7 @@
         iotagent-ul   ClusterIP   10.0.81.53   <none>        4041/TCP,7896/TCP   11m
         ```
 
-1. idasにsecrets/auth-tokensを利用した接続確認
+1. idasの接続確認
 
     ```
     $ TOKEN=$(cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[0].settings.bearer_tokens[0].token' -r)
@@ -1137,7 +1211,7 @@
     $ kubectl delete pods -l app=ambassador
     ```
 
-## AKSにfiware cygnusの設定
+## AKSでfiware cygnus(mongodb sink)を起動
 
 1. cygnus-mongoの作成
 

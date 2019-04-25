@@ -1,20 +1,48 @@
 ﻿# RoboticBase Coreインストールマニュアル #1
 
-## 構築環境(2019年2月18日現在)
+## 構築環境(2019年4月26日現在)
+### macOS
+- macOS Sierra 10.12.6
+- azure-cli 2.0.63
+- git 2.14.3
+- kubectl 1.14.1
+- helm v2.13.1
+ 
+
+### Ubuntu
 - Ubuntu 16.04.5 LTS
 - apt-transport-https 1.2.29ubuntu0.1
 - lsb-release 9.20160110ubuntu0.2
 - software-properties-common 0.96.20.8
 - dirmngr 2.1.11-6ubuntu2.1
-- azure-cli 2.0.58
+- azure-cli 2.0.63
 - git 2.7.4-0ubuntu1.6
-- kubectl 1.13.3 
-- helm v2.5.0
+- kubectl 1.14.1
+- helm v2.13.1
 
 # Azure Kubernetes Service(AKS)の準備
 
 ## Azure CLIのインストール
+### macOS
+1. Azure CLIのインストール
 
+    ```
+    $ brew update && brew install azure-cli
+    ```
+
+1. Azure CLIのバージョンを確認
+
+    ```
+    $ az --version
+    ```
+
+    - 実行結果（例）
+
+        ```
+        azure-cli                         2.0.63
+        ```
+
+### Ubuntu
 1. 前提条件のパッケージをインストール
 
     ```
@@ -61,12 +89,19 @@
     - 実行結果（例）
 
         ```
-        azure-cli                         2.0.58
+        azure-cli                         2.0.63
         ```
 
 
-## 環境変数の設定
+## gitのインストール
+### macOS
+1. gitのインストール
 
+    ```
+    $ brew update && brew install git
+    ```
+
+### Ubuntu
 1. gitのインストール
 
     ```
@@ -85,6 +120,110 @@
         ii  git                                        1:2.7.4-0ubuntu1.6                                  amd64        fast, scalable, distributed revision control system
         ```
 
+## jqのインストール
+### macOS
+1. jqのインストール
+
+    ```
+    $ brew update && brew install jq
+    ```
+
+### Ubuntu
+1. jqのインストール
+
+    ```
+    $ sudo apt-get install -y jq
+    ```
+
+## kubectlのインストール
+### macOS
+1. kubectlのインストール
+
+    ```
+    $ brew update && brew install kubernetes-cli
+    ```
+
+### Ubuntu
+1. kubernetesリポジトリの公開鍵登録
+
+    ```
+    $ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+    ```
+
+1. kubernetesのリポジトリ登録
+
+    ```
+    $ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+    ```
+
+1. パッケージリストの更新
+
+    ```
+    $ sudo apt-get update -y
+    ```
+
+1. kubectlのインストール
+
+    ```
+    $ sudo apt-get install -y kubectl
+    ```
+
+1. kubectlのインストール確認
+
+    ```
+    $ dpkg -s kubectl
+    ```
+
+    - 実行結果（例）
+
+        ```
+        Package: kubectl
+        Status: install ok installed
+        Priority: optional
+        Section: misc
+        Installed-Size: 38349
+        Maintainer: Kubernetes Authors <kubernetes-dev+release@googlegroups.com>
+        Architecture: amd64
+        Version: 1.13.3-00
+        Description: Kubernetes Command Line Tool
+        The Kubernetes command line tool for interacting with the Kubernetes API.
+        Homepage: https://kubernetes.io
+        ```
+
+## Helmのインストール
+### macOS
+1. Helmのインストール
+
+    ```
+    $ brew update && brew install kubernetes-helm
+    ```
+
+### Ubuntu
+1. Helmのインストール
+
+    ```
+    $ cd /tmp
+    $ curl -LO https://storage.googleapis.com/kubernetes-helm/helm-v2.5.0-linux-amd64.tar.gz
+    $ sudo tar xvf helm-v2.5.0-linux-amd64.tar.gz
+    $ sudo cp linux-amd64/helm /usr/bin
+    $ sudo rm -rf linux-amd64
+    $ rm helm-v2.5.0-linux-amd64.tar.gz
+    ```
+
+
+1. Helmのバージョン確認
+
+    ```
+    $ helm version --client
+    ```
+
+    - 実行結果（例）
+
+        ```
+        Client: &version.Version{SemVer:"v2.5.0", GitCommit:"012cb0ac1a1b2f888144ef5a67b8dab6c2d45be6", GitTreeState:"clean"}
+        ```
+
+## RoboticBase/coreの取得
 1. ベースファイルの取得
 
     ```
@@ -92,6 +231,7 @@
     $ git clone https://github.com/RoboticBase/core
     ```
 
+## 環境変数の設定
 1. 環境変数の設定
 
     ```
@@ -108,7 +248,7 @@
 1. 環境ファイルのコピー
 
     ```
-    $ cd $CORE_ROOT/docs/azure_aks
+    $ cd $CORE_ROOT/docs/environments/azure_aks
     $ cp env.template env
     ```
 
@@ -146,7 +286,7 @@
 1. 環境設定の読み込み
 
     ```
-    $ source $CORE_ROOT/docs/azure_aks/env
+    $ source $CORE_ROOT/docs/environments/azure_aks/env
     ```
 
 
@@ -208,13 +348,6 @@
 
 
 ## DNSゾーンの作成
-
-1. jqのインストール
-
-    ```
-    $ sudo apt-get install -y jq
-    ```
-
 1. DNS用のリソースグループ作成
 
     ```
@@ -350,9 +483,15 @@
     ```
 
 1. 環境ファイルのREPOSITORY書き換え
+  * macOS
 
     ```
-    $ sed -i -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/azure_aks/env
+    $ sed -i '' -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/azure_aks/env
+    ```
+  * Ubuntu
+
+    ```
+    $ sed -i -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/azure_aks/env
     ```
 
 1. REPOSITORYの環境変数確認
@@ -449,7 +588,7 @@
 1. AKSで利用可能なkubernetesのバージョン確認
 
     ```
-    $ az aks get-versions --location eastus --output table
+    $ az aks get-versions --location ${REGION} --output table
     ```
 
     - 実行結果（例）
@@ -457,155 +596,96 @@
         ```
         KubernetesVersion    Upgrades
         \-------------------  -----------------------
-        1.12.5               None available
-        1.12.4               1.12.5
-        1.11.7               1.12.4, 1.12.5
-        1.11.6               1.11.7, 1.12.4, 1.12.5
-        1.10.12              1.11.6, 1.11.7
-        1.10.9               1.10.12, 1.11.6, 1.11.7
-        1.9.11               1.10.9, 1.10.12
-        1.9.10               1.9.11, 1.10.9, 1.10.12
+        1.13.5               None available
+        1.12.7               1.13.5
+        1.12.6               1.12.7, 1.13.5
+        1.11.9               1.12.6, 1.12.7
+        1.11.8               1.11.9, 1.12.6, 1.12.7
+        1.10.13              1.11.8, 1.11.9
+        1.10.12              1.10.13, 1.11.8, 1.11.9
+        1.9.11               1.10.12, 1.10.13
+        1.9.10               1.9.11, 1.10.12, 1.10.13
         ```
 
 
-### A. monitoringやloggingを利用しないでAKSを起動
+1. NODEの仮想環境を `Standard_D2s_v3 `に指定
 
-※ `az aks create`コマンドを実行後、約10～20分待機します  
-※ AKSのmonitoring機能やlogging機能を利用有無により、起動方法を選択できます 
+   ```
+    $ export NODE_VM_SIZE="Standard_D2s_v3"
+    ```
 
-  ```
-  $ az aks create --resource-group ${AKS_RG} --name ${AKS_NAME} --node-count ${NODE_COUNT} --ssh-key-value ${SSH_KEY} --kubernetes-version 1.12.5
-  ```
+1. NODEのOS容量を64GBに指定
 
-  - 実行結果（例）
+    ```
+    $ export NODE_OSDISK_SIZE_GB=64
+    ```
 
-        ```
-        {
-            "aadProfile": null,
-            "addonProfiles": null,
-            "agentPoolProfiles": [
-                {
-                "count": 3,
-                "maxPods": 110,
-                "name": "nodepool1",
-                "osDiskSizeGb": 30,
-                "osType": "Linux",
-                "storageProfile": "ManagedDisks",
-                "vmSize": "Standard_DS2_v2",
-                "vnetSubnetId": null
-                }
-            ],
-            "dnsPrefix": "rbcaks-rbcore-38ac45",
-            "enableRbac": true,
-            "fqdn": "rbcaks-rbcore-38ac45-66347681.hcp.japaneast.azmk8s.io",
-            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/rbcore/providers/Microsoft.ContainerService/managedClusters/rbcaks",
-            "kubernetesVersion": "1.12.5",
-            "linuxProfile": {
-                "adminUsername": "azureuser",
-                "ssh": {
-                "publicKeys": [
-                    {
-                    "keyData": "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx fiware@FIWARE-PC\n"
-                    }
-                ]
-                }
-            },
-            "location": "japaneast",
-            "name": "rbcaks",
-            "networkProfile": {
-                "dnsServiceIp": "10.0.0.10",
-                "dockerBridgeCidr": "172.17.0.1/16",
-                "networkPlugin": "kubenet",
-                "networkPolicy": null,
-                "podCidr": "10.244.0.0/16",
-                "serviceCidr": "10.0.0.0/16"
-            },
-            "nodeResourceGroup": "MC_rbcore_rbcaks_japaneast",
-            "provisioningState": "Succeeded",
-            "resourceGroup": "rbcore",
-            "servicePrincipalProfile": {
-                "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-                "secret": null
-            },
-            "tags": null,
-            "type": "Microsoft.ContainerService/ManagedClusters"
-        }
-        ```
+1. AKSのバージョンを `1.13.5` に指定
 
-### B. monitoringやloggingを利用してのAKS起動
+    ```
+    $ export AKS_VERSION="1.13.5"
+    ```
 
-  1. NODEの仮想環境をStandard_D2s_v3に指定
+1. AKSの起動
 
-  ```
-  $ export NODE_VM_SIZE=Standard_D2s_v3
-  ```
+    ```
+    $ az aks create --resource-group ${AKS_RG} --name ${AKS_NAME} --node-count ${NODE_COUNT} --node-vm-size ${NODE_VM_SIZE} --node-osdisk-size ${NODE_OSDISK_SIZE_GB} --ssh-key-value ${SSH_KEY} --kubernetes-version ${AKS_VERSION}
+    ```
 
-  1. NODEのOS容量を64GBに指定
-
-  ```
-  $ export NODE_OSDISK_SIZE_GB=64
-  ```
-
-  1. AKSの起動
+    - 実行結果（例）
 
       ```
-      $ az aks create --resource-group ${AKS_RG} --name ${AKS_NAME} --node-count ${NODE_COUNT} --node-vm-size ${NODE_VM_SIZE} --node-osdisk-size ${NODE_OSDISK_SIZE_GB} --ssh-key-value ${SSH_KEY} --kubernetes-version 1.12.5
-      ```
-
-        - 実行結果（例）
-
-          ```
+      {
+        "aadProfile": null,
+        "addonProfiles": null,
+        "agentPoolProfiles": [
           {
-            "aadProfile": null,
-            "addonProfiles": null,
-            "agentPoolProfiles": [
-              {
-                "count": 3,
-                "maxPods": 110,
-                "name": "nodepool1",
-                "osDiskSizeGb": 64,
-                "osType": "Linux",
-                "storageProfile": "ManagedDisks",
-                "vmSize": "Standard_D2s_v3",
-                "vnetSubnetId": null
-              }
-            ],
-            "dnsPrefix": "rbcaks-rbcore-38ac45",
-            "enableRbac": true,
-            "fqdn": "rbcaks-rbcore-38ac45-ed59dae0.hcp.japaneast.azmk8s.io",
-            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/rbcore/providers/Microsoft.ContainerService/managedClusters/rbcaks",
-            "kubernetesVersion": "1.12.5",
-            "linuxProfile": {
-              "adminUsername": "azureuser",
-              "ssh": {
-                "publicKeys": [
-                  {
-                    "keyData": "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx fiware@FIWARE-PC\n"
-                  }
-                ]
-              }
-            },
-            "location": "japaneast",
-            "name": "rbcaks",
-            "networkProfile": {
-              "dnsServiceIp": "10.0.0.10",
-              "dockerBridgeCidr": "172.17.0.1/16",
-              "networkPlugin": "kubenet",
-              "networkPolicy": null,
-              "podCidr": "10.244.0.0/16",
-              "serviceCidr": "10.0.0.0/16"
-            },
-            "nodeResourceGroup": "MC_rbcore_rbcaks_japaneast",
-            "provisioningState": "Succeeded",
-            "resourceGroup": "rbcore",
-            "servicePrincipalProfile": {
-              "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-              "secret": null
-            },
-            "tags": null,
-            "type": "Microsoft.ContainerService/ManagedClusters"
+            "count": 4,
+            "maxPods": 110,
+            "name": "nodepool1",
+            "osDiskSizeGb": 64,
+            "osType": "Linux",
+            "storageProfile": "ManagedDisks",
+            "vmSize": "Standard_D2s_v3",
+            "vnetSubnetId": null
           }
-          ```
+        ],
+        "dnsPrefix": "rbcaks-rbcore-38ac45",
+        "enableRbac": true,
+        "fqdn": "rbcaks-rbcore-38ac45-ed59dae0.hcp.japaneast.azmk8s.io",
+        "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/rbcore/providers/Microsoft.ContainerService/managedClusters/rbcaks",
+        "kubernetesVersion": "1.13.5",
+        "linuxProfile": {
+          "adminUsername": "azureuser",
+          "ssh": {
+            "publicKeys": [
+              {
+                "keyData": "ssh-rsa xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx fiware@FIWARE-PC\n"
+              }
+            ]
+          }
+        },
+        "location": "japaneast",
+        "name": "rbcaks",
+        "networkProfile": {
+          "dnsServiceIp": "10.0.0.10",
+          "dockerBridgeCidr": "172.17.0.1/16",
+          "networkPlugin": "kubenet",
+          "networkPolicy": null,
+          "podCidr": "10.244.0.0/16",
+          "serviceCidr": "10.0.0.0/16"
+        },
+        "nodeResourceGroup": "MC_rbcore_rbcaks_japaneast",
+        "provisioningState": "Succeeded",
+        "resourceGroup": "rbcore",
+        "servicePrincipalProfile": {
+          "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "secret": null
+        },
+        "tags": null,
+        "type": "Microsoft.ContainerService/ManagedClusters"
+      }
+      ```
 
 
 ## AKSの資格情報取得
@@ -651,55 +731,6 @@
         ```
 
 
-## kubectlのインストール
-
-1. kubernetesリポジトリの公開鍵登録
-
-    ```
-    $ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-    ```
-
-1. kubernetesのリポジトリ登録
-
-    ```
-    $ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-    ```
-
-1. パッケージリストの更新
-
-    ```
-    $ sudo apt-get update -y
-    ```
-
-1. kubectlのインストール
-
-    ```
-    $ sudo apt-get install -y kubectl
-    ```
-
-1. kubectlのインストール確認
-
-    ```
-    $ dpkg -s kubectl
-    ```
-
-    - 実行結果（例）
-
-        ```
-        Package: kubectl
-        Status: install ok installed
-        Priority: optional
-        Section: misc
-        Installed-Size: 38349
-        Maintainer: Kubernetes Authors <kubernetes-dev+release@googlegroups.com>
-        Architecture: amd64
-        Version: 1.13.3-00
-        Description: Kubernetes Command Line Tool
-        The Kubernetes command line tool for interacting with the Kubernetes API.
-        Homepage: https://kubernetes.io
-        ```
-
-
 ## ノードの確認
 
 1. ノードの確認
@@ -712,10 +743,10 @@
 
         ```
         NAME                       STATUS   ROLES   AGE   VERSION
-        aks-nodepool1-35549331-0   Ready    agent   20h   v1.12.5
-        aks-nodepool1-35549331-1   Ready    agent   20h   v1.12.5
-        aks-nodepool1-35549331-2   Ready    agent   20h   v1.12.5
-        aks-nodepool1-35549331-3   Ready    agent   20h   v1.12.5
+        aks-nodepool1-35549331-0   Ready    agent   20h   v1.13.5
+        aks-nodepool1-35549331-1   Ready    agent   20h   v1.13.5
+        aks-nodepool1-35549331-2   Ready    agent   20h   v1.13.5
+        aks-nodepool1-35549331-3   Ready    agent   20h   v1.13.5
         ```
 
 
@@ -824,33 +855,7 @@
         default                                                13m
         ```
 
-
-## Helmのインストール
-
-1. Helmのインストール
-
-    ```
-    $ cd /tmp
-    $ curl -LO https://storage.googleapis.com/kubernetes-helm/helm-v2.5.0-linux-amd64.tar.gz
-    $ sudo tar xvf helm-v2.5.0-linux-amd64.tar.gz
-    $ sudo cp linux-amd64/helm /usr/bin
-    $ sudo rm -rf linux-amd64
-    $ rm helm-v2.5.0-linux-amd64.tar.gz
-    ```
-
-
-1. Helmのバージョン確認
-
-    ```
-    $ helm version --client
-    ```
-
-    - 実行結果（例）
-
-        ```
-        Client: &version.Version{SemVer:"v2.5.0", GitCommit:"012cb0ac1a1b2f888144ef5a67b8dab6c2d45be6", GitTreeState:"clean"}
-        ```
-
+## Helmの初期化
 1. Helmのサービスアカウント初期化
 
     ```
@@ -902,6 +907,6 @@
     - 実行結果（例）
 
         ```
-        Client: &version.Version{SemVer:"v2.5.0", GitCommit:"012cb0ac1a1b2f888144ef5a67b8dab6c2d45be6", GitTreeState:"clean"}
-        Server: &version.Version{SemVer:"v2.5.0", GitCommit:"012cb0ac1a1b2f888144ef5a67b8dab6c2d45be6", GitTreeState:"clean"}
+        Client: &version.Version{SemVer:"v2.13.1", GitCommit:"618447cbf203d147601b4b9bd7f8c37a5d39fbb4", GitTreeState:"clean"}
+        Server: &version.Version{SemVer:"v2.13.1", GitCommit:"618447cbf203d147601b4b9bd7f8c37a5d39fbb4", GitTreeState:"clean"}
         ```
