@@ -1,143 +1,6 @@
 # RoboticBase Coreインストールマニュアル #2
 
 ## 構築環境(2019年4月26日現在)
-
-- docker-ce 18.09.3
-- docker-ce-cli 18.09.3
-- ca-certificates 20170717~16.0  
-- mosquitto 1.5.7-0mosquitto1~xenial1  
-- mosquitto-clients 1.5.7-0mosquitto1~xenial1
-
-
-## docker-ceのインストール
-### macOS
-1. Docker CE for Macを公式サイトからダウンロード
-
-    ```
-    $ wget https://download.docker.com/mac/stable/Docker.dmg
-    ```
-
-1. `Docker.dmg` をダブルクリックし、 `Docker.app` をApplicationsフォルダへ移動
-1. `Docker.app` をダブルクリックしてDockerを起動
-
-
-### Ubuntu
-1. 前提ファイルのインストール
-
-    ```
-    $ sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-    ```
-
-1. docker-ceリポジトリの公開鍵を登録
-
-    ```
-    $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    ```
-
-1. docker-ceリポジトリを登録する
-
-    ```
-    $ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    ```
-
-1. パッケージリストの更新
-
-    ```
-    $ sudo apt-get update -y
-    ```
-
-1. docker-ceのインストール
-
-    ```
-    $ sudo apt-get install -y docker-ce
-    ```
-
-1. docker-ceのインストール確認
-
-    ```
-    $ dpkg -l | grep docker
-    ```
-
-    - 実行結果（例）
-
-        ```
-        ii  docker-ce                                  5:18.09.3~3-0~ubuntu-xenial                         amd64        Docker: the open-source application container engine
-        ii  docker-ce-cli                              5:18.09.3~3-0~ubuntu-xenial                         amd64        Docker CLI: the open-source application container engine
-        ```
-
-1. dockerコマンドの実行権限を付与
-
-    ```
-    $ sudo gpasswd -a $USER docker
-    ```
-
-1. dockerサービスの再起動
-
-    ```
-    $ sudo systemctl restart docker
-    $ exit
-    ```
-
-1. dockerサービスの自動起動を設定
-
-    ```
-    $ sudo systemctl enable docker
-    ```
-
-1. dockerサービスの状態確認
-
-    ```
-    $ systemctl status docker
-    ```
-
-    - 実行結果（例）
-
-        ```
-        ● docker.service - Docker Application Container Engine
-        Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
-        Active: active (running) since 月 2019-02-18 14:19:18 JST; 16min ago
-            Docs: https://docs.docker.com
-        Main PID: 9138 (dockerd)
-            Tasks: 10
-        Memory: 30.9M
-            CPU: 537ms
-        CGroup: /system.slice/docker.service
-                mq9138 /usr/bin/dockerd -H fd://
-        ```
-
-## MQTT clientのインストール
-### macOS
-1. `mosquitto` のインストール
-
-    ```
-    $ brew update && brew install mosquitto
-    ```
-
-### Ubuntu
-1. `mosquitto` のリポジトリ登録
-
-    ```
-    $ sudo add-apt-repository ppa:mosquitto-dev/mosquitto-ppa
-    ```
-
-1. パッケージリストの更新
-
-    ```
-    $ sudo apt-get update -y
-    ```
-
-1. `mosquitto-clients` のインストール
-
-    ```
-    $ sudo apt-get install mosquitto mosquitto-clients
-    ```
-
-1. `mosquitto-clients `のインストール確認
-
-    ```
-    $ dpkg -l | grep mosquitto
-    ```
-
 # Azure AKSでpodsの開始
 
 
@@ -505,9 +368,6 @@
         iotagent        []
         ```
 
-
-## RabbitMQのグローバルIPをDNSに登録
-
 1. rabbitmqのservices状態確認
 
     ```
@@ -520,6 +380,8 @@
         NAME             TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
         rabbitmq-mqtts   LoadBalancer   10.0.226.238   XX.XX.XX.XX   8883:31693/TCP   21m
         ```
+
+## RabbitMQのグローバルIPをDNSに登録
 
 1. RabbitMQのグローバルIPアドレスを取得
 
@@ -574,7 +436,8 @@
         Address: 23.102.75.46
         ```
 
-1. mqttの疎通確認
+## MQTTSの疎通確認
+1. mqttsの疎通確認
 
     ```
     $ mosquitto_pub -h mqtt.${DOMAIN} -p 8883 --cafile ${CORE_ROOT}/secrets/DST_Root_CA_X3.pem -d -u iotagent -P ${MQTT__iotagent} -t /test -m "test"
@@ -873,76 +736,76 @@
 1. secrets/auth-tokens.jsonの作成
     * macOS
 
-      ```
-      $ cat << __EOS__ > secrets/auth-tokens.json
-      [
-          {
-              "host": "api\\\\..+$",
-              "settings": {
-                  "bearer_tokens": [
-                      {
-                          "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
-                          "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
-                      }, {
-                          "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
-                          "allowed_paths": ["^/visualizer/positions/$"]
-                      }
-                  ],
-                  "basic_auths": [
-                      {
-                          "username": "user1",
-                          "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
-                          "allowed_paths": ["/controller/web/"]
-                      }, {
-                          "username": "visualizer",
-                          "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
-                          "allowed_paths": ["/visualizer/locus/"]
-                      }
-                  ],
-                  "no_auths": {
-                      "allowed_paths": ["^.*/static/.*$"]
-                  }
-              }
-          }
-      ]
-      __EOS__
-      ```
+        ```
+        $ cat << __EOS__ > secrets/auth-tokens.json
+        [
+            {
+                "host": "api\\\\..+$",
+                "settings": {
+                    "bearer_tokens": [
+                        {
+                            "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
+                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
+                        }, {
+                            "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
+                            "allowed_paths": ["^/visualizer/positions/$"]
+                        }
+                    ],
+                    "basic_auths": [
+                        {
+                            "username": "user1",
+                            "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
+                            "allowed_paths": ["/controller/web/"]
+                        }, {
+                            "username": "visualizer",
+                            "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
+                            "allowed_paths": ["/visualizer/locus/"]
+                        }
+                    ],
+                    "no_auths": {
+                        "allowed_paths": ["^.*/static/.*$"]
+                    }
+                }
+            }
+        ]
+        __EOS__
+        ```
     * Ubuntu
 
-      ```
-      $ cat << __EOS__ > secrets/auth-tokens.json
-      [
-          {
-              "host": "api\\\\..+$",
-              "settings": {
-                  "bearer_tokens": [
-                      {
-                          "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
-                          "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
-                      }, {
-                          "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
-                          "allowed_paths": ["^/visualizer/positions/$"]
-                      }
-                  ],
-                  "basic_auths": [
-                      {
-                          "username": "user1",
-                          "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
-                          "allowed_paths": ["/controller/web/"]
-                      }, {
-                          "username": "visualizer",
-                          "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
-                          "allowed_paths": ["/visualizer/locus/"]
-                      }
-                  ],
-                  "no_auths": {
-                      "allowed_paths": ["^.*/static/.*$"]
-                  }
-              }
-          }
-      ]
-      __EOS__
-      ```
+        ```
+        $ cat << __EOS__ > secrets/auth-tokens.json
+        [
+            {
+                "host": "api\\\\..+$",
+                "settings": {
+                    "bearer_tokens": [
+                        {
+                            "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
+                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
+                        }, {
+                            "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
+                            "allowed_paths": ["^/visualizer/positions/$"]
+                        }
+                    ],
+                    "basic_auths": [
+                        {
+                            "username": "user1",
+                            "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
+                            "allowed_paths": ["/controller/web/"]
+                        }, {
+                            "username": "visualizer",
+                            "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
+                            "allowed_paths": ["/visualizer/locus/"]
+                        }
+                    ],
+                    "no_auths": {
+                        "allowed_paths": ["^.*/static/.*$"]
+                    }
+                }
+            }
+        ]
+        __EOS__
+        ```
 
 1. secrets/auth-tokens.jsonを登録
 

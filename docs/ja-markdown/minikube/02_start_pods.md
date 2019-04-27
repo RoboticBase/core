@@ -1,11 +1,7 @@
-﻿# RoboticBase Coreインストールマニュアル #2
+# RoboticBase Coreインストールマニュアル #2
 
-## 構築環境(2019年3月6日現在)
-- mosquitto-clients 1.4.8-1ubuntu0.16.04.6
-- mongodb v4.0.6
-- jq 1.5+dfsg-1ubuntu0.1
-
-# 2. minikubeでpodsの開始
+## 構築環境(2019年4月26日現在)
+# minikubeでpodsの開始
 
 
 1. 環境変数の設定
@@ -24,7 +20,7 @@
 1. 環境設定の読み込み
 
     ```
-    $ source ${CORE_ROOT}/docs/minikube/env
+    $ source ${CORE_ROOT}/docs/environments/minikube/env
     ```
 
 
@@ -86,7 +82,7 @@
         rabbitmq-2   1/1     Running   0          1m
         ```
 
-1. rabbitmqのcluster_status状態確認
+1. rabbitmqのクラスタ状態確認
 
     ```
     kubectl exec rabbitmq-0 -- rabbitmqctl cluster_status
@@ -111,7 +107,20 @@
 
 
 ## ゲストパスワードの変更
+### macOS
+1. ゲストパスワードの変更
 
+    ```
+    $ kubectl exec rabbitmq-0 -- rabbitmqctl change_password guest $(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)
+    ```
+
+    - 実行結果（例）
+
+        ```
+        Changing password for user "guest" ...
+        ```
+
+### Ubuntu
 1. ゲストパスワードの変更
 
     ```
@@ -123,7 +132,6 @@
         ```
         Changing password for user "guest" ...
         ```
-
 
 ## RabbitMQのユーザ登録
 
@@ -148,7 +156,7 @@
         Setting permissions for user "iotagent" in vhost "/" ...
         ```
 
-1. RabbitMQのlist_users状態確認
+1. RabbitMQのユーザ状態確認
 
     ```
     $ kubectl exec rabbitmq-0 -- rabbitmqctl list_users
@@ -207,27 +215,8 @@
         ```
 
 
-## MQTTブローカーの設定
-
-1. mosquitto-clientsのインストール
-
-    ```
-    $ sudo apt-get install -y mosquitto-clients
-    ```
-
-1. mosquitto-clientsのインストール確認
-
-    ```
-    $ dpkg -l | grep  mosquitto-clients
-    ```
-
-    - 実行結果（例）
-
-        ```
-        ii  mosquitto-clients                          1.4.8-1ubuntu0.16.04.6                              amd64        Mosquitto command line MQTT clients
-        ```
-
-1. MQTTブローカーの接続確認
+## MQTTの疎通確認
+1. mqttの疎通確認
 
     ```
     $ mosquitto_pub -h ${HOST_IPADDR} -p 1883  -d -u iotagent -P ${MQTT__iotagent} -t /test -m "test"
@@ -295,18 +284,6 @@
             $ kubectl exec --namespace default POD_NAME -- mongo --eval="rs.slaveOk(); db.test.find().forEach(printjson)"
         ```
 
-1. mongodbのPersistentVolumeClaims状態確認
-
-    ```
-    $ kubectl get PersistentVolumeClaims -l release=mongodb -l app=mongodb-replicaset
-    ```
-
-    - 実行結果（例）
-
-        ```
-        No resources found.
-        ```
-
 1. mongodbのstatefulsets状態確認
 
     ```
@@ -316,8 +293,8 @@
     - 実行結果（例）
 
         ```
-        NAME      DESIRED   CURRENT   AGE
-        mongodb   3         3         3m9s
+        NAME      READY   AGE
+        mongodb   3/3     3m1s
         ```
 
 1. mongodbのpods状態確認
@@ -358,24 +335,23 @@
     - 実行結果（例）
 
         ```
-        printjson(rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};}))'
-        MongoDB shell version v4.0.6
-        connecting to: mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb
-        Implicit session: session { "id" : UUID("2c9140b7-fb2b-4027-96d6-e0b27aee756e") }
-        MongoDB server version: 4.0.6
+        MongoDB shell version v4.1.10
+        connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+        Implicit session: session { "id" : UUID("e906c596-1557-4a1a-9995-98fb22159488") }
+        MongoDB server version: 4.1.10
         [
-                {
-                        "name" : "mongodb-0.mongodb.default.svc.cluster.local:27017",
-                        "stateStr" : "PRIMARY"
-                },
-                {
-                        "name" : "mongodb-1.mongodb.default.svc.cluster.local:27017",
-                        "stateStr" : "SECONDARY"
-                },
-                {
-                        "name" : "mongodb-2.mongodb.default.svc.cluster.local:27017",
-                        "stateStr" : "SECONDARY"
-                }
+            {
+                "name" : "mongodb-0.mongodb.default.svc.cluster.local:27017",
+                "stateStr" : "PRIMARY"
+            },
+            {
+                "name" : "mongodb-1.mongodb.default.svc.cluster.local:27017",
+                "stateStr" : "SECONDARY"
+            },
+            {
+                "name" : "mongodb-2.mongodb.default.svc.cluster.local:27017",
+                "stateStr" : "SECONDARY"
+            }
         ]
         ```
 
@@ -479,69 +455,31 @@
         ```
 
 ## minikubeのauth設定
-
 1. secrets/auth-tokens.jsonの作成
-
-    ```
-    cat << __EOS__ > secrets/auth-tokens.json
-    [
-        {
-            "host": ".*",
-            "settings": {
-                "bearer_tokens": [
-                    {
-                        "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
-                        "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
-                    }, {
-                        "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
-                        "allowed_paths": ["^/visualizer/positions/$"]
-                    }
-                ],
-                "basic_auths": [
-                    {
-                        "username": "user1",
-                        "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
-                        "allowed_paths": ["/controller/web/"]
-                    }, {
-                        "username": "visualizer",
-                        "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
-                        "allowed_paths": ["/visualizer/locus/"]
-                    }
-                ],
-                "no_auths": {
-                    "allowed_paths": ["^.*/static/.*$"]
-                }
-            }
-        }
-    ]
-    __EOS__
-    $ cat secrets/auth-tokens.json
-    ```
-
-    - 実行結果（例）
-
+    * macOS
         ```
+        $ cat << __EOS__ > secrets/auth-tokens.json
         [
             {
                 "host": ".*",
                 "settings": {
                     "bearer_tokens": [
                         {
-                            "token": "5Z9KpEAE5z3XR7ZsV5cGGeefZUOJFLv0",
+                            "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
                             "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
                         }, {
-                            "token": "u6vuTzRay9XbeXgfgK5ncfL5aQrzoY1t",
+                            "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
                             "allowed_paths": ["^/visualizer/positions/$"]
                         }
                     ],
                     "basic_auths": [
                         {
                             "username": "user1",
-                            "password": "Tat7WDFTv86117Vn",
+                            "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
                             "allowed_paths": ["/controller/web/"]
                         }, {
                             "username": "visualizer",
-                            "password": "RTDdlnvp68jhKcuT",
+                            "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
                             "allowed_paths": ["/visualizer/locus/"]
                         }
                     ],
@@ -551,6 +489,43 @@
                 }
             }
         ]
+        __EOS__
+        ```
+    * Ubuntu
+
+        ```
+        $ cat << __EOS__ > secrets/auth-tokens.json
+        [
+            {
+                "host": ".*",
+                "settings": {
+                    "bearer_tokens": [
+                        {
+                            "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
+                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
+                        }, {
+                            "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
+                            "allowed_paths": ["^/visualizer/positions/$"]
+                        }
+                    ],
+                    "basic_auths": [
+                        {
+                            "username": "user1",
+                            "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
+                            "allowed_paths": ["/controller/web/"]
+                        }, {
+                            "username": "visualizer",
+                            "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
+                            "allowed_paths": ["/visualizer/locus/"]
+                        }
+                    ],
+                    "no_auths": {
+                        "allowed_paths": ["^.*/static/.*$"]
+                    }
+                }
+            }
+        ]
+        __EOS__
         ```
 
 1. secrets/auth-tokens.jsonの登録
@@ -690,29 +665,15 @@
         {"authorized":false,"error":"missing Header: authorization"}
         ```
 
-1. jqのインストール
-
-    ```
-    $ sudo apt-get install -y jq
-    ```
-
-1. jqのインストール確認
-
-    ```
-    $ dpkg -l | grep jq
-    ```
-
-    - 実行結果（例）
-
-        ```
-        ii  jq                                         1.5+dfsg-1ubuntu0.1                                 amd64        lightweight and flexible command-line JSON processor
-        fiware@roboticbase-pc:~/core$
-        ```
-
-1. secrets/auth-tokensを利用したorion接続確認
+1. 認証トークンを取得
 
     ```
     $ TOKEN=$(cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[0].settings.bearer_tokens[0].token' -r)
+    ```
+
+1. orionの認証確認
+
+    ```
     $ curl -i -H "Authorization: bearer ${TOKEN}" http://${HOST_IPADDR}:8080/orion/v2/entities/
     ```
 
@@ -815,14 +776,16 @@
 
         ```
         HTTP/1.1 200 OK
-            content-length: 2
-            content-type: application/json
-            fiware-correlator: 55aa070a-3fc9-11e9-8ab3-0242ac110012
-            date: Wed, 06 Mar 2019 04:35:56 GMT
-            x-envoy-upstream-service-time: 3
-            server: envoy
+        x-powered-by: Express
+        fiware-correlator: d7569174-8a31-4229-8905-42b6407309dc
+        content-type: application/json; charset=utf-8
+        content-length: 25
+        etag: W/"19-WMYe0U6ocKhQjp+oaVnMHLdbylc"
+        date: Thu, 21 Feb 2019 06:52:38 GMT
+        x-envoy-upstream-service-time: 23
+        server: envoy
 
-            []
+        {"count":0,"services":[]}
         ```
 
     ※200以外のコードが出力された場合は、以下のコマンドを実行し、Ambassador全てのPodを再起動してください  
@@ -884,9 +847,3 @@
         NAME           TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)             AGE
         cygnus-mongo   ClusterIP   10.99.98.62   <none>        5050/TCP,8081/TCP   2m26s
         ```
-
-
-
-
-
-

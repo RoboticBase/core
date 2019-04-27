@@ -3,24 +3,88 @@
 ## 構築環境(2019年4月26日現在)
 ### macOS
 - macOS Sierra 10.12.6
+- docker 18.09.2
 - azure-cli 2.0.63
-- git 2.14.3
 - kubectl 1.14.1
 - helm v2.13.1
- 
+- mosquitto-clients 1.6.0
 
 ### Ubuntu
 - Ubuntu 16.04.5 LTS
-- apt-transport-https 1.2.29ubuntu0.1
-- lsb-release 9.20160110ubuntu0.2
-- software-properties-common 0.96.20.8
-- dirmngr 2.1.11-6ubuntu2.1
+- docker-ce 18.09.5~3-0~ubuntu-xenial
 - azure-cli 2.0.63
-- git 2.7.4-0ubuntu1.6
 - kubectl 1.14.1
 - helm v2.13.1
+- mosquitto-clients 1.5.7-0mosquitto1~xenial1
 
 # Azure Kubernetes Service(AKS)の準備
+
+## docker-ceのインストール
+### macOS
+1. Docker CE for Macを公式サイトからダウンロード
+
+    ```
+    $ wget https://download.docker.com/mac/stable/Docker.dmg
+    ```
+
+1. `Docker.dmg` をダブルクリックし、 `Docker.app` をApplicationsフォルダへ移動
+1. `Docker.app` をダブルクリックしてDockerを起動
+
+### Ubuntu
+1. 前提ファイルのインストール
+
+    ```
+    $ sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+    ```
+
+1. docker-ceリポジトリの公開鍵を登録
+
+    ```
+    $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    ```
+
+1. docker-ceリポジトリを登録
+
+    ```
+    $ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    ```
+
+1. パッケージリストの更新
+
+    ```
+    $ sudo apt-get update
+    ```
+
+1. docker-ceのインストール
+
+    ```
+    $ sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+    ```
+
+1. docker-ceのインストール確認
+
+    ```
+    $ dpkg -l | grep docker
+    ```
+
+    - 実行結果（例）
+
+        ```
+        ii  docker-ce                                  5:18.09.5~3-0~ubuntu-xenial                  amd64        Docker: the open-source application container engine
+        ii  docker-ce-cli                              5:18.09.5~3-0~ubuntu-xenial                  amd64        Docker CLI: the open-source application container engine
+        ```
+
+1. dockerコマンドの実行権限を付与
+
+    ```
+    $ sudo gpasswd -a $USER docker
+    ```
+
+1. dockerの再起動
+
+    ```
+    $ sudo systemctl restart docker
+    ```
 
 ## Azure CLIのインストール
 ### macOS
@@ -135,6 +199,22 @@
     $ sudo apt-get install -y jq
     ```
 
+## envsubstのインストール
+### macOS
+1. envsubstのインストール
+
+    ```
+    $ brew update && brew install gettext
+    $ brew link --force gettext
+    ```
+
+### Ubuntu
+1. envsubstのインストール
+
+    ```
+    $ sudo apt-get install -y gettext-base
+    ```
+
 ## kubectlのインストール
 ### macOS
 1. kubectlのインストール
@@ -203,25 +283,45 @@
 
     ```
     $ cd /tmp
-    $ curl -LO https://storage.googleapis.com/kubernetes-helm/helm-v2.5.0-linux-amd64.tar.gz
-    $ sudo tar xvf helm-v2.5.0-linux-amd64.tar.gz
+    $ curl -LO https://storage.googleapis.com/kubernetes-helm/helm-v2.13.1-linux-amd64.tar.gz
+    $ sudo tar xvf helm-v2.13.1-linux-amd64.tar.gz
     $ sudo cp linux-amd64/helm /usr/bin
     $ sudo rm -rf linux-amd64
-    $ rm helm-v2.5.0-linux-amd64.tar.gz
+    $ rm helm-v2.13.1-linux-amd64.tar.gz
     ```
 
-
-1. Helmのバージョン確認
+## MQTT clientのインストール
+### macOS
+1. `mosquitto` のインストール
 
     ```
-    $ helm version --client
+    $ brew update && brew install mosquitto
     ```
 
-    - 実行結果（例）
+### Ubuntu
+1. `mosquitto` のリポジトリ登録
 
-        ```
-        Client: &version.Version{SemVer:"v2.5.0", GitCommit:"012cb0ac1a1b2f888144ef5a67b8dab6c2d45be6", GitTreeState:"clean"}
-        ```
+    ```
+    $ sudo add-apt-repository ppa:mosquitto-dev/mosquitto-ppa
+    ```
+
+1. パッケージリストの更新
+
+    ```
+    $ sudo apt-get update -y
+    ```
+
+1. `mosquitto-clients` のインストール
+
+    ```
+    $ sudo apt-get install mosquitto mosquitto-clients
+    ```
+
+1. `mosquitto-clients `のインストール確認
+
+    ```
+    $ dpkg -l | grep mosquitto
+    ```
 
 ## RoboticBase/coreの取得
 1. ベースファイルの取得
@@ -254,6 +354,10 @@
 
 1. 環境ファイルの設定
 
+    ```
+    $ vi env
+    ```
+
     ```bash
     #!/bin/bash
 
@@ -274,7 +378,8 @@
     ```
 
     ※利用環境によって`TENANT`や`DOMAIN`、`EMAIL`などを変更してください  
-    　また`DNS_ZONE`や`AKS_RG`などには、今後作成するリソースの名前を記載してください
+    　また`DNS_ZONE`や`AKS_RG`などには、今後作成するリソースの名前を記載してください  
+    ※ `MQTT__iotagent` の値(MQTT Brokerの `iotagent` ユーザのパスワード）を変更してください
 
 1. プロジェクトルートに移動
 

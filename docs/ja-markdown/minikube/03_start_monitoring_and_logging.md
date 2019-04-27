@@ -1,7 +1,7 @@
-﻿# RoboticBase Coreインストールマニュアル #3
+# RoboticBase Coreインストールマニュアル #3
 
 
-## 構築環境(2019年3月6日現在)
+## 構築環境(2019年4月26日現在)
 
 
 # 3. minikubeでモニターリング＆ロギングの開始
@@ -24,7 +24,7 @@
 1. 環境設定の読み込み
 
     ```
-    $ source ${CORE_ROOT}/docs/minikube/env
+    $ source ${CORE_ROOT}/docs/environments/minikube/env
     ```
 
 ## cygnus-elasticsearchの設定
@@ -328,10 +328,10 @@
     - 実行結果（例）
 
         ```
-        NAME                     DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-        kp-exporter-kube-state   1         1         1            1           7m21s
-        kp-grafana               1         1         1            1           7m21s
-        po-prometheus-operator   1         1         1            1           12m
+        NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+        kp-exporter-kube-state   1/1     1            1           70s
+        kp-grafana               1/1     1            1           70s
+        po-prometheus-operator   1/1     1            1           3m40s
         ```
 
 1. monitoringネームスペースのstatefulsets状態確認
@@ -343,9 +343,9 @@
     - 実行結果（例）
 
         ```
-        NAME                       DESIRED   CURRENT   AGE
-        alertmanager-kp            1         1         7m27s
-        prometheus-kp-prometheus   1         1         7m18s
+        NAME                       READY   AGE
+        alertmanager-kp            1/1     2m
+        prometheus-kp-prometheus   1/1     2m
         ```
 
 1. monitoringネームスペースのpods状態確認
@@ -369,7 +369,7 @@
 1. monitoringネームスペースのservices状態確認
 
     ```
-    kubectl get services --namespace monitoring
+    $ kubectl get services --namespace monitoring
     ```
 
     - 実行結果（例）
@@ -395,7 +395,7 @@
 
     ※先頭に-の付いている部分を削除してください
 
-    ```
+    ```diff
       for: 10m
       labels:
         severity: warning
@@ -420,7 +420,7 @@
 
     ※先頭に-の付いている部分を削除、先頭に+の付いている部分を追加してください
 
-    ```
+    ```diff
     spec:
         groups:
         - name: kube-controller-manager.rules
@@ -446,7 +446,7 @@
 
     ※先頭に-の付いている部分を削除してください
 
-    ```
+    ```diff
         labels:
         quantile: "0.5"
         record: cluster:scheduler_binding_latency_seconds:quantile
@@ -462,16 +462,9 @@
     -      severity: critical
     ```
 
-
 ## prometheusの確認
 
-1. コマンドの作成
-
-    ```
-    $ echo 'kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l prometheus=kube-prometheus -l app=prometheus -o template --template "{{(index .items 0).metadata.name}}") 9090:9090'
-    ```
-
-1. 別ターミナルでprometheusのポートフォワーディングを開始
+1. 別ターミナルを開き、prometheusのポートフォワーディングを開始
 
     ```
     $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l prometheus=kube-prometheus -l app=prometheus -o template --template "{{(index .items 0).metadata.name}}") 9090:9090
@@ -479,15 +472,21 @@
 
     - 実行結果（例）
 
-      ```
-      Forwarding from 127.0.0.1:9090 -> 9090
-      Forwarding from [::1]:9090 -> 9090
-      ```
+        ```
+        Forwarding from 127.0.0.1:9090 -> 9090
+        Forwarding from [::1]:9090 -> 9090
+        ```
 
 1. ブラウザでprometheusにアクセス
+  * macOS
 
     ```
-    xdg-open http://localhost:9090
+    $ open http://localhost:9090
+    ```
+  * Ubuntu
+
+    ```
+    $ xdg-open http://localhost:9090
     ```
 
 1. prometheusのWEB管理画面が表示されたことを確認
@@ -512,18 +511,12 @@
 
 1. ブラウザを終了
 
-1. port-forwardingを閉じる
+1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
 ## grafanaのData Sources追加
 
-1. コマンドの作成
-
-    ```
-    $ echo 'kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000'
-    ```
-
-1. 別ターミナルでgrafanaのポートフォワーディングを開始
+1. 別ターミナルを開き、grafanaのポートフォワーディングを開始
 
     ```
     $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000
@@ -531,15 +524,21 @@
 
     - 実行結果（例）
 
-      ```
-      Forwarding from 127.0.0.1:3000 -> 3000
-      Forwarding from [::1]:3000 -> 3000
-      ```
+        ```
+        Forwarding from 127.0.0.1:3000 -> 3000
+        Forwarding from [::1]:3000 -> 3000
+        ```
 
 1. ブラウザでgrafanaにアクセス
+  * macOS
 
     ```
-    xdg-open http://localhost:3000
+    $ open http://localhost:3000
+    ```
+  * Ubuntu
+
+    ```
+    $ xdg-open http://localhost:3000
     ```
 
 1. grafanaのログイン画面が表示されたことを確認
@@ -566,21 +565,17 @@
 
     ![grafana006](images/grafana/grafana006.png)
 
-1. 「URL」のテキストボックスに「http://kp-prometheus:9090」を入力
+1. 「URL」のテキストボックスに「 http://kp-prometheus:9090 」を入力し、「Save & Test」をクリック
 
     ![grafana007](images/grafana/grafana007.png)
 
-1. 最後部の「Save & Test」をクリック
+1. 「Data source is working」が表示されたことを確認
 
     ![grafana008](images/grafana/grafana008.png)
 
-1. 「Data source is working」が表示されたことを確認
-
-    ![grafana009](images/grafana/grafana009.png)
-
 1. ブラウザを終了
 
-1. port-forwardingを閉じる
+1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
 ## Elasticsearchの設定
@@ -621,8 +616,8 @@
     - 実行結果（例）
 
         ```
-        NAME                    DESIRED   CURRENT   AGE
-        elasticsearch-logging   2         2         3m47s
+        NAME                    READY   AGE
+        elasticsearch-logging   2/2     114s
         ```
 
 1. elasticsearch-loggingのpods状態確認
@@ -652,7 +647,7 @@
         elasticsearch-logging   ClusterIP   10.96.35.140   <none>        9200/TCP   4m23s
         ```
 
-1. elasticsearch-loggingの接続確認
+1. elasticsearchのクラスタ設定の変更
 
     ```
     $ kubectl exec -it elasticsearch-logging-0 --namespace monitoring -- curl -H "Content-Type: application/json" -X PUT http://elasticsearch-logging:9200/_cluster/settings -d '{"transient": {"cluster.routing.allocation.enable":"all"}}'
@@ -802,12 +797,6 @@
 
 ## KibanaにIndex Patternsの設定
 
-1. コマンドの作成
-
-    ```
-    $ echo 'kubectl --namespace monitoring port-forward $(kubectl get pod -l k8s-app=kibana-logging --namespace monitoring -o template --template "{{(index .items 0).metadata.name}}") 5601:5601'
-    ```
-
 1. 別ターミナルでKibanaのポートフォワーディングを開始
 
     ```
@@ -816,13 +805,18 @@
 
     - 実行結果（例）
 
-      ```
-      Forwarding from 127.0.0.1:5601 -> 5601
-      Forwarding from [::1]:5601 -> 5601
-      ```
+        ```
+        Forwarding from 127.0.0.1:5601 -> 5601
+        Forwarding from [::1]:5601 -> 5601
+        ```
 
 1. ブラウザでkibanaにアクセス
+  * macOS
+    ```
+    $ open http://localhost:5601/
+    ```
 
+  * Ubuntu
     ```
     $ xdg-open http://localhost:5601/
     ```
@@ -855,18 +849,16 @@
 
     ![kibana007](images/kibana/kibana007.png)
 
+1. 「Discover」をクリックすると、Kubernetesやコンテナのログが表示される
+
+    ![kibana008](images/kibana/kibana008.png)
+
 1. ブラウザを終了
 
-1. port-forwardingを閉じる
+1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
 ## grafanaにelasticsearch dashboardの追加
-
-1. コマンドの作成
-
-    ```
-    $ echo 'kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000'
-    ```
 
 1. 別ターミナルでgrafanaのポートフォワーディングを開始
 
@@ -876,15 +868,21 @@
 
     - 実行結果（例）
 
-      ```
-      Forwarding from 127.0.0.1:3000 -> 3000
-      Forwarding from [::1]:3000 -> 3000
-      ```
+        ```
+        Forwarding from 127.0.0.1:3000 -> 3000
+        Forwarding from [::1]:3000 -> 3000
+        ```
 
 1. ブラウザでgrafanaにアクセス
+  * macOS
 
     ```
-    xdg-open http://localhost:3000
+    $ open http://localhost:3000
+    ```
+  * Ubuntu
+
+    ```
+    $ xdg-open http://localhost:3000
     ```
 
 1. grafanaのWEB管理画面が表示されたことを確認
@@ -905,41 +903,39 @@
 
 1. 下記の設定値を入力し、「Save & Test」をクリック
 
-    Name : cygnus-fiwaredemo-deployer  
+    Name : elasticsearch  
     URL : http://elasticsearch-logging:9200  
     Access : Server(Default)  
-    Index name : logstash-* 
+    Index name : logstash-*  
     Time field name : @timestamp  
     Version : 6.0+
 
     ![grafana2-005](images/grafana2/grafana2-005.png)
 
-    ![grafana2-006](images/grafana2/grafana2-006.png)
-
 1. 「Datasource Updated」と表示されることを確認
 
-    ![grafana2-007](images/grafana2/grafana2-007.png)
+    ![grafana2-006](images/grafana2/grafana2-006.png)
 
 1. 「+」「Import」をクリック
 
-    ![grafana2-008](images/grafana2/grafana2-008.png)
+    ![grafana2-007](images/grafana2/grafana2-007.png)
 
 1. 「Upload .json File」をクリック
 
-     ![grafana2-009](images/grafana2/grafana2-009.png)
+    ![grafana2-008](images/grafana2/grafana2-008.png)
 
 1. 「monitoring/dashboard_elasticsearch.json」を選択し「開く」をクリック
 
-     ![grafana2-010](images/grafana2/grafana2-010.png)
+    ![grafana2-009](images/grafana2/grafana2-009.png)
 
 1. 「Import」をクリック
 
+    ![grafana2-010](images/grafana2/grafana2-010.png)
+
+1. ElasticSeartchのログ件数のグラフとログ内容のテーブルが表示されることを確認
+
     ![grafana2-011](images/grafana2/grafana2-011.png)
-
-1. ElasticSeartchのダッシュボード画面が表示されることを確認
-
-    ![grafana2-012](images/grafana2/grafana2-012.png)
 
 1. ブラウザを終了
 
-1. port-forwardingを閉じる
+1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
