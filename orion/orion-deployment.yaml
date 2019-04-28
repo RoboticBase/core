@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: orion
-        image: fiware/orion:2.1.0
+        image: fiware/orion:2.2.0
         args: ["-dbhost", "mongodb-client", "-rplSet", "rs0", "-dbTimeout", "10000", "-logLevel", "DEBUG"]
         ports:
         - containerPort: 1026
