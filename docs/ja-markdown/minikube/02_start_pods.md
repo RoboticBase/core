@@ -85,7 +85,7 @@
 1. rabbitmqのクラスタ状態確認
 
     ```
-    kubectl exec rabbitmq-0 -- rabbitmqctl cluster_status
+    $ kubectl exec rabbitmq-0 -- rabbitmqctl cluster_status
     ```
 
     - 実行結果（例）
@@ -794,7 +794,7 @@
     $ kubectl delete pods -l app=ambassador
     ```
 
-## minikubeにfiware cygnusの設定
+## minikubeにfiware cygnus(mongodb sink)を起動
 
 1. cygnus-mongoの作成
 

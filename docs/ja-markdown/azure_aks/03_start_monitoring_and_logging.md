@@ -19,7 +19,7 @@
     $ source ${CORE_ROOT}/docs/environments/azure_aks/env
     ```
 
-## cygnus-elasticsearchの設定
+## AKSでfiware cygnus(elasticsearch sink)を起動
 
 1. cygnus-elasticsearch-serviceの作成
 
@@ -511,21 +511,21 @@
     ※先頭に-の付いている部分を削除してください
 
     ```diff
-            for: 10m
-            labels:
-              severity: critical
-      -    - alert: K8SApiserverDown
-      -      annotations:
-      -        description: No API servers are reachable or all have disappeared from service
-      -          discovery
-      -        summary: No API servers are reachable
-      -      expr: absent(up{job="apiserver"} == 1)
-      -      for: 20m
-      -      labels:
-      -        severity: critical
-          - alert: K8sCertificateExpirationNotice
-            annotations:
-              description: Kubernetes API Certificate is expiring soon (less than 7 days)
+          for: 10m
+          labels:
+            severity: critical
+    -    - alert: K8SApiserverDown
+    -      annotations:
+    -        description: No API servers are reachable or all have disappeared from service
+    -          discovery
+    -        summary: No API servers are reachable
+    -      expr: absent(up{job="apiserver"} == 1)
+    -      for: 20m
+    -      labels:
+    -        severity: critical
+        - alert: K8sCertificateExpirationNotice
+          annotations:
+            description: Kubernetes API Certificate is expiring soon (less than 7 days)
     ```
 
 ## prometheusの確認

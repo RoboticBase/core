@@ -27,7 +27,7 @@
     $ source ${CORE_ROOT}/docs/environments/minikube/env
     ```
 
-## cygnus-elasticsearchの設定
+## minikubeでfiware cygnus(elasticsearch sink)を起動
 
 1. cygnus-elasticsearch-serviceの作成
 
