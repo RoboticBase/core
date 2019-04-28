@@ -4,7 +4,40 @@
 * We will employ "wirecloud" as a core component of RoboticBase-core
 * We will employ "sth-comet" as a core component of RoboticBase-core
 * We will employ "kurento" as a core component of RoboticBase-core
-* We will update components and documents to adjust [FIWARE Release 7.6](https://github.com/Fiware/catalogue/releases)
+
+## [0.4.1]
+### Changed
+* update components and documents to adjust [FIWARE Release 7.6](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.6)
+    * FIWARE components
+
+        |component|version|(previous version)|
+        |:--|:--|:--|
+        |orion|2.2.0|(2.1.0)|
+        |iotagent-ul|1.8.0|-|
+        |cygnus|1.10.0|-|
+    * Support components
+
+        |component|version|(previous version)|
+        |:--|:--|:--|
+        |mongodb|4.1.10|(4.0.6)|
+        |rabbitmq|3.7.14|-|
+        |ambassador|0.53.1|(0.50.2)|
+        |auth|0.2.0|-|
+    * Monitoring components
+
+        |component|version|(previous version)|
+        |:--|:--|:--|
+        |prometheus|2.9.1|2.7.1|
+        |alertmanager|0.16.2|0.16.1|
+        |grafana|6.1.4|5.4.3|
+    * Logging components
+
+        |component|version|(previous version)|
+        |:--|:--|:--|
+        |elasticsearch|6.3.0|-|
+        |fluentd|2.4.0|-|
+        |kibana|6.3.2|-|
+        |curator|5.6.0|5.5.4|
 
 ## [0.4.0]
 ### Changed
