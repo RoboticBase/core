@@ -1,6 +1,6 @@
 # RoboticBase-core
 
-This repository is a core components of "RoboticBase".
+This repository is a core components of "RoboticBase". The latest version (0.4.1) conforms to [FIWARE Release 7.6](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.6).
 
 ## Description
 "RoboticBase" is a robot management platform based on [FIWARE](http://www.fiware.org/) which enables you to manage and operate many kinds of robots and IoT devices as interactions of contexts.
@@ -10,21 +10,25 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 
 ![roboticbase-core-architecture.png](/docs/images/roboticbase-core-architecture.png)
 
-|component|summary|
-|:--|:--|
-|[kubernetes](https://kubernetes.io/)|Container Orchestration Platform|
-|[ambassador](https://www.getambassador.io/)|API Gateway|
-|[fiware-ambassador-auth](https://github.com/RoboticBase/fiware-ambassador-auth)|Authorization and Authentication component working with ambassador|
-|[FIWARE orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)|Publish/Subscribe Context Broker|
-|[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|
-|[FIWARE iotagent-ul](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|
-|[RabbitMQ](https://www.rabbitmq.com/)|Distributed Message Queue|
-|[MongoDB](https://www.mongodb.com/)|Document-oriented NoSQL Database|
-|[Prometheus](https://prometheus.io/)|Monitoring and Alerting toolkit|
-|[Grafana](https://grafana.com/)|Analytics and Alerting platform for time series metrics|
-|[Elasticsearch](https://www.elastic.co/products/elasticsearch)|Distributed search and analytics engine|
-|[fluentd](https://www.fluentd.org/)|Data collector for unified logging layer|
-|[Kibana](https://www.elastic.co/products/kibana)|Visualize the Elasticsearch data|
+
+|FIWARE components|summary|version|
+|:--|:--|:--|
+|[FIWARE orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)|Publish/Subscribe Context Broker|2.2.0|
+|[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|1.10.0|
+|[FIWARE iotagent-ul](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|1.8.0|
+
+|Other components|summary|version|
+|:--|:--|:--|
+|[kubernetes](https://kubernetes.io/)|Container Orchestration Platform|1.13 or higher|
+|[ambassador](https://www.getambassador.io/)|API Gateway|0.53.1|
+|[auth](https://github.com/RoboticBase/fiware-ambassador-auth)|Authorization and Authentication component working with ambassador|0.2.0|
+|[RabbitMQ](https://www.rabbitmq.com/)|Distributed Message Queue|3.7.14|
+|[MongoDB](https://www.mongodb.com/)|Document-oriented NoSQL Database|4.1.10|
+|[Prometheus](https://prometheus.io/)|Monitoring and Alerting toolkit|2.9.1|
+|[Grafana](https://grafana.com/)|Analytics and Alerting platform for time series metrics|6.1.4|
+|[Elasticsearch](https://www.elastic.co/products/elasticsearch)|Distributed search and analytics engine|6.3.0|
+|[fluentd](https://www.fluentd.org/)|Data collector for unified logging layer|2.4.0|
+|[Kibana](https://www.elastic.co/products/kibana)|Visualize the Elasticsearch data|6.3.2|
 
 ## An experiment to prove our concept
 We and University of Aizu have been performed an experiment to guide a visitor by collaborating with heterogeneous robots, IoT devices and people through this Robot Platform on Nov. 6th - 8th , 2018.
@@ -35,63 +39,40 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 
 ## Requirements
 
-### When you use macOS,
-
 * kubernetes client PC
+    * `azure cli` is required when you use Azure AKS.
 
 ||version|
 |:--|:--|
-|OS|macOS Sierra 10.12.6|
-|azure cli|2.0.45|
-|kubectl|1.12.2|
-|helm|2.10.0|
-|envsubst|0.19.8.1|
-
-* minikube
-    * when you use monitoring & logging, you have to give **4 cpu & 8192 MB memories** to minikube.
-
-||version|
-|:--|:--|
-|OS|macOS Sierra 10.12.6|
-|VirtualBox|5.2.12 r122591|
-|minikube|0.34.1|
-|kubernetes|1.12.5|
-
-### When you use Ubuntu,
-* kubernetes client PC
-
-||version|
-|:--|:--|
-|OS|Ubuntu 16.04|
-|kubectl|1.12.2|
-|helm|2.10.0|
-|envsubst|0.19.7|
-
-* minikube
-    * when you use monitoring & logging, you have to give **4 cpu & 8192 MB memories** to minikube.
-
-||version|
-|:--|:--|
-|OS|Ubuntu 16.04|
-|VirtualBox|5.2.14 r123301|
-|minikube|0.34.1|
-|kubernetes|1.12.5|
-
+|OS|macOS Sierra 10.12.6 or Ubuntu 16.04|
+|azure cli|2.0.63|
+|kubectl|1.14.1|
+|helm|2.13.1|
 
 * Azure AKS
-    * when you use monitoring & logging, you have to use the vm series which supports `Premium Storage` such as `Dsv3-series`.
 
 ||version|
 |:--|:--|
 |region|japaneast|
-|kubernetes|1.12.5|
+|kubernetes|1.13.5|
+
+* minikube
+    * when you use monitoring & logging, you have to give **4 cpu & 8192 MB memories** to minikube.
+
+||version|
+|:--|:--|
+|VirtualBox|5.2.28 r130011|
+|minikube|1.0.0|
+|kubernetes|1.14.1|
 
 ## getting started
+### jupyter notebook (english)
+1. install python3
 
 1. install jupyter notebook
 
     ```bash
-    $ cd docs
+    $ cd docs/en-jupyter_notebook/
     $ ./setup_jupyter_notebook.sh
     ```
 1. start jupyter notebook
@@ -100,57 +81,28 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
     $ ./start_jupyter_notebook.sh
     ```
 
-### Microsoft Azure AKS using macOS
+1. execute the commands in order according to the following documents:
+    * when using Azure AKS
+        * 01 prepare Microsoft Azure AKS -- [01_prepare_aks.ipynb](/docs/en-jupyter_notebook/azure_aks/01_prepare_aks.ipynb).
+        * 02 start pods on Azure AKS -- [02_start_pods.ipynb](/docs/en-jupyter_notebook/azure_aks/02_start_pods.ipynb).
+        * 03 start monitoring and logging on Azure AKS -- [03_start_monitoring_and_logging.ipynb](/docs/en-jupyter_notebook/azure_aks/03_start_monitoring_and_logging.ipynb).
+    * when using minikube
+        * 01 prepare minikube -- [01_prepare_minikube.ipynb](/docs/en-jupyter_notebook/minikube/01_prepare_minikube.ipynb).
+        * 02 start pods on minikube -- [02_start_pods.ipynb](/docs/en-jupyter_notebook/minikube/02_start_pods.ipynb).
+        * 03 start monitoring and logging on minikube -- [03_start_monitoring_and_logging.ipynb](/docs/en-jupyter_notebook/minikube/03_start_monitoring_and_logging.ipynb).
 
-1. setup environment variables
+### markdown (japanese)
+1. ターミナルを開き、Markdownのドキュメントに従ってコマンドを実行してください
+    * Azure AKSを用いる場合
+        * 01 Microsoft Azure AKSの準備 -- [01_prepare_aks.md](/docs/ja-markdown/azure_aks/01_prepare_aks.md).
+        * 02 AKS上にPODの起動 -- [02_start_pods.md](/docs/ja-markdown/azure_aks/02_start_pods.md).
+        * 03 モニタリングとロギング -- [03_start_monitoring_and_logging.md](/docs/ja-markdown/azure_aks/03_start_monitoring_and_logging.md).
+    * minikubeを用いる場合
+        * 01 minikubeの準備 -- [01_prepare_minikube.md](/docs/ja-markdown/minikube/01_prepare_minikube.md).
+        * 02 minikube上にPOD起動 -- [02_start_pods.md](/docs/ja-markdown/minikube/02_start_pods.md).
+        * 03 モニタリングとロギング -- [03_start_monitoring_and_logging.md](/docs/ja-markdown/minikube/03_start_monitoring_and_logging.md).
 
-    ```bash
-    $ cp azure_aks/env.template azure_aks/env
-    $ vi env
-    ```
-1. prepare Microsoft Azure AKS -- [/docs/azure_aks/macOS/01_prepare_aks.ipynb](/docs/azure_aks/macOS/01_prepare_aks.ipynb).
-1. start pods on Azure AKS -- [/docs/azure_aks/macOS/02_start_pods.ipynb](/docs/azure_aks/macOS/02_start_pods.ipynb).
-1. start monitoring and logging on Azure AKS -- [/doss/azure_aks/macOS/03_start_monitoring_and_logging.ipynb](/docs/azure_aks/macOS/03_start_monitoring_and_logging.ipynb).
-
-### Microsoft Azure AKS using Ubuntu
-
-1. setup environment variables
-
-    ```bash
-    $ cp azure_aks/env.template azure_aks/env
-    $ vi env
-    ```
-    1. prepare Microsoft Azure AKS -- [/docs/azure_aks/macOS/01_prepare_aks.ipynb](/docs/azure_aks/macOS/01_prepare_aks.ipynb).
-    1. start pods on Azure AKS -- [/docs/azure_aks/macOS/02_start_pods.ipynb](/docs/azure_aks/macOS/02_start_pods.ipynb).
-    1. start monitoring and logging on Azure AKS -- [/doss/azure_aks/macOS/03_start_monitoring_and_logging.ipynb](/docs/azure_aks/macOS/03_start_monitoring_and_logging.ipynb).
-
-### minikube on macOS
-
-1. setup environment variables
-
-    ```bash
-    $ cp minikube/env.template minikube/env
-    $ vi env
-    ```
-1. prepare minikube -- [/docs/minikube/macOS/01_prepare_minikube.ipynb](/docs/minikube/macOS/01_prepare_minikube.ipynb).
-1. start pods on minikube -- [/docs/minikube/macOS/02_start_pods.ipynb](/docs/minikube/macOS/02_start_pods.ipynb).
-1. start monitoring and logging on minikube -- [/docs/minikube/macOS/03_start_monitoring_and_logging.ipynb](/docs/minikube/macOS/03_start_monitoring_and_logging.ipynb).
-
-
-### minikube on Ubuntu
-
-1. setup environment variables
-
-    ```bash
-    $ cp minikube/env.template minikube/env
-    $ vi env
-    ```
-1. prepare minikube -- [/docs/minikube/Ubuntu/01_prepare_minikube.ipynb](/docs/minikube/Ubuntu/01_prepare_minikube.ipynb).
-1. start pods on minikube -- [/docs/minikube/Ubuntu/02_start_pods.ipynb](/docs/minikube/Ubuntu/02_start_pods.ipynb).
-1. start monitoring and logging on minikube -- [/docs/minikube/Ubuntu/03_start_monitoring_and_logging.ipynb](/docs/minikube/Ubuntu/03_start_monitoring_and_logging.ipynb).
-
-
-## Related Repositories (Cloud)
+## Related Repositories
 ### FIWARE components
 * [telefonicaid/fiware-orion](https://github.com/telefonicaid/fiware-orion)
     * Orion is a FIWARE's reference implementation of the Publish/Subscribe Context Broker.
@@ -171,4 +123,4 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 [Apache License 2.0](/LICENSE)
 
 ## Copyright
-Copyright (c) 2018 [TIS Inc.](https://www.tis.co.jp/)
+Copyright (c) 2018-2019 [TIS Inc.](https://www.tis.co.jp/)
