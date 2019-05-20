@@ -433,7 +433,7 @@
 
         Non-authoritative answer:
         Name:   mqtt.example.com
-        Address: 23.102.75.46
+        Address: XX.XX.XX.XX
         ```
 
 ## MQTTSの疎通確認
@@ -655,8 +655,8 @@
     - 実行結果（例）
 
         ```
-        NAME         TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)                      AGE
-        ambassador   LoadBalancer   10.0.255.79   104.41.182.148   443:31787/TCP,80:30655/TCP   4m43s
+        NAME         TYPE           CLUSTER-IP    EXTERNAL-IP   PORT(S)                      AGE
+        ambassador   LoadBalancer   10.0.255.79   XX.XX.XX.XX   443:31787/TCP,80:30655/TCP   4m43s
         ```
 
 
@@ -680,7 +680,7 @@
         {
             "arecords": [
                 {
-                    "ipv4Address": "104.41.182.148"
+                    "ipv4Address": "XX.XX.XX.XX"
                 }
             ],
             "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -712,7 +712,7 @@
 
         Non-authoritative answer:
         Name:   api.example.com
-        Address: 104.41.182.148
+        Address: XX.XX.XX.XX
         ```
 
 1. apiドメインの確認
@@ -766,6 +766,30 @@
                         "allowed_paths": ["^.*/static/.*$"]
                     }
                 }
+            }, {
+                "host": "kibana\\\\..+$",
+                "settings": {
+                    "bearer_tokens": [],
+                    "basic_auths": [
+                        {
+                            "username": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 8)",
+                            "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
+                            "allowed_paths": ["^.*$"]
+                        }
+                    ],
+                    "no_auths": {
+                        "allowed_paths": []
+                    }
+                }
+            }, {
+                "host": "grafana\\\\..+$",
+                "settings": {
+                    "bearer_tokens": [],
+                    "basic_auths": [],
+                    "no_auths": {
+                        "allowed_paths": ["^.*$"]
+                    }
+                }
             }
         ]
         __EOS__
@@ -800,6 +824,30 @@
                     ],
                     "no_auths": {
                         "allowed_paths": ["^.*/static/.*$"]
+                    }
+                }
+            }, {
+                "host": "kibana\\\\..+$",
+                "settings": {
+                    "bearer_tokens": [],
+                    "basic_auths": [
+                        {
+                            "username": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 8)",
+                            "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
+                            "allowed_paths": ["^.*$"]
+                        }
+                    ],
+                    "no_auths": {
+                        "allowed_paths": []
+                    }
+                }
+            }, {
+                "host": "grafana\\\\..+$",
+                "settings": {
+                    "bearer_tokens": [],
+                    "basic_auths": [],
+                    "no_auths": {
+                        "allowed_paths": ["^.*$"]
                     }
                 }
             }
