@@ -84,23 +84,31 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 1. execute the commands in order according to the following documents:
     * when using Azure AKS
         * 01 prepare Microsoft Azure AKS -- [01_prepare_aks.ipynb](/docs/en-jupyter_notebook/azure_aks/01_prepare_aks.ipynb).
-        * 02 start pods on Azure AKS -- [02_start_pods.ipynb](/docs/en-jupyter_notebook/azure_aks/02_start_pods.ipynb).
-        * 03 start monitoring and logging on Azure AKS -- [03_start_monitoring_and_logging.ipynb](/docs/en-jupyter_notebook/azure_aks/03_start_monitoring_and_logging.ipynb).
+        * 02 start base pods on Azure AKS -- [02_start_base_pods.ipynb](/docs/en-jupyter_notebook/azure_aks/02_start_base_pods.ipynb).
+        * 03 start auth pods for API Gateway on Azure AKS -- [03_start_auth_pods.ipynb](/docs/en-jupyter_notebook/azure_aks/03_start_auth_pods.ipynb).
+        * 04 start FIWARE pods on Azure AKS -- [04_start_fiware_pods.ipynb](/docs/en-jupyter_notebook/azure_aks/04_start_fiware_pods.ipynb).
+        * 05 start monitoring and logging on Azure AKS -- [05_start_monitoring_and_logging.ipynb](/docs/en-jupyter_notebook/azure_aks/05_start_monitoring_and_logging.ipynb).
     * when using minikube
         * 01 prepare minikube -- [01_prepare_minikube.ipynb](/docs/en-jupyter_notebook/minikube/01_prepare_minikube.ipynb).
-        * 02 start pods on minikube -- [02_start_pods.ipynb](/docs/en-jupyter_notebook/minikube/02_start_pods.ipynb).
-        * 03 start monitoring and logging on minikube -- [03_start_monitoring_and_logging.ipynb](/docs/en-jupyter_notebook/minikube/03_start_monitoring_and_logging.ipynb).
+        * 02 start base pods on minikube -- [02_start_base_pods.ipynb](/docs/en-jupyter_notebook/minikube/02_start_base_pods.ipynb).
+        * 03 start auth pods for API Gateway on minikube -- [03_start_auth_pods.ipynb](/docs/en-jupyter_notebook/minikube/03_start_auth_pods.ipynb).
+        * 04 start FIWARE pods on minikube -- [04_start_fiware_pods.ipynb](/docs/en-jupyter_notebook/minikube/04_start_fiware_pods.ipynb).
+        * 05 start monitoring and logging on minikube -- [05_start_monitoring_and_logging.ipynb](/docs/en-jupyter_notebook/minikube/05_start_monitoring_and_logging.ipynb).
 
 ### markdown (japanese)
 1. ターミナルを開き、Markdownのドキュメントに従ってコマンドを実行してください
     * Azure AKSを用いる場合
         * 01 Microsoft Azure AKSの準備 -- [01_prepare_aks.md](/docs/ja-markdown/azure_aks/01_prepare_aks.md).
-        * 02 AKS上にPODの起動 -- [02_start_pods.md](/docs/ja-markdown/azure_aks/02_start_pods.md).
-        * 03 モニタリングとロギング -- [03_start_monitoring_and_logging.md](/docs/ja-markdown/azure_aks/03_start_monitoring_and_logging.md).
+        * 02 AKS上にベースとなるPODを起動 -- [02_start_base_pods.md](/docs/ja-markdown/azure_aks/02_start_base_pods.md).
+        * 03 AKS上にAPI Gateway認証用PODを起動 -- [03_start_auth_pods.md](/docs/ja-markdown/azure_aks/03_start_auth_pods.md).
+        * 04 AKS上にFIWAREのPODを起動 -- [04_start_fiware_pods.md](/docs/ja-markdown/azure_aks/04_start_fiware_pods.md).
+        * 05 モニタリングとロギング -- [05_start_monitoring_and_logging.md](/docs/ja-markdown/azure_aks/05_start_monitoring_and_logging.md).
     * minikubeを用いる場合
         * 01 minikubeの準備 -- [01_prepare_minikube.md](/docs/ja-markdown/minikube/01_prepare_minikube.md).
-        * 02 minikube上にPOD起動 -- [02_start_pods.md](/docs/ja-markdown/minikube/02_start_pods.md).
-        * 03 モニタリングとロギング -- [03_start_monitoring_and_logging.md](/docs/ja-markdown/minikube/03_start_monitoring_and_logging.md).
+        * 02 minikube上にベースとなるPODを起動 -- [02_start_base_pods.md](/docs/ja-markdown/minikube/02_start_base_pods.md).
+        * 03 minikube上にAPI Gateway認証用PODを起動 -- [03_start_auth_pods.md](/docs/ja-markdown/minikube/03_start_auth_pods.md).
+        * 04 minikube上にFIWAREのPODを起動 -- [04_start_fiware_pods.md](/docs/ja-markdown/minikube/04_start_fiware_pods.md).
+        * 05 モニタリングとロギング -- [05_start_monitoring_and_logging.md](/docs/ja-markdown/minikube/05_start_monitoring_and_logging.md).
 
 ## Related Repositories
 ### FIWARE components

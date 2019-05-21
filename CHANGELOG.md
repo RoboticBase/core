@@ -8,6 +8,7 @@
 ## [0.4.2]
 ### Changed
 * create the subdomains and routing rules of "kibana" and "grafana", and expose them to Internet.
+* update the `auth` component to be able to change the auth tokens dynamically.
 
 ## [0.4.1]
 ### Changed
