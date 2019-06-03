@@ -1,6 +1,6 @@
 # RoboticBase-core
 
-This repository is a core components of "RoboticBase". The latest version (0.4.1) conforms to [FIWARE Release 7.6](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.6).
+This repository is a core components of "RoboticBase". The latest version (0.4.2) conforms to [FIWARE Release 7.6](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.6).
 
 ## Description
 "RoboticBase" is a robot management platform based on [FIWARE](http://www.fiware.org/) which enables you to manage and operate many kinds of robots and IoT devices as interactions of contexts.
