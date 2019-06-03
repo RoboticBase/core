@@ -1,7 +1,6 @@
-# RoboticBase Coreインストールマニュアル #3
+# RoboticBase Coreインストールマニュアル #5
 
 ## 環境構築(2019年4月26日現在)
-
 
 # AKSでモニターリング＆ロギングの開始
 
@@ -542,19 +541,17 @@
         Forwarding from 127.0.0.1:9090 -> 9090
         Forwarding from [::1]:9090 -> 9090
         ```
-
 1. ブラウザでprometheusにアクセス
-  * macOS
+    * macOS
 
-    ```
-    $ open http://localhost:9090
-    ```
-  * Ubuntu
+        ```
+        $ open http://localhost:9090
+        ```
+    * Ubuntu
 
-    ```
-    $ xdg-open http://localhost:9090
-    ```
-
+        ```
+        $ xdg-open http://localhost:9090
+        ```
 1. prometheusのWEB管理画面が表示されたことを確認
 
     ![prometheus001](images/prometheus/prometheus001.png)
@@ -580,36 +577,107 @@
 1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
-## grafanaのData Sources追加
-
-1. 別ターミナルを開き、grafanaのポートフォワーディングを開始
+## grafanaのServiceにpatch
+1. ambassadorのルーティングルールをannotationとして追記
 
     ```
-    $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000
+    $ kubectl patch service --namespace monitoring kp-grafana -p '{"metadata": {"annotations": {"getambassador.io/config": "---\napiVersion: ambassador/v0\nkind:  Mapping\nname:  grafana-mapping\nprefix: /\nhost: \"^grafana\\\\..+$\"\nhost_regex: true\nservice: http://kp-grafana.monitoring:80\n"}}}'
+    ```
+
+
+## grafanaのサブドメインをDNSレコードに追加
+
+1. ambassadorのグローバルIPアドレスを取得
+
+    ```
+    $ HTTPS_IPADDR=$(kubectl get services -l app=ambassador -o json | jq '.items[0].status.loadBalancer.ingress[0].ip' -r)
+    ```
+
+1. ambassadorのサブドメイン（ `grafana` ）をDNSレコードを追加
+
+    ```
+    $ az network dns record-set a add-record --resource-group ${DNS_ZONE_RG} --zone-name "${DOMAIN}" --record-set-name "grafana" --ipv4-address "${HTTPS_IPADDR}"
+    ```
+
+    - 実行結果（例）
+
+        ```json
+        {
+            "arecords": [
+                {
+                    "ipv4Address": "XX.XX.XX.XX"
+                }
+            ],
+            "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "fqdn": "grafana.example.com.",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com/A/api",
+            "metadata": null,
+            "name": "grafana",
+            "provisioningState": "Succeeded",
+            "resourceGroup": "dns-zone",
+            "targetResource": {
+                "id": null
+            },
+            "ttl": 3600,
+            "type": "Microsoft.Network/dnszones/A"
+        }
+        ```
+
+1. grafanaドメインの名前解決確認
+
+    ```
+    $ nslookup grafana.${DOMAIN}
     ```
 
     - 実行結果（例）
 
         ```
-        Forwarding from 127.0.0.1:3000 -> 3000
-        Forwarding from [::1]:3000 -> 3000
+        Server:         127.0.1.1
+        Address:        127.0.1.1#53
+
+        Non-authoritative answer:
+        Name:   grafana.example.com
+        Address: XX.XX.XX.XX
         ```
 
+1. grafanaドメインの確認
+
+    ```
+    $ curl -i https://grafana.${DOMAIN}
+    ```
+
+    - 実行結果（例）
+
+        ```
+        HTTP/1.1 302 Found
+        content-type: text/html; charset=utf-8
+        location: /login
+        set-cookie: redirect_to=%252F; Path=/; HttpOnly
+        date: Thu, 21 Feb 2019 00:32:29 GMT
+        content-length: 29
+        x-envoy-upstream-service-time: 1
+        server: envoy
+
+        <a href="/login">Found</a>.
+        ```
+
+
+## grafanaのData Sources追加
+
 1. ブラウザでgrafanaにアクセス
-  * macOS
+    * macOS
 
-    ```
-    $ open http://localhost:3000
-    ```
-  * Ubuntu
+        ```
+        $ open https://grafana.${DOMAIN}/login
+        ```
+    * Ubuntu
 
-    ```
-    $ xdg-open http://localhost:3000
-    ```
-
+        ```
+        $ xdg-open https://grafana.${DOMAIN}/login
+        ```
 1. grafanaのログイン画面が表示されたことを確認
 
-   ![grafana001](images/grafana/grafana001.png)
+    ![grafana001](images/grafana/grafana001.png)
 
 1. 「email or username」に「admin」、「password」に「admin」を入力し「Log In」をクリック
 
@@ -664,8 +732,6 @@
     ![grafana014](images/grafana/grafana014.png)
 
 1. ブラウザを終了
-
-1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
 ## Elasticsearchの設定
@@ -899,97 +965,153 @@
         elasticsearch-curator   0 18 * * *   False     0        <none>          2m28s
         ```
 
+## kibanaのサブドメインをDNSレコードに追加
 
-## KibanaにIndex Patternsの設定
-
-1. 別ターミナルでKibanaのポートフォワーディングを開始
+1. ambassadorのグローバルIPアドレスを取得
 
     ```
-    $ kubectl --namespace monitoring port-forward $(kubectl get pod -l k8s-app=kibana-logging --namespace monitoring -o template --template "{{(index .items 0).metadata.name}}") 5601:5601
+    $ HTTPS_IPADDR=$(kubectl get services -l app=ambassador -o json | jq '.items[0].status.loadBalancer.ingress[0].ip' -r)
+    ```
+
+1. ambassadorのサブドメイン（ `kibana` ）をDNSレコードを追加
+
+    ```
+    $ az network dns record-set a add-record --resource-group ${DNS_ZONE_RG} --zone-name "${DOMAIN}" --record-set-name "kibana" --ipv4-address "${HTTPS_IPADDR}"
+    ```
+
+    - 実行結果（例）
+
+        ```json
+        {
+            "arecords": [
+                {
+                    "ipv4Address": "XX.XX.XX.XX"
+                }
+            ],
+            "etag": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "fqdn": "kibana.example.com.",
+            "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com/A/api",
+            "metadata": null,
+            "name": "kibana",
+            "provisioningState": "Succeeded",
+            "resourceGroup": "dns-zone",
+            "targetResource": {
+                "id": null
+            },
+            "ttl": 3600,
+            "type": "Microsoft.Network/dnszones/A"
+        }
+        ```
+
+1. grafanaドメインの名前解決確認
+
+    ```
+    $ nslookup kibana.${DOMAIN}
     ```
 
     - 実行結果（例）
 
         ```
-        Forwarding from 127.0.0.1:5601 -> 5601
-        Forwarding from [::1]:5601 -> 5601
+        Server:         127.0.1.1
+        Address:        127.0.1.1#53
+
+        Non-authoritative answer:
+        Name:   kibana.example.com
+        Address: XX.XX.XX.XX
         ```
 
+1. kibanaドメインの確認
+
+    ```
+    $ curl -i https://kibana.${DOMAIN}
+    ```
+
+    - 実行結果（例）
+
+        ```
+        HTTP/1.1 401 Unauthorized
+        www-authenticate: Basic realm="basic authentication required"
+        content-length: 0
+        date: Thu, 21 Feb 2019 00:32:29 GMT
+        server: envoy
+        ```
+
+
+## KibanaにIndex Patternsの設定
+
+1. ユーザ名とパスワードの確認
+    * ユーザ名
+
+        ```
+        $ cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[]|select(.host == "kibana\\..+$")|.settings.basic_auths[0].username' -r
+        ```
+    * パスワード
+
+        ```
+        $ cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[]|select(.host == "kibana\\..+$")|.settings.basic_auths[0].password' -r
+        ```
 1. ブラウザでkibanaにアクセス
-  * macOS
-    ```
-    $ open http://localhost:5601/
-    ```
+    * macOS
 
-  * Ubuntu
-    ```
-    $ xdg-open http://localhost:5601/
-    ```
-
-1. KibanaのWEB管理画面が表示されたことを確認
+        ```
+        $ open https://kibana.${DOMAIN}/
+        ```
+    * Ubuntu
+        ```
+        $ xdg-open https://kibana.${DOMAIN}/
+        ```
+1. ユーザ名とパスワードを入力し、ログイン
 
     ![kibana001](images/kibana/kibana001.png)
 
-1. 「Management」をクリック
+1. KibanaのWEB管理画面が表示されたことを確認
 
     ![kibana002](images/kibana/kibana002.png)
 
-1. 「Index Patterns」をクリック
+1. 「Management」をクリック
 
     ![kibana003](images/kibana/kibana003.png)
 
-1. 「Index pattern」のテキストボックスに「logstash-*」を入力
+1. 「Index Patterns」をクリック
 
     ![kibana004](images/kibana/kibana004.png)
 
-1. 「Success!」のメッセージが表示されたことを確認し「Next step」をクリック
+1. 「Index pattern」のテキストボックスに「logstash-*」を入力
 
     ![kibana005](images/kibana/kibana005.png)
 
-1. 「Time Filter field name」のテキストボックスで「@timestamp」を選択し「Create Index pattern」をクリック
+1. 「Success!」のメッセージが表示されたことを確認し「Next step」をクリック
 
     ![kibana006](images/kibana/kibana006.png)
 
-1. 「logstash-*」が作成されたことを確認
+1. 「Time Filter field name」のテキストボックスで「@timestamp」を選択し「Create Index pattern」をクリック
 
     ![kibana007](images/kibana/kibana007.png)
 
-1. 「Discover」をクリックすると、Kubernetesやコンテナのログが表示される
+1. 「logstash-*」が作成されたことを確認
 
     ![kibana008](images/kibana/kibana008.png)
 
-1. ブラウザを終了
+1. 「Discover」をクリックすると、Kubernetesやコンテナのログが表示される
 
-1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
+    ![kibana009](images/kibana/kibana009.png)
+
+1. ブラウザを終了
 
 
 ## grafanaにelasticsearch dashboardの追加
 
-1. 別ターミナルでgrafanaのポートフォワーディングを開始
-
-    ```
-    $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000
-    ```
-
-    - 実行結果（例）
-
-        ```
-        Forwarding from 127.0.0.1:3000 -> 3000
-        Forwarding from [::1]:3000 -> 3000
-        ```
-
 1. ブラウザでgrafanaにアクセス
-  * macOS
+    * macOS
 
-    ```
-    $ open http://localhost:3000
-    ```
-  * Ubuntu
+        ```
+        $ open https://grafana.${DOMAIN}/login
+        ```
+    * Ubuntu
 
-    ```
-    $ xdg-open http://localhost:3000
-    ```
-
+        ```
+        $ xdg-open https://grafana.${DOMAIN}/login
+        ```
 1. grafanaのWEB管理画面が表示されたことを確認
 
     ![grafana2-001](images/grafana2/grafana2-001.png)
@@ -1042,5 +1164,3 @@
     ![grafana2-011](images/grafana2/grafana2-011.png)
 
 1. ブラウザを終了
-
-1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる

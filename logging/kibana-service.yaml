@@ -8,6 +8,16 @@ metadata:
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
     kubernetes.io/name: "Kibana"
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  kibana-mapping
+      prefix: /
+      host: "^kibana\\..+$"
+      host_regex: true
+      service: http://kibana-logging.monitoring:5601
 spec:
   ports:
   - port: 5601
