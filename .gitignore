@@ -4,6 +4,7 @@ idas/iotagent-ul/config.js
 .python-version
 .ipynb_checkpoints/
 docs/**/env
+docs/**/env.back
 .DS_Store
 .pytest_cache/
 __pycache__/

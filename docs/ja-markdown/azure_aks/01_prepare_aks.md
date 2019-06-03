@@ -586,17 +586,16 @@
     ```
 
 1. 環境ファイルのREPOSITORY書き換え
-  * macOS
+    * macOS
 
-    ```
-    $ sed -i '' -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/azure_aks/env
-    ```
-  * Ubuntu
+       ```
+        $ sed -i '' -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/azure_aks/env
+        ```
+    * Ubuntu
 
-    ```
-    $ sed -i -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/azure_aks/env
-    ```
-
+        ```
+        $ sed -i -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/azure_aks/env
+        ```
 1. REPOSITORYの環境変数確認
 
     ```

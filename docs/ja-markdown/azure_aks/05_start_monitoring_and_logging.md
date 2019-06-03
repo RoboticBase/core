@@ -1,7 +1,6 @@
-# RoboticBase Coreインストールマニュアル #3
+# RoboticBase Coreインストールマニュアル #5
 
 ## 環境構築(2019年4月26日現在)
-
 
 # AKSでモニターリング＆ロギングの開始
 
@@ -578,6 +577,14 @@
 1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
+## grafanaのServiceにpatch
+1. ambassadorのルーティングルールをannotationとして追記
+
+    ```
+    $ kubectl patch service --namespace monitoring kp-grafana -p '{"metadata": {"annotations": {"getambassador.io/config": "---\napiVersion: ambassador/v0\nkind:  Mapping\nname:  grafana-mapping\nprefix: /\nhost: \"^grafana\\\\..+$\"\nhost_regex: true\nservice: http://kp-grafana.monitoring:80\n"}}}'
+    ```
+
+
 ## grafanaのサブドメインをDNSレコードに追加
 
 1. ambassadorのグローバルIPアドレスを取得
@@ -605,7 +612,7 @@
             "fqdn": "grafana.example.com.",
             "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com/A/api",
             "metadata": null,
-            "name": "api",
+            "name": "grafana",
             "provisioningState": "Succeeded",
             "resourceGroup": "dns-zone",
             "targetResource": {
@@ -985,7 +992,7 @@
             "fqdn": "kibana.example.com.",
             "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/dns-zone/providers/Microsoft.Network/dnszones/example.com/A/api",
             "metadata": null,
-            "name": "api",
+            "name": "kibana",
             "provisioningState": "Succeeded",
             "resourceGroup": "dns-zone",
             "targetResource": {
@@ -1041,7 +1048,7 @@
     * パスワード
 
         ```
-        $ cat ${PJ_ROOT}/secrets/auth-tokens.json | jq '.[]|select(.host == "kibana\\..+$")|.settings.basic_auths[0].password' -r
+        $ cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[]|select(.host == "kibana\\..+$")|.settings.basic_auths[0].password' -r
         ```
 1. ブラウザでkibanaにアクセス
     * macOS
