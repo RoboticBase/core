@@ -1,0 +1,41 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: simple-dump-cornjob
+  labels:
+    job: simple-dump-cronjob
+spec:
+  schedule: "0 0-23/3 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            job: simple-dump-cronjob
+        spec:
+          containers:
+          - name: simple-dump-cronjob
+            image: roboticbase/mongodb-simple-backup:0.1.0
+            env:
+            - name: LOG_LEVEL
+              value: "info"
+            - name: TIMEZONE
+              value: "Asia/Tokyo"
+            - name: MONGODB_ENDPOINT
+              value: "rs0/mongodb-0.mongodb:27017,mongodb-1.mongodb:27017,mongodb-2.mongodb:27017"
+            - name: STORE_OPLOG
+              value: "true"
+            - name: DUMPFILE_PREFIX
+              value: "mongodump_"
+            - name: STORAGE_ACCOUNT
+              value: "${STORAGE_ACCOUNT}"
+            - name: ACCOUNT_KEY
+              value: "${ACCOUNT_KEY}"
+            - name: STORAGE_CONTAINER
+              value: "${STORAGE_CONTAINER}"
+          restartPolicy: Never
+      backoffLimit: 3
