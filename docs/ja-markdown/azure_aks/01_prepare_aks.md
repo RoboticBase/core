@@ -804,7 +804,7 @@
         Merged "rbcaks" as current context in /home/fiware/.kube/config
         ```
 
-1. クライアントのID取得
+1. AKSのクライアントのID取得
 
     ```
     $ CLIENT_ID=$(az aks show --resource-group ${AKS_RG} --name ${AKS_NAME} --query "servicePrincipalProfile.clientId" --output tsv)
@@ -814,6 +814,9 @@
 
     ```
     $ ACR_ID=$(az acr show --resource-group ${AKS_RG} --name ${ACR_NAME} --query "id" --output tsv)
+    ```
+
+1. AKSからACRを参照できるように権限を設定
     $ az role assignment create --assignee ${CLIENT_ID} --role Reader --scope ${ACR_ID}
     ```
 

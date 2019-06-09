@@ -93,6 +93,8 @@
         www-authenticate: Bearer realm="token_required"
         date: Thu, 21 Feb 2019 00:23:54 GMT
         server: envoy
+
+        {"authorized":false,"error":"missing Header: authorization"}
         ```
 
 1. 認証トークンを取得
