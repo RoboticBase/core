@@ -23,7 +23,7 @@
     $ source ${CORE_ROOT}/docs/environments/minikube/env
     ```
 
-## minikubeにfiware orionの設定
+## minikubeでfiware orionを起動
 
 1. orion-minikube-serviceの作成
 
@@ -128,7 +128,7 @@
     $ kubectl delete pods -l app=ambassador
     ```
 
-## minikubeにfiware idasの設定
+## minikubeでfiware idas(iotagent-ul)を起動
 
 1. iotagent-configのインストール
 
@@ -225,9 +225,9 @@
     $ kubectl delete pods -l app=ambassador
     ```
 
-## minikubeにfiware cygnus(mongodb sink)を起動
+## minikubeでfiware cygnus(mongodb sink)を起動
 
-1. cygnus-mongoの作成
+1. cygnus-mongo-serviceの作成
 
     ```
     $ kubectl apply -f cygnus/cygnus-mongo-service.yaml
@@ -277,4 +277,80 @@
         ```
         NAME           TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)             AGE
         cygnus-mongo   ClusterIP   10.99.98.62   <none>        5050/TCP,8081/TCP   2m26s
+        ```
+
+## minikubeでfiware sth-cometを起動
+
+1. comet-minikube-serviceの作成
+
+    ```
+    $ kubectl apply -f comet/comet-minikube-service.yaml
+    ```
+
+    - 実行結果（例）
+
+        ```
+        service/comet created
+        ```
+
+1. comet-deploymentの作成
+
+    ```
+    $ kubectl apply -f comet/comet-deployment.yaml
+    ```
+
+    - 実行結果（例）
+
+        ```
+        deployment.apps/comet created
+        ```
+
+1. sth-cometのpods状態確認
+
+    ```
+    $ kubectl get pods -l app=comet
+    ```
+
+    - 実行結果（例）
+
+        ```
+        NAME                    READY   STATUS    RESTARTS   AGE
+        comet-7fb8b9554-bfrwl   1/1     Running   0          26s
+        comet-7fb8b9554-hbmkx   1/1     Running   0          26s
+        comet-7fb8b9554-ms94m   1/1     Running   0          26s
+        ```
+
+1. sth-cometのservices確認
+
+    ```
+    $ kubectl get services -l app=comet
+    ```
+
+    - 実行結果（例）
+
+        ```
+        NAME    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+        comet   ClusterIP   10.0.120.142   <none>        8666/TCP   67s
+        ```
+1. sth-cometの接続確認
+
+    ```
+    $ TOKEN=$(cat ${PJ_ROOT}/secrets/auth-tokens.json | jq '.[0].settings.bearer_tokens[0].token' -r)
+    $ curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: test" -H "Fiware-Servicepath: /*" http://${HOST_IPADDR}:8080/comet/STH/v1/contextEntities/
+    ```
+
+    - 実行結果（例）
+
+        ```
+        HTTP/1.1 404 Not Found
+        fiware-correlator: 7db06a49-57a2-465f-a4ef-714d8e773637
+        content-type: application/json; charset=utf-8
+        cache-control: no-cache
+        content-length: 38
+        vary: accept-encoding
+        date: Tue, 18 Jun 2019 03:55:17 GMT
+        x-envoy-upstream-service-time: 4
+        server: envoy
+
+        {"statusCode":404,"error":"Not Found"}
         ```
