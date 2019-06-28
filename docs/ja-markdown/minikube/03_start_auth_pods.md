@@ -36,7 +36,7 @@
                     "bearer_tokens": [
                         {
                             "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
-                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
+                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
                         }
                     ],
                     "basic_auths": [],
@@ -59,7 +59,7 @@
                     "bearer_tokens": [
                         {
                             "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
-                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$"]
+                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
                         }
                     ],
                     "basic_auths": [],
