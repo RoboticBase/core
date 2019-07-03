@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iotagent-json
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: iotagent-json
+  template:
+    metadata:
+      labels:
+        app: iotagent-json
+    spec:
+      containers:
+      - name: iotagent-json
+        image: fiware/iotagent-json:1.9.0
+        imagePullPolicy: Always
+        args: ["--", "rb-config-json.js"]
+        volumeMounts:
+          - name: config-volume
+            mountPath: "/opt/iotajson/rb-config-json.js"
+            subPath: "rb-config-json.js"
+      volumes:
+        - name: config-volume
+          secret:
+            secretName: iotagent-config
