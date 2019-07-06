@@ -7,6 +7,7 @@
 ## [0.4.3]
 ### Added
 * added the function to back up mongodb data to Azure Blob Storage periodically (in the case of AKS).
+* employed the stable HELM [stable/prometheus-operator](https://github.com/helm/charts/tree/master/stable/prometheus-operator) for deploying Prometheus and Grafana instead of the [deprecated coreos's HELM](https://github.com/coreos/prometheus-operator/tree/master/helm).
 * employed below FIWARE components:
 
     |component|version|

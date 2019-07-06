@@ -25,8 +25,8 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |[auth](https://github.com/RoboticBase/fiware-ambassador-auth)|Authorization and Authentication component working with ambassador|0.3.0|
 |[RabbitMQ](https://www.rabbitmq.com/)|Distributed Message Queue|3.7.14|
 |[MongoDB](https://www.mongodb.com/)|Document-oriented NoSQL Database|4.1.10|
-|[Prometheus](https://prometheus.io/)|Monitoring and Alerting toolkit|2.9.1|
-|[Grafana](https://grafana.com/)|Analytics and Alerting platform for time series metrics|6.1.4|
+|[Prometheus](https://prometheus.io/)|Monitoring and Alerting toolkit|2.10.0|
+|[Grafana](https://grafana.com/)|Analytics and Alerting platform for time series metrics|6.2.4|
 |[Elasticsearch](https://www.elastic.co/products/elasticsearch)|Distributed search and analytics engine|6.3.0|
 |[fluentd](https://www.fluentd.org/)|Data collector for unified logging layer|2.4.0|
 |[Kibana](https://www.elastic.co/products/kibana)|Visualize the Elasticsearch data|6.3.2|
