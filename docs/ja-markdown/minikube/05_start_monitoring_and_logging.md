@@ -84,226 +84,210 @@
 
 ## prometheusとgrafanaの設定
 
-1. リポジトリにcoreosの追加
-
-    ```
-    $ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
-    ```
-
-    - 実行結果（例）
-
-        ```
-        "coreos" has been added to your repositories
-        ```
-
 1. prometheus-operatorのインストール
 
     ```
-    $ helm install coreos/prometheus-operator --name po --namespace monitoring
+    $ helm install stable/prometheus-operator --name po --namespace monitoring -f monitoring/prometheus-operator-minikube.yaml
     ```
 
     - 実行結果（例）
 
         ```
         NAME:   po
-        LAST DEPLOYED: Wed Mar  6 14:24:11 2019
+        LAST DEPLOYED: Sat Jul  6 14:44:32 2019
         NAMESPACE: monitoring
         STATUS: DEPLOYED
 
         RESOURCES:
-        ==> v1beta1/ClusterRole
-        NAME                        AGE
-        po-prometheus-operator      2m
-        psp-po-prometheus-operator  2m
+        ==> v1/Alertmanager
+        NAME                                 AGE
+        po-prometheus-operator-alertmanager  1s
 
-        ==> v1beta1/ClusterRoleBinding
-        NAME                        AGE
-        po-prometheus-operator      2m
-        psp-po-prometheus-operator  2m
+        ==> v1/ClusterRole
+        NAME                                   AGE
+        po-grafana-clusterrole                 2s
+        po-prometheus-operator-alertmanager    2s
+        po-prometheus-operator-operator        2s
+        po-prometheus-operator-operator-psp    2s
+        po-prometheus-operator-prometheus      2s
+        po-prometheus-operator-prometheus-psp  2s
+        psp-po-kube-state-metrics              2s
 
-        ==> v1beta1/Deployment
-        NAME                    DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
-        po-prometheus-operator  1        1        1           1          2m
-
-        ==> v1/Pod(related)
-        NAME                                    READY  STATUS   RESTARTS  AGE
-        po-prometheus-operator-56956994f-hssjz  1/1    Running  0         2m
-
-        ==> v1beta1/PodSecurityPolicy
-        NAME                    DATA   CAPS      SELINUX   RUNASUSER  FSGROUP    SUPGROUP  READONLYROOTFS  VOLUMES
-        po-prometheus-operator  false  RunAsAny  RunAsAny  MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim
+        ==> v1/ClusterRoleBinding
+        NAME                                   AGE
+        po-grafana-clusterrolebinding          2s
+        po-prometheus-operator-alertmanager    2s
+        po-prometheus-operator-operator        2s
+        po-prometheus-operator-operator-psp    2s
+        po-prometheus-operator-prometheus      2s
+        po-prometheus-operator-prometheus-psp  2s
+        psp-po-kube-state-metrics              2s
 
         ==> v1/ConfigMap
-        NAME                    DATA  AGE
-        po-prometheus-operator  1     2m
+        NAME                                                      DATA  AGE
+        po-grafana                                                1     2s
+        po-grafana-config-dashboards                              1     2s
+        po-grafana-test                                           1     2s
+        po-prometheus-operator-etcd                               1     2s
+        po-prometheus-operator-grafana-datasource                 1     2s
+        po-prometheus-operator-k8s-cluster-rsrc-use               1     2s
+        po-prometheus-operator-k8s-coredns                        1     2s
+        po-prometheus-operator-k8s-node-rsrc-use                  1     2s
+        po-prometheus-operator-k8s-resources-cluster              1     2s
+        po-prometheus-operator-k8s-resources-namespace            1     2s
+        po-prometheus-operator-k8s-resources-pod                  1     2s
+        po-prometheus-operator-k8s-resources-workload             1     2s
+        po-prometheus-operator-k8s-resources-workloads-namespace  1     2s
+        po-prometheus-operator-nodes                              1     2s
+        po-prometheus-operator-persistentvolumesusage             1     2s
+        po-prometheus-operator-pods                               1     2s
+        po-prometheus-operator-statefulset                        1     2s
+
+        ==> v1/Deployment
+        NAME                             READY  UP-TO-DATE  AVAILABLE  AGE
+        po-kube-state-metrics            0/1    1           0          1s
+        po-prometheus-operator-operator  0/1    1           0          1s
+
+        ==> v1/Pod(related)
+        NAME                                              READY  STATUS             RESTARTS  AGE
+        po-grafana-594865f85-rqdcs                        0/2    Init:0/1           0         1s
+        po-kube-state-metrics-844bd6548c-xdzb4            0/1    ContainerCreating  0         1s
+        po-prometheus-node-exporter-9gpwj                 0/1    ContainerCreating  0         1s
+        po-prometheus-operator-operator-6984bb6db6-8cwft  0/1    ContainerCreating  0         1s
+
+        ==> v1/Prometheus
+        NAME                               AGE
+        po-prometheus-operator-prometheus  1s
+
+        ==> v1/PrometheusRule
+        NAME                                                         AGE
+        po-prometheus-operator-alertmanager.rules                    1s
+        po-prometheus-operator-etcd                                  1s
+        po-prometheus-operator-general.rules                         1s
+        po-prometheus-operator-k8s.rules                             1s
+        po-prometheus-operator-kube-apiserver.rules                  1s
+        po-prometheus-operator-kube-prometheus-node-alerting.rules   1s
+        po-prometheus-operator-kube-prometheus-node-recording.rules  1s
+        po-prometheus-operator-kube-scheduler.rules                  1s
+        po-prometheus-operator-kubernetes-absent                     1s
+        po-prometheus-operator-kubernetes-apps                       1s
+        po-prometheus-operator-kubernetes-resources                  1s
+        po-prometheus-operator-kubernetes-storage                    1s
+        po-prometheus-operator-kubernetes-system                     1s
+        po-prometheus-operator-node-network                          1s
+        po-prometheus-operator-node-time                             1s
+        po-prometheus-operator-node.rules                            1s
+        po-prometheus-operator-prometheus-operator                   1s
+        po-prometheus-operator-prometheus.rules                      1s
+
+        ==> v1/Role
+        NAME             AGE
+        po-grafana-test  2s
+
+        ==> v1/RoleBinding
+        NAME             AGE
+        po-grafana-test  2s
+
+        ==> v1/Secret
+        NAME                                              TYPE    DATA  AGE
+        alertmanager-po-prometheus-operator-alertmanager  Opaque  1     2s
+        po-grafana                                        Opaque  3     2s
+
+        ==> v1/Service
+        NAME                                            TYPE       CLUSTER-IP      EXTERNAL-IP  PORT(S)    AGE
+        po-grafana                                      ClusterIP  10.106.85.127   <none>       80/TCP     2s
+        po-kube-state-metrics                           ClusterIP  10.106.251.12   <none>       8080/TCP   2s
+        po-prometheus-node-exporter                     ClusterIP  10.97.49.161    <none>       9100/TCP   2s
+        po-prometheus-operator-alertmanager             ClusterIP  10.97.209.186   <none>       9093/TCP   2s
+        po-prometheus-operator-coredns                  ClusterIP  None            <none>       9153/TCP   2s
+        po-prometheus-operator-kube-controller-manager  ClusterIP  None            <none>       10252/TCP  2s
+        po-prometheus-operator-kube-etcd                ClusterIP  None            <none>       2379/TCP   2s
+        po-prometheus-operator-kube-scheduler           ClusterIP  None            <none>       10251/TCP  2s
+        po-prometheus-operator-operator                 ClusterIP  10.108.31.165   <none>       8080/TCP   1s
+        po-prometheus-operator-prometheus               ClusterIP  10.101.223.201  <none>       9090/TCP   1s
 
         ==> v1/ServiceAccount
-        NAME                    SECRETS  AGE
-        po-prometheus-operator  1        2m
+        NAME                                 SECRETS  AGE
+        po-grafana                           1        2s
+        po-grafana-test                      1        2s
+        po-kube-state-metrics                1        2s
+        po-prometheus-node-exporter          1        2s
+        po-prometheus-operator-alertmanager  1        2s
+        po-prometheus-operator-operator      1        2s
+        po-prometheus-operator-prometheus    1        2s
+
+        ==> v1/ServiceMonitor
+        NAME                                            AGE
+        po-prometheus-operator-alertmanager             1s
+        po-prometheus-operator-apiserver                1s
+        po-prometheus-operator-coredns                  1s
+        po-prometheus-operator-grafana                  1s
+        po-prometheus-operator-kube-controller-manager  1s
+        po-prometheus-operator-kube-etcd                1s
+        po-prometheus-operator-kube-scheduler           1s
+        po-prometheus-operator-kube-state-metrics       1s
+        po-prometheus-operator-kubelet                  1s
+        po-prometheus-operator-node-exporter            1s
+        po-prometheus-operator-operator                 1s
+        po-prometheus-operator-prometheus               1s
+
+        ==> v1beta1/ClusterRole
+        NAME                             AGE
+        po-kube-state-metrics            2s
+        psp-po-prometheus-node-exporter  2s
+
+        ==> v1beta1/ClusterRoleBinding
+        NAME                             AGE
+        po-kube-state-metrics            2s
+        psp-po-prometheus-node-exporter  2s
+
+        ==> v1beta1/DaemonSet
+        NAME                         DESIRED  CURRENT  READY  UP-TO-DATE  AVAILABLE  NODE SELECTOR  AGE
+        po-prometheus-node-exporter  1        1        0      1           0          <none>         1s
+
+        ==> v1beta1/PodSecurityPolicy
+        NAME                                 PRIV   CAPS      SELINUX           RUNASUSER  FSGROUP    SUPGROUP  READONLYROOTFS  VOLUMES
+        po-grafana                           false  RunAsAny  RunAsAny          RunAsAny   RunAsAny   false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim
+        po-grafana-test                      false  RunAsAny  RunAsAny          RunAsAny   RunAsAny   false     configMap,downwardAPI,emptyDir,projected,secret
+        po-kube-state-metrics                false  RunAsAny  MustRunAsNonRoot  MustRunAs  MustRunAs  false     secret
+        po-prometheus-node-exporter          false  RunAsAny  RunAsAny          MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim,hostPath
+        po-prometheus-operator-alertmanager  false  RunAsAny  RunAsAny          MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim
+        po-prometheus-operator-operator      false  RunAsAny  RunAsAny          MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim
+        po-prometheus-operator-prometheus    false  RunAsAny  RunAsAny          MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim
+
+        ==> v1beta1/Role
+        NAME        AGE
+        po-grafana  2s
+
+        ==> v1beta1/RoleBinding
+        NAME        AGE
+        po-grafana  2s
+
+        ==> v1beta2/Deployment
+        NAME        READY  UP-TO-DATE  AVAILABLE  AGE
+        po-grafana  0/1    1           0          1s
+
 
         NOTES:
         The Prometheus Operator has been installed. Check its status by running:
-        kubectl --namespace monitoring get pods -l "app=prometheus-operator,release=po"
+          kubectl --namespace monitoring get pods -l "release=po"
 
         Visit https://github.com/coreos/prometheus-operator for instructions on how
         to create & configure Alertmanager and Prometheus instances using the Operator.
+
         ```
 
 1. prometheus-operatorのpods状態確認
 
     ```
-    $ kubectl --namespace monitoring get pods -l "app=prometheus-operator,release=po"
+    $ kubectl --namespace monitoring get pods -l "app=prometheus-operator-operator,release=po"
     ```
 
     - 実行結果（例）
 
         ```
-        NAME                                     READY   STATUS    RESTARTS   AGE
-        po-prometheus-operator-56956994f-hssjz   1/1     Running   0          4m29s
-        ```
-
-1. kube-prometheusのインストール
-
-    ```
-    $ helm install coreos/kube-prometheus --name kp --namespace monitoring -f monitoring/kube-prometheus-minikube.yaml
-    ```
-
-    - 実行結果（例）
-
-        ```
-        NAME:   kp
-        LAST DEPLOYED: Wed Mar  6 14:29:26 2019
-        NAMESPACE: monitoring
-        STATUS: DEPLOYED
-
-        RESOURCES:
-        ==> v1beta1/ClusterRole
-        NAME                        AGE
-        psp-kp-alertmanager         37s
-        kp-exporter-kube-state      36s
-        psp-kp-exporter-kube-state  36s
-        psp-kp-exporter-node        36s
-        psp-kp-grafana              35s
-        kp-prometheus               35s
-        psp-kp-prometheus           35s
-
-        ==> v1beta1/Role
-        kp-exporter-kube-state  32s
-
-        ==> v1/Service
-        NAME                                 TYPE       CLUSTER-IP      EXTERNAL-IP  PORT(S)    AGE
-        kp-alertmanager                      ClusterIP  10.101.214.36   <none>       9093/TCP   32s
-        kp-exporter-coredns                  ClusterIP  None            <none>       9153/TCP   32s
-        kp-exporter-kube-controller-manager  ClusterIP  None            <none>       10252/TCP  32s
-        kp-exporter-kube-etcd                ClusterIP  None            <none>       4001/TCP   31s
-        kp-exporter-kube-scheduler           ClusterIP  None            <none>       10251/TCP  30s
-        kp-exporter-kube-state               ClusterIP  10.98.211.64    <none>       80/TCP     29s
-        kp-exporter-node                     ClusterIP  10.110.53.144   <none>       9100/TCP   26s
-        kp-grafana                           ClusterIP  10.105.106.169  <none>       80/TCP     25s
-        kp-prometheus                        ClusterIP  10.96.150.232   <none>       9090/TCP   24s
-
-        ==> v1/Prometheus
-        NAME           AGE
-        kp-prometheus  22s
-
-        ==> v1/ServiceMonitor
-        kp-alertmanager                      12s
-        kp-exporter-coredns                  12s
-        kp-exporter-kube-controller-manager  11s
-        kp-exporter-kube-etcd                11s
-        kp-exporter-kube-scheduler           10s
-        kp-exporter-kube-state               10s
-        kp-exporter-kubelets                 9s
-        kp-exporter-kubernetes               9s
-        kp-exporter-node                     9s
-        kp-grafana                           9s
-        kp-prometheus                        8s
-
-        ==> v1beta1/ClusterRoleBinding
-        NAME                        AGE
-        psp-kp-alertmanager         35s
-        kp-exporter-kube-state      34s
-        psp-kp-exporter-kube-state  34s
-        psp-kp-exporter-node        33s
-        psp-kp-grafana              33s
-        kp-prometheus               33s
-        psp-kp-prometheus           32s
-
-        ==> v1beta1/RoleBinding
-        NAME                    AGE
-        kp-exporter-kube-state  32s
-
-        ==> v1beta1/DaemonSet
-        NAME              DESIRED  CURRENT  READY  UP-TO-DATE  AVAILABLE  NODE SELECTOR  AGE
-        kp-exporter-node  1        1        0      1           0          <none>         24s
-
-        ==> v1beta1/Deployment
-        NAME                    DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
-        kp-exporter-kube-state  1        1        1           0          23s
-        kp-grafana              1        1        1           0          23s
-
-        ==> v1/PrometheusRule
-        NAME                                 AGE
-        kp-alertmanager                      21s
-        kp-exporter-kube-controller-manager  21s
-        kp-exporter-kube-etcd                21s
-        kp-exporter-kube-scheduler           17s
-        kp-exporter-kube-state               16s
-        kp-exporter-kubelets                 15s
-        kp-exporter-kubernetes               15s
-        kp-exporter-node                     14s
-        kp-prometheus-rules                  13s
-        kp-kube-prometheus                   13s
-
-        ==> v1/Pod(related)
-        NAME                                    READY  STATUS             RESTARTS  AGE
-        kp-exporter-node-k24np                  0/1    ContainerCreating  0         21s
-        kp-exporter-kube-state-574bf889c-m2jzd  0/2    ContainerCreating  0         21s
-        kp-grafana-6df99fd77f-c276j             0/2    ContainerCreating  0         21s
-
-        ==> v1beta1/PodSecurityPolicy
-        NAME                    DATA   CAPS      SELINUX   RUNASUSER  FSGROUP    SUPGROUP  READONLYROOTFS  VOLUMES
-        kp-alertmanager         false  RunAsAny  RunAsAny  MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim
-        kp-exporter-kube-state  false  RunAsAny  RunAsAny  MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim
-        kp-exporter-node        false  RunAsAny  RunAsAny  MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim,hostPath
-        kp-grafana              false  RunAsAny  RunAsAny  MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim,hostPath
-        kp-prometheus           false  RunAsAny  RunAsAny  MustRunAs  MustRunAs  false     configMap,emptyDir,projected,secret,downwardAPI,persistentVolumeClaim
-
-        ==> v1/Secret
-        NAME             TYPE    DATA  AGE
-        alertmanager-kp  Opaque  1     39s
-        kp-grafana       Opaque  2     39s
-
-        ==> v1/ConfigMap
-        NAME        DATA  AGE
-        kp-grafana  10    39s
-
-        ==> v1/ServiceAccount
-        NAME                    SECRETS  AGE
-        kp-exporter-kube-state  1        38s
-        kp-exporter-node        1        38s
-        kp-grafana              1        37s
-        kp-prometheus           1        37s
-
-        ==> v1/Alertmanager
-        NAME  AGE
-        kp    22s
-
-        NOTES:
-        DEPRECATION NOTICE:
-
-        - alertmanager.ingress.fqdn is not used anymore, use alertmanager.ingress.hosts []
-        - prometheus.ingress.fqdn is not used anymore, use prometheus.ingress.hosts []
-        - grafana.ingress.fqdn is not used anymore, use prometheus.grafana.hosts []
-
-        - additionalRulesConfigMapLabels is not used anymore, use additionalRulesLabels
-        - prometheus.additionalRulesConfigMapLabels is not used anymore, use additionalRulesLabels
-        - alertmanager.additionalRulesConfigMapLabels is not used anymore, use additionalRulesLabels
-        - exporter-kube-controller-manager.additionalRulesConfigMapLabels is not used anymore, use additionalRulesLabels
-        - exporter-kube-etcd.additionalRulesConfigMapLabels is not used anymore, use additionalRulesLabels
-        - exporter-kube-scheduler.additionalRulesConfigMapLabels is not used anymore, use additionalRulesLabels
-        - exporter-kubelets.additionalRulesConfigMapLabels is not used anymore, use additionalRulesLabels
-        - exporter-kubernetes.additionalRulesConfigMapLabels is not used anymore, use additionalRulesLabels
+        NAME                                               READY   STATUS    RESTARTS   AGE
+        po-prometheus-operator-operator-7cf7c5cc97-78h9g   1/1     Running   0          2m28s
         ```
 
 1. monitoringネームスペースのdaemonsets状態確認
@@ -315,8 +299,8 @@
     - 実行結果（例）
 
         ```
-        NAME               DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
-        kp-exporter-node   1         1         1       1            1           <none>          7m12s
+        NAME                          DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+        po-prometheus-node-exporter   1         1         1       1            1           <none>          3m47s
         ```
 
 1. monitoringネームスペースのdeployments状態確認
@@ -328,10 +312,10 @@
     - 実行結果（例）
 
         ```
-        NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
-        kp-exporter-kube-state   1/1     1            1           70s
-        kp-grafana               1/1     1            1           70s
-        po-prometheus-operator   1/1     1            1           3m40s
+        NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+        po-grafana                        1/1     1            1           4m27s
+        po-kube-state-metrics             1/1     1            1           4m27s
+        po-prometheus-operator-operator   1/1     1            1           4m27s
         ```
 
 1. monitoringネームスペースのstatefulsets状態確認
@@ -343,9 +327,9 @@
     - 実行結果（例）
 
         ```
-        NAME                       READY   AGE
-        alertmanager-kp            1/1     2m
-        prometheus-kp-prometheus   1/1     2m
+        NAME                                               READY   AGE
+        alertmanager-po-prometheus-operator-alertmanager   1/1     4m42s
+        prometheus-po-prometheus-operator-prometheus       1/1     4m32s
         ```
 
 1. monitoringネームスペースのpods状態確認
@@ -357,13 +341,13 @@
     - 実行結果（例）
 
         ```
-        NAME                                      READY   STATUS    RESTARTS   AGE
-        alertmanager-kp-0                         2/2     Running   0          7m31s
-        kp-exporter-kube-state-7db7c95dd5-pzf9g   2/2     Running   0          4m58s
-        kp-exporter-node-k24np                    1/1     Running   0          7m35s
-        kp-grafana-6df99fd77f-c276j               2/2     Running   0          7m35s
-        po-prometheus-operator-56956994f-hssjz    1/1     Running   0          13m
-        prometheus-kp-prometheus-0                3/3     Running   1          7m25s
+        NAME                                                 READY   STATUS    RESTARTS   AGE
+        alertmanager-po-prometheus-operator-alertmanager-0   2/2     Running   0          5m10s
+        po-grafana-594865f85-rqdcs                           2/2     Running   0          5m39s
+        po-kube-state-metrics-844bd6548c-xdzb4               1/1     Running   0          5m39s
+        po-prometheus-node-exporter-9gpwj                    1/1     Running   0          5m39s
+        po-prometheus-operator-operator-6984bb6db6-8cwft     1/1     Running   0          5m39s
+        prometheus-po-prometheus-operator-prometheus-0       3/3     Running   1          5m
         ```
 
 1. monitoringネームスペースのservices状態確認
@@ -375,91 +359,42 @@
     - 実行結果（例）
 
         ```
-        NAME                     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
-        alertmanager-operated    ClusterIP   None             <none>        9093/TCP,6783/TCP   7m42s
-        kp-alertmanager          ClusterIP   10.101.214.36    <none>        9093/TCP            7m53s
-        kp-exporter-kube-state   ClusterIP   10.98.211.64     <none>        80/TCP              7m50s
-        kp-exporter-node         ClusterIP   10.110.53.144    <none>        9100/TCP            7m47s
-        kp-grafana               ClusterIP   10.105.106.169   <none>        80/TCP              7m46s
-        kp-prometheus            ClusterIP   10.96.150.232    <none>        9090/TCP            7m45s
-        prometheus-operated      ClusterIP   None             <none>        9090/TCP            7m34s
+        NAME                                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
+        alertmanager-operated                 ClusterIP   None             <none>        9093/TCP,6783/TCP   5m46s
+        po-grafana                            ClusterIP   10.106.85.127    <none>        80/TCP              6m16s
+        po-kube-state-metrics                 ClusterIP   10.106.251.12    <none>        8080/TCP            6m16s
+        po-prometheus-node-exporter           ClusterIP   10.97.49.161     <none>        9100/TCP            6m16s
+        po-prometheus-operator-alertmanager   ClusterIP   10.97.209.186    <none>        9093/TCP            6m16s
+        po-prometheus-operator-operator       ClusterIP   10.108.31.165    <none>        8080/TCP            6m15s
+        po-prometheus-operator-prometheus     ClusterIP   10.101.223.201   <none>        9090/TCP            6m15s
+        prometheus-operated                   ClusterIP   None             <none>        9090/TCP            5m36s
         ```
 
 ## prometheusルールの編集
 
-1. kp-kube-prometheusの編集
+1. general.rulesの編集
 
     ```
-    $ kubectl edit prometheusrules --namespace monitoring kp-kube-prometheus
-    ```
-
-    ※先頭に-の付いている部分を削除してください
-
-    ```diff
-      for: 10m
-      labels:
-        severity: warning
-    -   - alert: DeadMansSwitch
-    -     annotations:
-    -       description: This is a DeadMansSwitch meant to ensure that the entire Alerting
-    -         pipeline is functional.
-    -       summary: Alerting DeadMansSwitch
-    -     expr: vector(1)
-    -     labels:
-    -       severity: none
-        - expr: process_open_fds / process_max_fds
-          record: fd_utilization
-        - alert: FdExhaustionClose
-    ```
-
-1. kp-exporter-kube-controller-managerの編集
-
-    ```
-    $ kubectl edit prometheusrules --namespace monitoring kp-exporter-kube-controller-manager
-    ```
-
-    ※先頭に-の付いている部分を削除、先頭に+の付いている部分を追加してください
-
-    ```diff
-    spec:
-        groups:
-        - name: kube-controller-manager.rules
-    -     rules:
-    -      - alert: K8SControllerManagerDown
-    -        annotations:
-    -          description: There is no running K8S controller manager. Deployments and replication
-    -            controllers are not making progress.
-    -          runbook: https://coreos.com/tectonic/docs/latest/troubleshooting/controller-recovery.html#recovering-a-controller-manager
-    -          summary: Controller manager is down
-    -        expr: absent(up{job="kube-controller-manager"} == 1)
-    -        for: 5m
-    -        labels:
-    -          severity: critical
-    +     rules: []
-    ```
-
-1. kp-exporter-kube-schedulerの編集
-
-    ```
-    $ kubectl edit prometheusrules --namespace monitoring kp-exporter-kube-scheduler
+    $ kubectl edit --namespace=monitoring prometheusrules po-prometheus-operator-general.rules
     ```
 
     ※先頭に-の付いている部分を削除してください
 
     ```diff
-        labels:
-        quantile: "0.5"
-        record: cluster:scheduler_binding_latency_seconds:quantile
-    -  - alert: K8SSchedulerDown
-    -    annotations:
-    -      description: There is no running K8S scheduler. New pods are not being assigned
-    -        to nodes.
-    -      runbook: https://coreos.com/tectonic/docs/latest/troubleshooting/controller-recovery.html#recovering-a-scheduler
-    -      summary: Scheduler is down
-    -    expr: absent(up{job="kube-scheduler"} == 1)
-    -    for: 5m
-    -    labels:
-    -      severity: critical
+           for: 10m
+           labels:
+             severity: warning
+    -    - alert: Watchdog
+    -      annotations:
+    -        message: |
+    -          This is an alert meant to ensure that the entire alerting pipeline is functional.
+    -          This alert is always firing, therefore it should always be firing in Alertmanager
+    -          and always fire against a receiver. There are integrations with various notification
+    -          mechanisms that send a notification when this alert is not firing. For example the
+    -          "DeadMansSnitch" integration in PagerDuty.
+    -      expr: vector(1)
+    -      labels:
+    -        severity: none
     ```
 
 ## prometheusの確認
@@ -495,11 +430,12 @@
 
 1. 「Alerts」を選択
 
-   ![prometheus002](images/prometheus/prometheus002.png)
+    ![prometheus002](images/prometheus/prometheus002.png)
 
-1. すべてのアラートが「0 active」と表示されることを確認
+1. CPUやMemoryのリソース使用量警告以外のすべてのアラートが「0 active」と表示されることを確認
 
-    ![prometheus003](images/prometheus/prometheus003.png)
+    ![prometheus003-1](images/prometheus/prometheus003-1.png)
+    ![prometheus003-2](images/prometheus/prometheus003-2.png)
 
 1. メニューから「Status」「Targets」をクリック
 
@@ -514,12 +450,12 @@
 1. Ctrl-Cでport-forwardingを終了し、別ターミナル閉じる
 
 
-## grafanaのData Sources追加
+## grafanaのパスワード変更とダッシュボード確認
 
 1. 別ターミナルを開き、grafanaのポートフォワーディングを開始
 
     ```
-    $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000
+    $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=grafana,release=po -o template --template "{{(index .items 0).metadata.name}}") 3000:3000
     ```
 
     - 実行結果（例）
@@ -533,45 +469,40 @@
   * macOS
 
     ```
-    $ open http://localhost:3000
+    $ open http://localhost:3000/login
     ```
   * Ubuntu
 
     ```
-    $ xdg-open http://localhost:3000
+    $ xdg-open http://localhost:3000/login
     ```
 
 1. grafanaのログイン画面が表示されたことを確認
 
-   ![grafana001](images/grafana/grafana001.png)
+    ![grafana001](images/grafana/grafana001.png)
 
-1. 「email or username」に「admin」、「password」に「admin」を入力し「Log In」をクリック
+1. 「email or username」に「admin」、「password」に「prom-operator」を入力し「Log In」をクリック
 
     ![grafana002](images/grafana/grafana002.png)
 
-1. パスワードの変更画面が表示されるので、新規パスワードを入力し「Save」をクリック
+1. 左下の「Preferences」より、adminユーザのプロファイル画面を表示する
 
     ![grafana003](images/grafana/grafana003.png)
-
-1. ホーム画面が表示されることを確認
-
     ![grafana004](images/grafana/grafana004.png)
 
-1. 「歯車」「Data Sources」をクリック
+1. 「Change Password」よりパスワードの変更画面を表示し、パスワードを変更する
 
     ![grafana005](images/grafana/grafana005.png)
-
-1. 「prometheus」をクリック
-
     ![grafana006](images/grafana/grafana006.png)
 
-1. 「URL」のテキストボックスに「 http://kp-prometheus:9090 」を入力し、「Save & Test」をクリック
+1. ホーム画面に遷移し、左上の「Home」をクリックしてprometheus-operatorがインストールしたダッシュボードのリストを表示する
 
     ![grafana007](images/grafana/grafana007.png)
-
-1. 「Data source is working」が表示されたことを確認
-
     ![grafana008](images/grafana/grafana008.png)
+
+1. 「Kubernetes / Compute Resouces / Cluster」をクリックし、AKSクラスタのリソース使用状況が表示されることを確認する
+
+    ![grafana009](images/grafana/grafana009.png)
 
 1. ブラウザを終了
 
@@ -863,7 +794,7 @@
 1. 別ターミナルでgrafanaのポートフォワーディングを開始
 
     ```
-    $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kp-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000
+    $ kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=grafana,release=po -o template --template "{{(index .items 0).metadata.name}}") 3000:3000
     ```
 
     - 実行結果（例）
@@ -877,12 +808,12 @@
   * macOS
 
     ```
-    $ open http://localhost:3000
+    $ open http://localhost:3000/login
     ```
   * Ubuntu
 
     ```
-    $ xdg-open http://localhost:3000
+    $ xdg-open http://localhost:3000/login
     ```
 
 1. grafanaのWEB管理画面が表示されたことを確認
@@ -924,7 +855,7 @@
 
     ![grafana2-008](images/grafana2/grafana2-008.png)
 
-1. 「monitoring/dashboard_elasticsearch.json」を選択し「開く」をクリック
+1. 「monitoring/dashboard\_elasticsearch.json」を選択し「開く」をクリック
 
     ![grafana2-009](images/grafana2/grafana2-009.png)
 
