@@ -130,7 +130,13 @@
     $ kubectl delete pods -l app=ambassador
     ```
 
-## AKSでfiware idas(iotagent-ul)を起動
+## AKSでfiware idasを起動
+**IoTデバイスとMQTTで交換するメッセージ形式として `Ultralight 2.0` を使用するか `json` を使用するかを選択してください。**
+
+* `Ultralight 2.0` を使用する場合： "選択肢1: iotagent-ulを起動" の手順を実施
+* `json` を使用する場合： "選択肢2: iotagent-jsonを起動" の手順を実施
+
+### 選択肢1: iotagent-ulを起動
 
 1. iotagent-configのインストール
 
@@ -203,6 +209,103 @@
     ```
     $ TOKEN=$(cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[0].settings.bearer_tokens[0].token' -r)
     $ curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: test" -H "Fiware-Servicepath: /*" https://api.${DOMAIN}/idas/ul20/manage/iot/services/
+    ```
+
+    - 実行結果（例）
+
+        ```
+        HTTP/1.1 200 OK
+        x-powered-by: Express
+        fiware-correlator: d7569174-8a31-4229-8905-42b6407309dc
+        content-type: application/json; charset=utf-8
+        content-length: 25
+        etag: W/"19-WMYe0U6ocKhQjp+oaVnMHLdbylc"
+        date: Thu, 21 Feb 2019 06:52:38 GMT
+        x-envoy-upstream-service-time: 23
+        server: envoy
+
+        {"count":0,"services":[]}
+        ```
+
+    ※200以外のコードが出力された場合は、以下のコマンドを実行し、Ambassador全てのPodを再起動してください  
+
+    ```
+    $ kubectl delete pods -l app=ambassador
+    ```
+
+### 選択肢2: iotagent-jsonを起動
+
+1. iotagent-configのインストール
+
+    ```
+    $ env IOTA_PASSWORD=${MQTT__iotagent} envsubst < idas/rb-config-json.js > /tmp/rb-config-json.js
+    $ kubectl create secret generic iotagent-config --from-file /tmp/rb-config-json.js
+    $ rm /tmp/rb-config-json.js
+    ```
+
+    - 実行結果（例）
+
+        ```
+        secret/iotagent-config created
+        ```
+
+1. iotagent-json-serviceの作成
+
+    ```
+    $ kubectl apply -f idas/iotagent-json-service.yaml
+    ```
+
+    - 実行結果（例）
+
+        ```
+        service/iotagent-json created
+        ```
+
+1. iotagent-json-deploymentの作成
+
+    ```
+    $ kubectl apply -f idas/iotagent-json-deployment.yaml
+    ```
+
+    - 実行結果（例）
+
+        ```
+        deployment.apps/iotagent-json created
+        ```
+
+1. iotagent-jsonのpods状態確認
+
+    ```
+    $ kubectl get pods -l app=iotagent-json
+    ```
+
+    - 実行結果（例）
+
+        ```
+        NAME                             READY   STATUS    RESTARTS   AGE
+        iotagent-json-65879f88b4-2h2hx   1/1     Running   0          53s
+        iotagent-json-65879f88b4-r9sv2   1/1     Running   0          53s
+        iotagent-json-65879f88b4-xx9dl   1/1     Running   0          53s
+        ```
+
+1. iotagent-jsonのservices状態確認
+
+    ```
+    $ kubectl get services -l app=iotagent-json
+    ```
+
+    - 実行結果（例）
+
+        ```
+        NAME            TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
+        iotagent-json   ClusterIP   10.111.43.11   <none>        4041/TCP,7896/TCP   2m
+        ```
+
+1. idasの接続確認
+
+    ```
+    $ TOKEN=$(cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[0].settings.bearer_tokens[0].token' -r)
+    $ curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: test" -H "Fiware-Servicepath: /*" https://api.${DOMAIN}/idas/json/manage/iot/services/
     ```
 
     - 実行結果（例）

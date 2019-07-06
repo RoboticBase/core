@@ -7,7 +7,12 @@
 ## [0.4.3]
 ### Added
 * added the function to back up mongodb data to Azure Blob Storage periodically (in the case of AKS).
-* employed "sth-comet".
+* employed below FIWARE components:
+
+    |component|version|
+    |:--|:--|
+    |sth-comet|2.5.0|
+    |iotagent-json|1.9.0|
 
 ## [0.4.2]
 ### Changed
