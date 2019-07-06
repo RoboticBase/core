@@ -120,6 +120,8 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 * [telefonicaid/iotagent-ul](https://github.com/telefonicaid/iotagent-ul)
     * IotAgent-UL is a bridge that can be used to communicate devices using the Ultralight 2.0 protocol and Orion.
         * Ultralight 2.0 is a lightweight text based protocol aimed to constrained devices and communications where the bandwidth and device memory may be limited resources.
+* [telefonicaid/iotagent-json](https://github.com/telefonicaid/iotagent-json)
+    * IotAgent-JSON is a bridge that can be used to communicate devices using the JSON and Orion.
 * [telefonicaid/fiware-cygnus](https://github.com/telefonicaid/fiware-cygnus)
     * Cygnus is a connector in charge of persisting certain sources of data in certain configured third-party storages, creating a historical view of such data.
 * [telefonicaid/fiware-sth-comet](https://github.com/telefonicaid/fiware-sth-comet)
