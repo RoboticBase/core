@@ -16,7 +16,7 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |[FIWARE orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)|Publish/Subscribe Context Broker|2.2.0|
 |[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|1.10.0|
 |[FIWARE sth-comet](https://catalogue-server.fiware.org/enablers/sth-comet)|An Agent to manage historical raw and aggregated time series context|2.5.0|
-|[FIWARE iotagent-ul](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|1.8.0|
+|[FIWARE IDAS](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|[iotagent-ul](https://fiware-iotagent-ul.readthedocs.io/en/latest/) 1.8.0 <br/> [iotagent-json](https://fiware-iotagent-json.readthedocs.io/en/latest/) 1.9.0|
 
 |Other components|summary|version|
 |:--|:--|:--|
