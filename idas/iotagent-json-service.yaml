@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: iotagent-json
+  labels:
+    app: iotagent-json
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  iotagent-json-manage-mapping
+      prefix: /idas/json/manage/
+      host: "^api\\..+$"
+      host_regex: true
+      service: http://iotagent-json:4041
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  iotagent-json-http-mapping
+      prefix: /idas/json/data/
+      host: "^api\\..+$"
+      host_regex: true
+      service: http://iotagent-json:7896
+spec:
+  type: ClusterIP
+  selector:
+    app: iotagent-json
+  ports:
+  - port: 4041
+    name: iotagent-json-manage-binding
+  - port: 7896
+    name: iotagent-json-http-binding
