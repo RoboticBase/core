@@ -2,17 +2,27 @@
 
 ## [Unreleased]
 * We will employ "wirecloud" as a core component of RoboticBase-core
-* We will employ "sth-comet" as a core component of RoboticBase-core
 * We will employ "kurento" as a core component of RoboticBase-core
+
+## [0.4.3]
+### Added
+* added the function to back up mongodb data to Azure Blob Storage periodically (in the case of AKS).
+* employed the stable HELM [stable/prometheus-operator](https://github.com/helm/charts/tree/master/stable/prometheus-operator) for deploying Prometheus and Grafana instead of the [deprecated coreos's HELM](https://github.com/coreos/prometheus-operator/tree/master/helm).
+* employed below FIWARE components:
+
+    |component|version|
+    |:--|:--|
+    |sth-comet|2.5.0|
+    |iotagent-json|1.9.0|
 
 ## [0.4.2]
 ### Changed
-* create the subdomains and routing rules of "kibana" and "grafana", and expose them to Internet.
-* update the `auth` component to be able to change the auth tokens dynamically.
+* created the subdomains and routing rules of "kibana" and "grafana", and expose them to Internet (in the case of AKS).
+* updated the `auth` component to be able to change the auth tokens dynamically.
 
 ## [0.4.1]
 ### Changed
-* update components and documents to adjust [FIWARE Release 7.6](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.6)
+* updated components and documents to adjust [FIWARE Release 7.6](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.6)
     * FIWARE components
 
         |component|version|(previous version)|
@@ -46,8 +56,8 @@
 
 ## [0.4.0]
 ### Changed
-* split repository ([core](https://github.com/RoboticBase/core) and [example-turtlebot3](https://github.com/RoboticBase/example-turtlebot3))
-* update components and documents to adjust [FIWARE Release 7.5.1](https://github.com/Fiware/catalogue/releases)
+* splitted repository ([core](https://github.com/RoboticBase/core) and [example-turtlebot3](https://github.com/RoboticBase/example-turtlebot3))
+* updated components and documents to adjust [FIWARE Release 7.5.1](https://github.com/Fiware/catalogue/releases)
 
 * rabbitmq
     * no change

@@ -1,0 +1,25 @@
+alertmanager:
+  alertmanagerSpec:
+    image:
+      repository: quay.io/prometheus/alertmanager
+      tag: v0.17.0
+
+prometheus:
+  prometheusSpec:
+    image:
+      repository: quay.io/prometheus/prometheus
+      tag: v2.10.0
+
+grafana:
+  image:
+    repository: grafana/grafana
+    tag: 6.2.4
+  auth:
+    anonymous:
+      enabled: "false"
+
+prometheusOperator:
+  configReloaderCpu: 400m
+
+kubeEtcd:
+  enabled: false

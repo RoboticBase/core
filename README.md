@@ -1,6 +1,6 @@
 # RoboticBase-core
 
-This repository is a core components of "RoboticBase". The latest version (0.4.2) conforms to [FIWARE Release 7.6](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.6).
+This repository is a core components of "RoboticBase". The latest version (0.4.3) conforms to [FIWARE Release 7.6](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.6).
 
 ## Description
 "RoboticBase" is a robot management platform based on [FIWARE](http://www.fiware.org/) which enables you to manage and operate many kinds of robots and IoT devices as interactions of contexts.
@@ -15,17 +15,18 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |:--|:--|:--|
 |[FIWARE orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)|Publish/Subscribe Context Broker|2.2.0|
 |[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|1.10.0|
-|[FIWARE iotagent-ul](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|1.8.0|
+|[FIWARE sth-comet](https://catalogue-server.fiware.org/enablers/sth-comet)|An Agent to manage historical raw and aggregated time series context|2.5.0|
+|[FIWARE IDAS](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|[iotagent-ul](https://fiware-iotagent-ul.readthedocs.io/en/latest/) 1.8.0 <br/> [iotagent-json](https://fiware-iotagent-json.readthedocs.io/en/latest/) 1.9.0|
 
 |Other components|summary|version|
 |:--|:--|:--|
 |[kubernetes](https://kubernetes.io/)|Container Orchestration Platform|1.13 or higher|
 |[ambassador](https://www.getambassador.io/)|API Gateway|0.53.1|
-|[auth](https://github.com/RoboticBase/fiware-ambassador-auth)|Authorization and Authentication component working with ambassador|0.2.0|
+|[auth](https://github.com/RoboticBase/fiware-ambassador-auth)|Authorization and Authentication component working with ambassador|0.3.0|
 |[RabbitMQ](https://www.rabbitmq.com/)|Distributed Message Queue|3.7.14|
 |[MongoDB](https://www.mongodb.com/)|Document-oriented NoSQL Database|4.1.10|
-|[Prometheus](https://prometheus.io/)|Monitoring and Alerting toolkit|2.9.1|
-|[Grafana](https://grafana.com/)|Analytics and Alerting platform for time series metrics|6.1.4|
+|[Prometheus](https://prometheus.io/)|Monitoring and Alerting toolkit|2.10.0|
+|[Grafana](https://grafana.com/)|Analytics and Alerting platform for time series metrics|6.2.4|
 |[Elasticsearch](https://www.elastic.co/products/elasticsearch)|Distributed search and analytics engine|6.3.0|
 |[fluentd](https://www.fluentd.org/)|Data collector for unified logging layer|2.4.0|
 |[Kibana](https://www.elastic.co/products/kibana)|Visualize the Elasticsearch data|6.3.2|
@@ -88,6 +89,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
         * 03 start auth pods for API Gateway on Azure AKS -- [03_start_auth_pods.ipynb](/docs/en-jupyter_notebook/azure_aks/03_start_auth_pods.ipynb).
         * 04 start FIWARE pods on Azure AKS -- [04_start_fiware_pods.ipynb](/docs/en-jupyter_notebook/azure_aks/04_start_fiware_pods.ipynb).
         * 05 start monitoring and logging on Azure AKS -- [05_start_monitoring_and_logging.ipynb](/docs/en-jupyter_notebook/azure_aks/05_start_monitoring_and_logging.ipynb).
+        * 06 backup mongodb data to Azure Blog Storage -- [06_backup_mongodb.ipynb](/docs/en-jupyter_notebook/azure_aks/06_backup_mongodb.ipynb).
     * when using minikube
         * 01 prepare minikube -- [01_prepare_minikube.ipynb](/docs/en-jupyter_notebook/minikube/01_prepare_minikube.ipynb).
         * 02 start base pods on minikube -- [02_start_base_pods.ipynb](/docs/en-jupyter_notebook/minikube/02_start_base_pods.ipynb).
@@ -103,6 +105,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
         * 03 AKS上にAPI Gateway認証用PODを起動 -- [03_start_auth_pods.md](/docs/ja-markdown/azure_aks/03_start_auth_pods.md).
         * 04 AKS上にFIWAREのPODを起動 -- [04_start_fiware_pods.md](/docs/ja-markdown/azure_aks/04_start_fiware_pods.md).
         * 05 モニタリングとロギング -- [05_start_monitoring_and_logging.md](/docs/ja-markdown/azure_aks/05_start_monitoring_and_logging.md).
+        * 06 mongodbのデータをAzure Blog Storageへバックアップ -- [06_backup_mongodb.md](/docs/ja-markdown/azure_aks/06_backup_mongodb.md).
     * minikubeを用いる場合
         * 01 minikubeの準備 -- [01_prepare_minikube.md](/docs/ja-markdown/minikube/01_prepare_minikube.md).
         * 02 minikube上にベースとなるPODを起動 -- [02_start_base_pods.md](/docs/ja-markdown/minikube/02_start_base_pods.md).
@@ -117,9 +120,12 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 * [telefonicaid/iotagent-ul](https://github.com/telefonicaid/iotagent-ul)
     * IotAgent-UL is a bridge that can be used to communicate devices using the Ultralight 2.0 protocol and Orion.
         * Ultralight 2.0 is a lightweight text based protocol aimed to constrained devices and communications where the bandwidth and device memory may be limited resources.
+* [telefonicaid/iotagent-json](https://github.com/telefonicaid/iotagent-json)
+    * IotAgent-JSON is a bridge that can be used to communicate devices using the JSON and Orion.
 * [telefonicaid/fiware-cygnus](https://github.com/telefonicaid/fiware-cygnus)
     * Cygnus is a connector in charge of persisting certain sources of data in certain configured third-party storages, creating a historical view of such data.
-        * In this demonstration, historical data are stored to mongodb.
+* [telefonicaid/fiware-sth-comet](https://github.com/telefonicaid/fiware-sth-comet)
+    * A component of the FIWARE ecosystem in charge of managing historical and aggregated time series context information.
 
 ### Support components
 * [RoboticBase/fiware-ambassador-auth](https://github.com/RoboticBase/fiware-ambassador-auth)

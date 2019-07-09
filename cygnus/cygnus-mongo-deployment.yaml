@@ -30,3 +30,7 @@ spec:
           value: ""
         - name: CYGNUS_MONGO_ATTR_PERSISTENCE
           value: "row"
+        - name: CYGNUS_MONGO_ENABLE_ENCODING
+          value: "true"
+        - name: CYGNUS_STH_ENABLE_ENCODING
+          value: "true"
