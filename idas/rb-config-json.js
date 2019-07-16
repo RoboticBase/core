@@ -30,18 +30,20 @@ config.amqp = {
     username: "iotagent",
     password: "${IOTA_PASSWORD}",
     exchange: "iota-exchange",
-    queue: "iotaqueue",
+    queue: "iotaqueue-json",
     options: {durable: true}
 };
 
 config.http = {};
 
 config.iota = {
-    logLevel: "INFO",
+    logLevel: "DEBUG",
     timestamp: true,
     contextBroker: {
         host: "orion",
-        port: '1026'
+        port: "1026",
+        url: "http://orion:1026",
+        ngsiVersion: "v2"
     },
     server: {
         port: 4041
@@ -59,12 +61,12 @@ config.iota = {
     service: "roboticsbase",
     subservice: "/",
     providerUrl: "http://iotagent-json:4041",
-    deviceRegistrationDuration: "P1M",
+    deviceRegistrationDuration: "P1Y",
     defaultType: "fiware",
     defaultResource: "/iot/json"
 };
 
-config.defaultKey = 'TEF';
-config.defaultBinding = 'AMQP';
+config.defaultKey = "TEF";
+config.defaultTransport = "AMQP";
 
 module.exports = config;

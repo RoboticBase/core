@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: iotagent-json
-        image: fiware/iotagent-json:1.9.0
-        imagePullPolicy: Always
+        image: fiware/iotagent-json:1.10.0
+        command: ["pm2-runtime", "bin/iotagent-json"]
         args: ["--", "rb-config-json.js"]
         volumeMounts:
           - name: config-volume
@@ -24,4 +24,4 @@ spec:
       volumes:
         - name: config-volume
           secret:
-            secretName: iotagent-config
+            secretName: iotagent-json-config
