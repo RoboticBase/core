@@ -8,21 +8,29 @@ metadata:
   annotations:
     getambassador.io/config: |
       ---
-      apiVersion: ambassador/v0
+      apiVersion: ambassador/v1
+      kind: Module
+      name: ambassador
+      config:
+        service_port: 8443
+      ---
+      apiVersion: ambassador/v1
       kind: Module
       name: tls
       config:
         server:
           enabled: True
-          redirect_cleartext_from: 80
+          redirect_cleartext_from: 8080
+          secret: ambassador-certs
 spec:
   type: LoadBalancer
+  externalTrafficPolicy: Local
   ports:
   - name: ambassador-tls
     port: 443
-    targetPort: 443
+    targetPort: 8443
   - name: ambassador
     port: 80
-    targetPort: 80
+    targetPort: 8080
   selector:
     app: ambassador
