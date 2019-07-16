@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: cygnus-elasticsearch
-        image: roboticbase/fiware-cygnus:1.9.0.elasticsearch
+        image: fiware/cygnus-ngsi:1.15.0
         imagePullPolicy: Always
         env:
         - name: CYGNUS_SERVICE_PORT

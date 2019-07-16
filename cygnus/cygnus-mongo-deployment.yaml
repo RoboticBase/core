@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: cygnus-mongo
-        image: fiware/cygnus-ngsi:1.10.0
+        image: fiware/cygnus-ngsi:1.15.0
         env:
         - name: CYGNUS_SERVICE_PORT
           value: "5050"
