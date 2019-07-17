@@ -28,6 +28,8 @@ spec:
     app: iotagent-ul
   ports:
   - port: 4041
+    targetPort: manage
     name: iotagent-ul-manage-binding
   - port: 7896
+    targetPort: http
     name: iotagent-ul-http-binding

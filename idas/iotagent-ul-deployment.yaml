@@ -17,6 +17,14 @@ spec:
         image: fiware/iotagent-ul:1.9.0
         command: ["pm2-runtime", "bin/iotagent-ul"]
         args: ["--", "rb-config-ul.js"]
+        ports:
+        - containerPort: 4041
+          name: manage
+        - containerPort: 7896
+          name: http
+        env:
+        - name: IOTA_CB_NGSI_VERSION
+          value: "${IOTAGENT_UL_NGSI_VERSION}"
         volumeMounts:
           - name: config-volume
             mountPath: "/opt/iotaul/rb-config-ul.js"
