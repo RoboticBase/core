@@ -15,10 +15,12 @@ spec:
       containers:
       - name: cygnus-elasticsearch
         image: fiware/cygnus-ngsi:1.15.0
-        imagePullPolicy: Always
+        ports:
+        - containerPort: 5058
+          name: service
+        - containerPort: 8081
+          name: api
         env:
-        - name: CYGNUS_SERVICE_PORT
-          value: "5050"
         - name: CYGNUS_API_PORT
           value: "8081"
         - name: CYGNUS_LOG_LEVEL

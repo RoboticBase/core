@@ -15,9 +15,12 @@ spec:
       containers:
       - name: cygnus-mongo
         image: fiware/cygnus-ngsi:1.15.0
+        ports:
+        - containerPort: 5051
+          name: service
+        - containerPort: 8081
+          name: api
         env:
-        - name: CYGNUS_SERVICE_PORT
-          value: "5050"
         - name: CYGNUS_API_PORT
           value: "8081"
         - name: CYGNUS_LOG_LEVEL
