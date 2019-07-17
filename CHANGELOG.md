@@ -4,6 +4,49 @@
 * We will employ "wirecloud" as a core component of RoboticBase-core
 * We will employ "kurento" as a core component of RoboticBase-core
 
+## [0.4.4]
+### Changed
+* updated components and documents to adjust [FIWARE Release 7.7.1](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.7.1)
+    * Kubernetes
+
+        |component|version|(previous version)|
+        |:--|:--|:--|
+        |Azure AKS|1.13.7|(1.13.5)|
+        |minikube|1.14.4|(1.14.1)|
+    * Support components
+
+        |component|version|(previous version)|
+        |:--|:--|:--|
+        |mongodb|4.1.13|(4.1.10)|
+        |rabbitmq|3.7.16|(3.7.14)|
+        |ambassador|0.73.0|(0.53.1)|
+        |auth|0.3.0|(0.2.0)|
+    * FIWARE components
+
+        |component|version|(previous version)|
+        |:--|:--|:--|
+        |orion|2.2.0|-|
+        |iotagent-ul|1.9.0|(1.8.0)|
+        |iotagent-json|1.10.0|(1.9.0)|
+        |cygnus|1.15.0|(1.10.0)|
+        |sth-comet|2.5.0|-|
+    * Monitoring components
+
+        |component|version|(previous version)|
+        |:--|:--|:--|
+        |prometheus|2.10.0|-|
+        |alertmanager|0.17.0|-|
+        |grafana|6.2.4|-|
+    * Logging components
+
+        |component|version|(previous version)|
+        |:--|:--|:--|
+        |elasticsearch|6.3.0|-|
+        |fluentd|2.4.0|-|
+        |kibana|6.3.2|-|
+        |curator|5.6.0|-|
+* [fiware/cygnus-ngsi:1.15.0](https://hub.docker.com/r/fiware/cygnus-ngsi/tags) was used as the container of cygnus-elasticsearch instead of [roboticbase/fiware-cygnus:1.9.0.elasticsearch](https://hub.docker.com/r/roboticbase/fiware-cygnus/tags) because `NGSIelasticsearchSink` had been merged to [fiware/cygnus-ngsi](https://hub.docker.com/r/fiware/cygnus-ngsi) at `1.15.0`.
+
 ## [0.4.3]
 ### Added
 * added the function to back up mongodb data to Azure Blob Storage periodically (in the case of AKS).
