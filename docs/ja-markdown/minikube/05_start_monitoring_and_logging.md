@@ -1,7 +1,7 @@
 # RoboticBase Coreインストールマニュアル #5
 
 
-## 構築環境(2019年4月26日現在)
+## 構築環境(2019年7月18日現在)
 
 
 # 3. minikubeでモニターリング＆ロギングの開始
@@ -25,6 +25,20 @@
 
     ```
     $ source ${CORE_ROOT}/docs/environments/minikube/env
+    ```
+
+## コマンドのエイリアスを設定
+1. エイリアスの設定
+
+    ```
+    $ if [ "$(uname)" == 'Darwin' ]; then
+      alias openbrowser='open'
+    elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+      alias openbrowser='xdg-open'
+    else
+      echo "Your platform ($(uname -a)) is not supported."
+      exit 1
+    fi
     ```
 
 ## minikubeでfiware cygnus(elasticsearch sink)を起動
@@ -413,15 +427,9 @@
         ```
 
 1. ブラウザでprometheusにアクセス
-  * macOS
 
     ```
-    $ open http://localhost:9090
-    ```
-  * Ubuntu
-
-    ```
-    $ xdg-open http://localhost:9090
+    $ openbrowser http://localhost:9090
     ```
 
 1. prometheusのWEB管理画面が表示されたことを確認
@@ -466,15 +474,9 @@
         ```
 
 1. ブラウザでgrafanaにアクセス
-  * macOS
 
     ```
-    $ open http://localhost:3000/login
-    ```
-  * Ubuntu
-
-    ```
-    $ xdg-open http://localhost:3000/login
+    $ openbrowser http://localhost:3000/login
     ```
 
 1. grafanaのログイン画面が表示されたことを確認
@@ -742,14 +744,9 @@
         ```
 
 1. ブラウザでkibanaにアクセス
-  * macOS
-    ```
-    $ open http://localhost:5601/
-    ```
 
-  * Ubuntu
     ```
-    $ xdg-open http://localhost:5601/
+    $ openbrowser http://localhost:5601/
     ```
 
 1. KibanaのWEB管理画面が表示されたことを確認
@@ -805,15 +802,9 @@
         ```
 
 1. ブラウザでgrafanaにアクセス
-  * macOS
 
     ```
-    $ open http://localhost:3000/login
-    ```
-  * Ubuntu
-
-    ```
-    $ xdg-open http://localhost:3000/login
+    $ openbrowser http://localhost:3000/login
     ```
 
 1. grafanaのWEB管理画面が表示されたことを確認

@@ -1,6 +1,6 @@
 # RoboticBase Coreインストールマニュアル #1
 
-## 構築環境(2019年4月26日現在)
+## 構築環境(2019年7月18日現在)
 ### macOS
 - macOS Sierra 10.12.6
 - virtualbox 5.2.28r130011
@@ -355,6 +355,21 @@
     $ dpkg -l | grep mosquitto
     ```
 
+## ネットワーク関連ツールのインストール
+### Ubuntu
+1. ipcalcのインストール
+
+    ```
+    $ sudo apt install ipcalc
+    ```
+
+1. langの変更
+
+    ```
+    $ export LANG=C
+    ```
+
+
 ## RoboticBase/coreの取得
 1. ベースファイルの取得
 
@@ -414,13 +429,31 @@
     $ source $CORE_ROOT/docs/environments/minikube/env
     ```
 
+## コマンドのエイリアスを設定
+1. エイリアスの設定
+
+    ```
+    $ if [ "$(uname)" == 'Darwin' ]; then
+      alias sedi="sed -i '' "
+      alias getHostIp='ifconfig ${NWNAME} | awk '"'"'/inet / {print $2}'"'"
+      alias netmask='NETMASK_HEX=$(ifconfig ${NWNAME} | awk '"'"'/netmask / {print $4}'"'"'); echo "${NETMASK_HEX:2}" | perl -pe '"'"'$_ = unpack("B32", pack("H*", $_)); s/0+$//g; $_ = length'"'"
+    elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+      alias sedi="sed -i "
+      alias getHostIp='ifconfig ${NWNAME}  | awk '"'"'/inet / {print $2}'"'"' | cut -d: -f2'
+      alias netmask='NETMASK_IP=$(ifconfig ${NWNAME} | awk '"'"'/Mask/ {print $4}'"'"' | cut -d: -f2); ipcalc ${HOST_IPADDR} ${NETMASK_IP} | awk '"'"'/Netmask: / {print $4}'"'"
+    else
+      echo "Your platform ($(uname -a)) is not supported."
+      exit 1
+    fi
+    ```
+
 ## minikubeの起動
 1. minikubeの起動
 
     ```
     $ export CPU_CORE_NUM="4"
     $ export MEMORY_MB=8192
-    $ export K8S_VERSION="v1.14.1"
+    $ export K8S_VERSION="v1.14.4"
     $ minikube start --cpus ${CPU_CORE_NUM} --memory ${MEMORY_MB} --kubernetes-version ${K8S_VERSION} --bootstrapper=kubeadm --extra-config=kubelet.authentication-token-webhook=true --extra-config=kubelet.authorization-mode=Webhook --extra-config=scheduler.address=0.0.0.0 --extra-config=controller-manager.address=0.0.0.0 --profile ${MINIKUBE_NAME}
     ```
 
@@ -464,11 +497,10 @@
         ```
 
 ## minikubeのネットワーク設定確認
-### macOS
 1. ネットワーク名の確認
 
     ```
-    $ NWNAME=$(VBoxManage showvminfo ${MINIKUBE_NAME} | grep "Host-only Interface" | awk 'match($0, /vboxnet[0-9]+/){print substr($0,RSTART,RLENGTH)}');echo ${NWNAME}
+    $ NWNAME=$(VBoxManage showvminfo ${MINIKUBE_NAME} | grep "Host-only Interface" | awk 'match($0, /vboxnet[0-9]+/){print substr($0,RSTART,RLENGTH)}'); echo ${NWNAME}
     ```
 
     - 実行結果（例）
@@ -480,8 +512,8 @@
 1. IPアドレスの確認
 
     ```
-    $ export HOST_IPADDR=$(ifconfig ${NWNAME} | awk '/inet / {print $2}')
-    $ sed -i '' -e "s/<<HOST_IPADDR>>/${HOST_IPADDR}/" ${CORE_ROOT}/docs/environments/minikube/env
+    $ export HOST_IPADDR=$(getHostIp)
+    $ sedi -e "s/<<HOST_IPADDR>>/${HOST_IPADDR}/" ${CORE_ROOT}/docs/environments/minikube/env
     $ echo ${HOST_IPADDR}
     ```
 
@@ -494,9 +526,7 @@
 1. ネットマスクの確認
 
     ```
-    $ NETMASK_HEX=$(ifconfig ${NWNAME} | awk '/netmask / {print $4}')
-    $ export NETMASK=$(echo "${NETMASK_HEX:2}" | perl -pe '$_ = unpack("B32", pack("H*", $_)); s/0+$//g; $_ = length')
-    $ echo ${NETMASK}
+    $ export NETMASK=$(netmask); echo ${NETMASK}
     ```
 
     - 実行結果（例）
@@ -504,59 +534,6 @@
         ```
         24
         ```
-
-### Ubuntu
-1. ipcalcのインストール
-
-    ```
-    $ sudo apt install ipcalc
-    ```
-
-1. langの変更
-
-    ```
-    $ export LANG=C
-    ```
-
-1. ネットワーク名の確認
-
-    ```
-    $ NWNAME=$(VBoxManage showvminfo ${MINIKUBE_NAME} | grep "Host-only Interface" | awk 'match($0, /vboxnet[0-9]+/){print substr($0,RSTART,RLENGTH)}');echo ${NWNAME}
-    ```
-
-    - 実行結果（例）
-
-        ```
-        vboxnet0
-        ```
-
-1. IPアドレスの確認
-
-    ```
-    $ export HOST_IPADDR=$(ifconfig ${NWNAME}  | awk '/inet / {print $2}' | cut -d: -f2)
-    $ sed -i -e "s/<<HOST_IPADDR>>/${HOST_IPADDR}/" ${CORE_ROOT}/docs/environments/minikube/env
-    $ echo ${HOST_IPADDR}
-    ```
-
-    - 実行結果（例）
-
-        ```
-        192.168.99.1
-        ```
-
-1. ネットマスクの確認
-
-    ```
-    $ NETMASK_IP=$(ifconfig ${NWNAME} | awk '/Mask/ {print $4}' | cut -d: -f2)
-    $ export NETMASK=$(ipcalc ${HOST_IPADDR} ${NETMASK_IP} | awk '/Netmask: / {print $4}');echo ${NETMASK}
-    ```
-
-    - 実行結果（例）
-
-        ```
-        24
-        ```
-
 
 ## minikubeのコンフィグレーション編集
 
@@ -632,7 +609,7 @@
 
         ```
         NAME       STATUS   ROLES    AGE   VERSION
-        minikube   Ready    master   10m   v1.14.1
+        minikube   Ready    master   10m   v1.14.4
         ```
 
 
@@ -718,7 +695,6 @@
 
 
 ## ローカルレジストリのスタート
-### macOS
 1. ローカルレジストリのスタート
 
     ```
@@ -744,7 +720,7 @@
 
     ```
     $ export REPOSITORY=${HOST_IPADDR}:5000
-    $ sed -i '' -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/minikube/env
+    $ sedi -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/minikube/env
     $ echo ${REPOSITORY}
     ```
 
@@ -753,44 +729,6 @@
         ```
         192.168.99.1:5000
         ```
-
-### Ubuntu
-
-1. ローカルレジストリのスタート
-
-    ```
-    $ docker run --name registry -p 5000:5000 -d registry:2.7.1
-    ```
-
-    - 実行結果（例）
-
-        ```
-        Unable to find image 'registry:2.7.1' locally
-        2.7.1: Pulling from library/registry
-        c87736221ed0: Pull complete
-        1cc8e0bb44df: Pull complete
-        54d33bcb37f5: Pull complete
-        e8afc091c171: Pull complete
-        b4541f6d3db6: Pull complete
-        Digest: sha256:3b00e5438ebd8835bcfa7bf5246445a6b57b9a50473e89c02ecc8e575be3ebb5
-        Status: Downloaded newer image for registry:2.7.1
-        a1eb1d13205879387870fe55f52e145844d6a1754fb7d4bc5de2a8297bf5d091
-        ```
-
-1. リポジトリの確認
-
-    ```
-    $ export REPOSITORY=${HOST_IPADDR}:5000
-    $ sed -i -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/minikube/env
-    $ echo ${REPOSITORY}
-    ```
-
-    - 実行結果（例）
-
-        ```
-        192.168.99.1:5000
-        ```
-
 
 ## Role-based access control(RBAC)の設定
 
