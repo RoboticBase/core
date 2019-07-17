@@ -5,11 +5,20 @@ metadata:
   creationTimestamp: null
   labels:
     app: ambassador
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind: Module
+      name: ambassador
+      config:
+        service_port: 8080
 spec:
   type: NodePort
+  externalTrafficPolicy: Local
   ports:
   - name: ambassador
     port: 80
-    targetPort: 80
+    targetPort: 8080
   selector:
     app: ambassador
