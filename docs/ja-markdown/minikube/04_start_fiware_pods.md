@@ -234,7 +234,7 @@
 
 ### 選択肢2: iotagent-jsonを起動
 
-1. iotagent-configのインストール
+1. iotagent-jsonの設定をsecretに登録
 
     ```
     $ env IOTA_PASSWORD=${MQTT__iotagent} envsubst < idas/rb-config-json.js > /tmp/rb-config-json.js
@@ -305,7 +305,6 @@
 
     ```
     $ TOKEN=$(cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[0].settings.bearer_tokens[0].token' -r)
-
     $ curl -i -H "Authorization: bearer ${TOKEN}" -H "Fiware-Service: test" -H "Fiware-Servicepath: /*" http://${HOST_IPADDR}:8080/idas/json/manage/iot/services/
     ```
 

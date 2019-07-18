@@ -377,9 +377,20 @@
     - 実行結果（例）
 
         ```
+        service/ambassador-admin created
         clusterrole.rbac.authorization.k8s.io/ambassador created
         serviceaccount/ambassador created
         clusterrolebinding.rbac.authorization.k8s.io/ambassador created
+        customresourcedefinition.apiextensions.k8s.io/authservices.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/consulresolvers.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/kubernetesendpointresolvers.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/kubernetesserviceresolvers.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/mappings.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/modules.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/ratelimitservices.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/tcpmappings.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/tlscontexts.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/tracingservices.getambassador.io created
         deployment.apps/ambassador created
         ```
 
