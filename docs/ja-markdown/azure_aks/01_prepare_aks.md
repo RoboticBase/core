@@ -1,6 +1,6 @@
 # RoboticBase Coreインストールマニュアル #1
 
-## 構築環境(2019年4月26日現在)
+## 構築環境(2019年7月18日現在)
 ### macOS
 - macOS Sierra 10.12.6
 - docker 18.09.2
@@ -393,6 +393,19 @@
     $ source $CORE_ROOT/docs/environments/azure_aks/env
     ```
 
+## コマンドのエイリアスを設定
+1. エイリアスの設定
+
+    ```
+    $ if [ "$(uname)" == 'Darwin' ]; then
+      alias sedi="sed -i '' "
+    elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+      alias sedi="sed -i "
+    else
+      echo "Your platform ($(uname -a)) is not supported."
+      exit 1
+    fi
+    ```
 
 ## AKSのログイン
 
@@ -586,16 +599,11 @@
     ```
 
 1. 環境ファイルのREPOSITORY書き換え
-    * macOS
 
-       ```
-        $ sed -i '' -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/azure_aks/env
-        ```
-    * Ubuntu
+    ```
+    $ sedi -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/azure_aks/env
+    ```
 
-        ```
-        $ sed -i -e "s/<<REPOSITORY>>/${REPOSITORY}/" ${CORE_ROOT}/docs/environments/azure_aks/env
-        ```
 1. REPOSITORYの環境変数確認
 
     ```
@@ -697,18 +705,16 @@
 
         ```
         KubernetesVersion    Upgrades
-        \-------------------  -----------------------
-        1.13.5               None available
-        1.12.7               1.13.5
-        1.12.6               1.12.7, 1.13.5
-        1.11.9               1.12.6, 1.12.7
-        1.11.8               1.11.9, 1.12.6, 1.12.7
-        1.10.13              1.11.8, 1.11.9
-        1.10.12              1.10.13, 1.11.8, 1.11.9
-        1.9.11               1.10.12, 1.10.13
-        1.9.10               1.9.11, 1.10.12, 1.10.13
+        -------------------  ------------------------
+        1.13.7               None available
+        1.13.5               1.13.7
+        1.12.8               1.13.5, 1.13.7
+        1.12.7               1.12.8, 1.13.5, 1.13.7
+        1.11.10              1.12.7, 1.12.8
+        1.11.9               1.11.10, 1.12.7, 1.12.8
+        1.10.13              1.11.9, 1.11.10
+        1.10.12              1.10.13, 1.11.9, 1.11.10
         ```
-
 
 1. NODEの仮想環境を `Standard_D2s_v3 `に指定
 
@@ -722,10 +728,10 @@
     $ export NODE_OSDISK_SIZE_GB=64
     ```
 
-1. AKSのバージョンを `1.13.5` に指定
+1. AKSのバージョンを `1.13.7` に指定
 
     ```
-    $ export AKS_VERSION="1.13.5"
+    $ export AKS_VERSION="1.13.7"
     ```
 
 1. AKSの起動
@@ -756,7 +762,7 @@
         "enableRbac": true,
         "fqdn": "rbcaks-rbcore-38ac45-ed59dae0.hcp.japaneast.azmk8s.io",
         "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/rbcore/providers/Microsoft.ContainerService/managedClusters/rbcaks",
-        "kubernetesVersion": "1.13.5",
+        "kubernetesVersion": "1.13.7",
         "linuxProfile": {
           "adminUsername": "azureuser",
           "ssh": {
@@ -817,6 +823,8 @@
     ```
 
 1. AKSからACRを参照できるように権限を設定
+
+    ```
     $ az role assignment create --assignee ${CLIENT_ID} --role Reader --scope ${ACR_ID}
     ```
 
@@ -848,37 +856,19 @@
 
         ```
         NAME                       STATUS   ROLES   AGE   VERSION
-        aks-nodepool1-35549331-0   Ready    agent   20h   v1.13.5
-        aks-nodepool1-35549331-1   Ready    agent   20h   v1.13.5
-        aks-nodepool1-35549331-2   Ready    agent   20h   v1.13.5
-        aks-nodepool1-35549331-3   Ready    agent   20h   v1.13.5
+        aks-nodepool1-35549331-0   Ready    agent   20h   v1.13.7
+        aks-nodepool1-35549331-1   Ready    agent   20h   v1.13.7
+        aks-nodepool1-35549331-2   Ready    agent   20h   v1.13.7
+        aks-nodepool1-35549331-3   Ready    agent   20h   v1.13.7
         ```
 
 
 ## Role-based access control(RBAC)の設定
 
-1. RBAC用のリソース定義確認
-
-    ```
-    $ cd $CORE_ROOT/rbac
-    $ ls -la 
-    ```
-
-    - 実行結果（例）
-
-        ```
-        合計 20
-        drwxr-xr-x  2 root root 4096  2月 13 14:52 .
-        drwxr-xr-x 17 root root 4096  2月 13 14:52 ..
-        -rw-r--r--  1 root root  466  2月 13 14:52 dashboard-rbac.yaml
-        -rw-r--r--  1 root root  501  2月 13 14:52 default-rbac.yaml
-        -rw-r--r--  1 root root  354  2月 13 14:52 tiller-rbac.yaml
-        ```
-
 1. RBACによるアクセス制限追加
 
     ```
-    $ kubectl apply -f dashboard-rbac.yaml
+    $ kubectl apply -f rbac/dashboard-rbac.yaml
     ```
 
     - 実行結果（例）
@@ -902,7 +892,7 @@
 1. tiller-rbacの作成
 
     ```
-    $ kubectl apply -f tiller-rbac.yaml
+    $ kubectl apply -f rbac/tiller-rbac.yaml
     ```
 
     - 実行結果（例）
@@ -926,7 +916,7 @@
 1. default-rbacの作成
 
     ```
-    $ kubectl apply -f default-rbac.yaml
+    $ kubectl apply -f rbac/default-rbac.yaml
     ```
 
     - 実行結果（例）
