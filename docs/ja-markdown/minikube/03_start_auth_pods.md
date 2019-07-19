@@ -1,6 +1,6 @@
 # RoboticBase Coreインストールマニュアル #3
 
-## 構築環境(2019年4月26日現在)
+## 構築環境(2019年7月18日現在)
 # minikubeで認証認可用のpodsを開始
 
 
@@ -23,19 +23,56 @@
     $ source ${CORE_ROOT}/docs/environments/minikube/env
     ```
 
+## コマンドのエイリアスを設定
+1. エイリアスの設定
+
+    ```
+    $ if [ "$(uname)" == 'Darwin' ]; then
+      alias randomstr32='cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32'
+    elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+      alias randomstr32='cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32'
+    else
+      echo "Your platform ($(uname -a)) is not supported."
+      exit 1
+    fi
+    ```
+
 ## minikubeのauth設定
 1. secrets/auth-tokens.jsonの作成
-    * macOS
 
-        ```
-        $ cat << __EOS__ > secrets/auth-tokens.json
+    ```
+    $ cat << __EOS__ > secrets/auth-tokens.json
+    [
+        {
+            "host": ".*",
+            "settings": {
+                "bearer_tokens": [
+                    {
+                        "token": "$(randomstr32)",
+                        "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
+                    }
+                ],
+                "basic_auths": [],
+                "no_auths": {
+                    "allowed_paths": []
+                }
+            }
+        }
+    ]
+    __EOS__
+    $ cat ./secrets/auth-tokens.json
+    ```
+
+    - 実行結果（例）
+
+        ```json
         [
             {
                 "host": ".*",
                 "settings": {
                     "bearer_tokens": [
                         {
-                            "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
+                            "token": "1IqNHfjQsD84mPHvciATObXM3ozfHmX1",
                             "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
                         }
                     ],
@@ -46,32 +83,9 @@
                 }
             }
         ]
-        __EOS__
-        ```
-    * Ubuntu
-
-        ```
-        $ cat << __EOS__ > secrets/auth-tokens.json
-        [
-            {
-                "host": ".*",
-                "settings": {
-                    "bearer_tokens": [
-                        {
-                            "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
-                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
-                        }
-                    ],
-                    "basic_auths": [],
-                    "no_auths": {
-                        "allowed_paths": []
-                    }
-                }
-            }
-        ]
-        __EOS__
         ```
 
+## minikubeにauthの設定
 1. secrets/auth-tokens.jsonの登録
 
     ```

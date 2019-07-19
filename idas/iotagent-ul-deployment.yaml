@@ -14,14 +14,22 @@ spec:
     spec:
       containers:
       - name: iotagent-ul
-        image: fiware/iotagent-ul:1.8.0
-        imagePullPolicy: Always
-        args: ["--", "rb-config.js"]
+        image: fiware/iotagent-ul:1.9.0
+        command: ["pm2-runtime", "bin/iotagent-ul"]
+        args: ["--", "rb-config-ul.js"]
+        ports:
+        - containerPort: 4041
+          name: manage
+        - containerPort: 7896
+          name: http
+        env:
+        - name: IOTA_CB_NGSI_VERSION
+          value: "${IOTAGENT_UL_NGSI_VERSION}"
         volumeMounts:
           - name: config-volume
-            mountPath: "/opt/iotaul/rb-config.js"
-            subPath: "rb-config.js"
+            mountPath: "/opt/iotaul/rb-config-ul.js"
+            subPath: "rb-config-ul.js"
       volumes:
         - name: config-volume
           secret:
-            secretName: iotagent-config
+            secretName: iotagent-ul-config

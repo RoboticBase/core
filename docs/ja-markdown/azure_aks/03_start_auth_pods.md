@@ -1,6 +1,6 @@
 # RoboticBase Coreインストールマニュアル #3
 
-## 構築環境(2019年4月26日現在)
+## 構築環境(2019年7月18日現在)
 # Azure AKSで認証認可用のpodsを開始
 
 
@@ -23,104 +23,122 @@
     $ source ${CORE_ROOT}/docs/environments/azure_aks/env
     ```
 
-## AKSで認証/承認サービスを起動
+## コマンドのエイリアスを設定
+1. エイリアスの設定
+
+    ```
+    $ if [ "$(uname)" == 'Darwin' ]; then
+      alias randomstr8='cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 8'
+      alias randomstr16='cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16'
+      alias randomstr32='cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32'
+    elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+      alias randomstr8='cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 8'
+      alias randomstr16='cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16'
+      alias randomstr32='cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32'
+    else
+      echo "Your platform ($(uname -a)) is not supported."
+      exit 1
+    fi
+    ```
+
+## AKSのauth設定
 
 1. secrets/auth-tokens.jsonの作成
-    * macOS
 
-        ```
-        $ cat << __EOS__ > secrets/auth-tokens.json
-        [
-            {
-                "host": "api\\\\..+$",
-                "settings": {
-                    "bearer_tokens": [
-                        {
-                            "token": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)",
-                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
-                        }
-                    ],
-                    "basic_auths": [],
-                    "no_auths": {
-                        "allowed_paths": []
+    ```
+    $ cat << __EOS__ > secrets/auth-tokens.json
+    [
+        {
+            "host": "api\\\\..+$",
+            "settings": {
+                "bearer_tokens": [
+                    {
+                        "token": "$(randomstr32)",
+                        "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
                     }
-                }
-            }, {
-                "host": "kibana\\\\..+$",
-                "settings": {
-                    "bearer_tokens": [],
-                    "basic_auths": [
-                        {
-                            "username": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 8)",
-                            "password": "$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 16)",
-                            "allowed_paths": ["^.*$"]
-                        }
-                    ],
-                    "no_auths": {
-                        "allowed_paths": []
-                    }
-                }
-            }, {
-                "host": "grafana\\\\..+$",
-                "settings": {
-                    "bearer_tokens": [],
-                    "basic_auths": [],
-                    "no_auths": {
-                        "allowed_paths": ["^.*$"]
-                    }
+                ],
+                "basic_auths": [],
+                "no_auths": {
+                    "allowed_paths": []
                 }
             }
-        ]
-        __EOS__
-        ```
-    * Ubuntu
-
-        ```
-        $ cat << __EOS__ > secrets/auth-tokens.json
-        [
-            {
-                "host": "api\\\\..+$",
-                "settings": {
-                    "bearer_tokens": [
-                        {
-                            "token": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)",
-                            "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
-                        }
-                    ],
-                    "basic_auths": [],
-                    "no_auths": {
-                        "allowed_paths": []
-                    }
-                }
-            }, {
-                "host": "kibana\\\\..+$",
-                "settings": {
-                    "bearer_tokens": [],
-                    "basic_auths": [
-                        {
-                            "username": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 8)",
-                            "password": "$(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 16)",
-                            "allowed_paths": ["^.*$"]
-                        }
-                    ],
-                    "no_auths": {
-                        "allowed_paths": []
-                    }
-                }
-            }, {
-                "host": "grafana\\\\..+$",
-                "settings": {
-                    "bearer_tokens": [],
-                    "basic_auths": [],
-                    "no_auths": {
+        }, {
+            "host": "kibana\\\\..+$",
+            "settings": {
+                "bearer_tokens": [],
+                "basic_auths": [
+                    {
+                        "username": "$(randomstr8)",
+                        "password": "$(randomstr16)",
                         "allowed_paths": ["^.*$"]
                     }
+                ],
+                "no_auths": {
+                    "allowed_paths": []
                 }
             }
+        }, {
+            "host": "grafana\\\\..+$",
+            "settings": {
+                "bearer_tokens": [],
+                "basic_auths": [],
+                "no_auths": {
+                    "allowed_paths": ["^.*$"]
+                }
+            }
+        }
+    ]
+    __EOS__
+    $ cat ./secrets/auth-tokens.json
+    ```
+
+    - 実行結果（例）
+
+        ```json
+        [
+          {
+            "host": "api\\..+$",
+            "settings": {
+              "bearer_tokens": [
+                {
+                  "token": "nrWtb8sS0MmwlkhHXv0DC6orPMpFFbni",
+                  "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
+                }
+              ],
+              "basic_auths": [],
+              "no_auths": {}
+            }
+          },
+          {
+            "host": "kibana\\..+$",
+            "settings": {
+              "bearer_tokens": [],
+              "basic_auths": [
+                {
+                  "username": "yW7FvSGD",
+                  "password": "6BoTFE5xfUlX3ssV",
+                  "allowed_paths": ["^.*$"]
+                }
+              ],
+              "no_auths": {
+                "allowed_paths": []
+              }
+            }
+          },
+          {
+            "host": "grafana\\..+$",
+            "settings": {
+              "bearer_tokens": [],
+              "basic_auths": [],
+              "no_auths": {
+                "allowed_paths": ["^.*$"]
+              }
+            }
+          }
         ]
-        __EOS__
         ```
 
+## AKSにauthの設定
 1. secrets/auth-tokens.jsonを登録
 
     ```

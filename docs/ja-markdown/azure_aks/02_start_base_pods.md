@@ -1,6 +1,6 @@
 # RoboticBase Coreインストールマニュアル #2
 
-## 構築環境(2019年4月26日現在)
+## 構築環境(2019年7月18日現在)
 # Azure AKSでAPI GatewayやMessage Broker、KeyValue DBのpodsを開始
 
 
@@ -23,35 +23,19 @@
     $ source ${CORE_ROOT}/docs/environments/azure_aks/env
     ```
 
-## Azureにログイン
-
-1. テナントIDを指定してのAKSログイン
+## コマンドのエイリアスを設定
+1. エイリアスの設定
 
     ```
-    $ az login --tenant ${TENANT}
+    $ if [ "$(uname)" == 'Darwin' ]; then
+      alias randomstr32='cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32'
+    elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+      alias randomstr32='cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32'
+    else
+      echo "Your platform ($(uname -a)) is not supported."
+      exit 1
+    fi
     ```
-
-    - 実行結果（例）
-
-        ```
-        fiware@FIWARE-PC:/tmp$ az login --tenant ${TENANT}
-        To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code GVG5YS2HA to authenticate.
-        [
-          {
-            "cloudName": "AzureCloud",
-            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            "isDefault": true,
-            "name": "Microsoft Azure",
-            "state": "Enabled",
-            "tenantId": "example.onmicrosoft.com",
-            "user": {
-              "name": "example@example.com",
-              "type": "user"
-            }
-          }
-        ]
-        ```
-
 
 ## ワイルドカードTLS証明書の作成
 
@@ -304,24 +288,10 @@
         ```
 
 ## RabbitMQのゲストパスワードの変更
-### macOS
 1. ゲストパスワードの変更
 
     ```
-    $ kubectl exec rabbitmq-0 -- rabbitmqctl change_password guest $(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)
-    ```
-
-    - 実行結果（例）
-
-        ```
-        Changing password for user "guest" ...
-        ```
-
-### Ubuntu
-1. ゲストパスワードの変更
-
-    ```
-    $ kubectl exec rabbitmq-0 -- rabbitmqctl change_password guest $(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)
+    $ kubectl exec rabbitmq-0 -- rabbitmqctl change_password guest $(randomstr32)
     ```
 
     - 実行結果（例）
@@ -568,10 +538,10 @@
     - 実行結果（例）
 
         ```
-        MongoDB shell version v4.1.10
+        MongoDB shell version v4.1.13
         connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
-        Implicit session: session { "id" : UUID("8b7bb307-9524-4fc4-a4cd-3e37d0b5dea0") }
-        MongoDB server version: 4.1.10
+        Implicit session: session { "id" : UUID("2508d7c2-8857-4228-8f1d-0fd1e6859b08") }
+        MongoDB server version: 4.1.13
         [
           {
             "name" : "mongodb-0.mongodb.default.svc.cluster.local:27017",
@@ -624,9 +594,20 @@
     - 実行結果（例）
 
         ```
+        service/ambassador-admin created
         clusterrole.rbac.authorization.k8s.io/ambassador created
         serviceaccount/ambassador created
         clusterrolebinding.rbac.authorization.k8s.io/ambassador created
+        customresourcedefinition.apiextensions.k8s.io/authservices.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/consulresolvers.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/kubernetesendpointresolvers.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/kubernetesserviceresolvers.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/mappings.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/modules.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/ratelimitservices.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/tcpmappings.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/tlscontexts.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/tracingservices.getambassador.io created
         deployment.apps/ambassador created
         ```
 
@@ -641,9 +622,9 @@
         ```
         fiware@FIWARE-PC:~/core$ kubectl get pods -l app=ambassador
         NAME                          READY   STATUS    RESTARTS   AGE
-        ambassador-69dcd7cb7c-gw2mm   2/2     Running   0          104s
-        ambassador-69dcd7cb7c-qwkdb   2/2     Running   0          104s
-        ambassador-69dcd7cb7c-tfrfv   2/2     Running   0          104s
+        ambassador-69dcd7cb7c-gw2mm   1/1     Running   0          104s
+        ambassador-69dcd7cb7c-qwkdb   1/1     Running   0          104s
+        ambassador-69dcd7cb7c-tfrfv   1/1     Running   0          104s
         ```
 
 1. ambassadorのservices状態確認

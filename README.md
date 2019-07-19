@@ -1,6 +1,6 @@
 # RoboticBase-core
 
-This repository is a core components of "RoboticBase". The latest version (0.4.3) conforms to [FIWARE Release 7.6](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.6).
+This repository is a core components of "RoboticBase". The latest version (0.4.4) conforms to [FIWARE Release 7.7.1](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.7.1).
 
 ## Description
 "RoboticBase" is a robot management platform based on [FIWARE](http://www.fiware.org/) which enables you to manage and operate many kinds of robots and IoT devices as interactions of contexts.
@@ -14,17 +14,17 @@ For example, you can deploy a ROS program to the robot and access the raw data o
 |FIWARE components|summary|version|
 |:--|:--|:--|
 |[FIWARE orion](https://catalogue-server.fiware.org/enablers/publishsubscribe-context-broker-orion-context-broker)|Publish/Subscribe Context Broker|2.2.0|
-|[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|1.10.0|
+|[FIWARE cygnus](https://catalogue-server.fiware.org/enablers/cygnus)|Data collection and Persistence Agent|1.15.0|
 |[FIWARE sth-comet](https://catalogue-server.fiware.org/enablers/sth-comet)|An Agent to manage historical raw and aggregated time series context|2.5.0|
-|[FIWARE IDAS](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|[iotagent-ul](https://fiware-iotagent-ul.readthedocs.io/en/latest/) 1.8.0 <br/> [iotagent-json](https://fiware-iotagent-json.readthedocs.io/en/latest/) 1.9.0|
+|[FIWARE IDAS](https://catalogue-server.fiware.org/enablers/backend-device-management-idas)|Backend Device Management Agent|[iotagent-ul](https://fiware-iotagent-ul.readthedocs.io/en/latest/) 1.9.0 <br/> [iotagent-json](https://fiware-iotagent-json.readthedocs.io/en/latest/) 1.10.0|
 
 |Other components|summary|version|
 |:--|:--|:--|
 |[kubernetes](https://kubernetes.io/)|Container Orchestration Platform|1.13 or higher|
-|[ambassador](https://www.getambassador.io/)|API Gateway|0.53.1|
+|[ambassador](https://www.getambassador.io/)|API Gateway|0.73.0|
 |[auth](https://github.com/RoboticBase/fiware-ambassador-auth)|Authorization and Authentication component working with ambassador|0.3.0|
-|[RabbitMQ](https://www.rabbitmq.com/)|Distributed Message Queue|3.7.14|
-|[MongoDB](https://www.mongodb.com/)|Document-oriented NoSQL Database|4.1.10|
+|[RabbitMQ](https://www.rabbitmq.com/)|Distributed Message Queue|3.7.16|
+|[MongoDB](https://www.mongodb.com/)|Document-oriented NoSQL Database|4.1.13|
 |[Prometheus](https://prometheus.io/)|Monitoring and Alerting toolkit|2.10.0|
 |[Grafana](https://grafana.com/)|Analytics and Alerting platform for time series metrics|6.2.4|
 |[Elasticsearch](https://www.elastic.co/products/elasticsearch)|Distributed search and analytics engine|6.3.0|

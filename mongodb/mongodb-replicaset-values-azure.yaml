@@ -22,7 +22,7 @@ copyConfigImage:
 # Specs for the MongoDB image
 image:
   repository: mongo
-  tag: 4.1.10
+  tag: 4.1.13
   pullPolicy: IfNotPresent
 
 # Prometheus Metrics Exporter

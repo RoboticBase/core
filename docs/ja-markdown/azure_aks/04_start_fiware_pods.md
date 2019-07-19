@@ -1,6 +1,6 @@
 # RoboticBase Coreインストールマニュアル #4
 
-## 構築環境(2019年4月26日現在)
+## 構築環境(2019年7月18日現在)
 # Azure AKSでFIWAREのpodsを開始
 
 
@@ -138,18 +138,18 @@
 
 ### 選択肢1: iotagent-ulを起動
 
-1. iotagent-configのインストール
+1. iotagent-ulの設定をsecretに登録
 
     ```
-    $ env IOTA_PASSWORD=${MQTT__iotagent} envsubst < idas/rb-config.js > /tmp/rb-config.js
-    $ kubectl create secret generic iotagent-config --from-file /tmp/rb-config.js
-    $ rm /tmp/rb-config.js
+    $ env IOTA_PASSWORD=${MQTT__iotagent} envsubst < idas/rb-config-ul.js > /tmp/rb-config-ul.js
+    $ kubectl create secret generic iotagent-ul-config --from-file /tmp/rb-config-ul.js
+    $ rm /tmp/rb-config-ul.js
     ```
 
     - 実行結果（例）
 
         ```
-        secret/iotagent-config created
+        secret/iotagent-ul-config created
         ```
 
 1. iotagent-ul-serviceの作成
@@ -167,7 +167,7 @@
 1. iotagent-ul-deploymentの作成
 
     ```
-    $ kubectl apply -f idas/iotagent-ul-deployment.yaml
+    $ env IOTAGENT_UL_NGSI_VERSION="v1" envsubst < idas/iotagent-ul-deployment.yaml | kubectl apply -f -
     ```
 
     - 実行結果（例）
@@ -175,6 +175,7 @@
         ```
         deployment.apps/iotagent-ul created
         ```
+    * **orionとの接続でNGSIv2を利用したい場合は、 `IOTAGENT_UL_NGSI_VERSION` を "v2" に変更してください**
 
 1. iotagent-ulのpods状態確認
 
@@ -235,18 +236,18 @@
 
 ### 選択肢2: iotagent-jsonを起動
 
-1. iotagent-configのインストール
+1. iotagent-jsonの設定をsecretに登録
 
     ```
     $ env IOTA_PASSWORD=${MQTT__iotagent} envsubst < idas/rb-config-json.js > /tmp/rb-config-json.js
-    $ kubectl create secret generic iotagent-config --from-file /tmp/rb-config-json.js
+    $ kubectl create secret generic iotagent-json-config --from-file /tmp/rb-config-json.js
     $ rm /tmp/rb-config-json.js
     ```
 
     - 実行結果（例）
 
         ```
-        secret/iotagent-config created
+        secret/iotagent-json-config created
         ```
 
 1. iotagent-json-serviceの作成
@@ -264,7 +265,7 @@
 1. iotagent-json-deploymentの作成
 
     ```
-    $ kubectl apply -f idas/iotagent-json-deployment.yaml
+    $ env IOTAGENT_JSON_NGSI_VERSION="v1" envsubst < idas/iotagent-json-deployment.yaml | kubectl apply -f -
     ```
 
     - 実行結果（例）
@@ -272,6 +273,7 @@
         ```
         deployment.apps/iotagent-json created
         ```
+    * **orionとの接続でNGSIv2を利用したい場合は、 `IOTAGENT_JSON_NGSI_VERSION` を "v2" に変更してください**
 
 1. iotagent-jsonのpods状態確認
 
