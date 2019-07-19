@@ -1,6 +1,6 @@
 # RoboticBase Coreインストールマニュアル #5
 
-## 環境構築(2019年4月26日現在)
+## 環境構築(2019年7月18日現在)
 
 # AKSでモニターリング＆ロギングの開始
 
@@ -10,12 +10,27 @@
 
     ```
     $ export CORE_ROOT=${HOME}/core
+    $ cd ${CORE_ROOT};pwd
     ```
 
 1. 環境設定の読み込み
 
     ```
     $ source ${CORE_ROOT}/docs/environments/azure_aks/env
+    ```
+
+## コマンドのエイリアスを設定
+1. エイリアスの設定
+
+    ```
+    $ if [ "$(uname)" == 'Darwin' ]; then
+      alias openbrowser='open'
+    elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+      alias openbrowser='xdg-open'
+    else
+      echo "Your platform ($(uname -a)) is not supported."
+      exit 1
+    fi
     ```
 
 ## AKSでfiware cygnus(elasticsearch sink)を起動
@@ -454,16 +469,11 @@
         Forwarding from [::1]:9090 -> 9090
         ```
 1. ブラウザでprometheusにアクセス
-    * macOS
 
-        ```
-        $ open http://localhost:9090
-        ```
-    * Ubuntu
+    ```
+    $ openbrowser http://localhost:9090
+    ```
 
-        ```
-        $ xdg-open http://localhost:9090
-        ```
 1. prometheusのWEB管理画面が表示されたことを確認
 
     ![prometheus001](images/prometheus/prometheus001.png)
@@ -583,16 +593,11 @@
 ## grafanaのパスワード変更とダッシュボード確認
 
 1. ブラウザでgrafanaにアクセス
-    * macOS
 
-        ```
-        $ open https://grafana.${DOMAIN}/login
-        ```
-    * Ubuntu
+    ```
+    $ openbrowser https://grafana.${DOMAIN}/login
+    ```
 
-        ```
-        $ xdg-open https://grafana.${DOMAIN}/login
-        ```
 1. grafanaのログイン画面が表示されたことを確認
 
     ![grafana001](images/grafana/grafana001.png)
@@ -940,15 +945,11 @@
         $ cat ${CORE_ROOT}/secrets/auth-tokens.json | jq '.[]|select(.host == "kibana\\..+$")|.settings.basic_auths[0].password' -r
         ```
 1. ブラウザでkibanaにアクセス
-    * macOS
 
-        ```
-        $ open https://kibana.${DOMAIN}/
-        ```
-    * Ubuntu
-        ```
-        $ xdg-open https://kibana.${DOMAIN}/
-        ```
+    ```
+    $ openbrowser https://kibana.${DOMAIN}/
+    ```
+
 1. ユーザ名とパスワードを入力し、ログイン
 
     ![kibana001](images/kibana/kibana001.png)
@@ -991,16 +992,11 @@
 ## grafanaにelasticsearch dashboardの追加
 
 1. ブラウザでgrafanaにアクセス
-    * macOS
 
-        ```
-        $ open https://grafana.${DOMAIN}/login
-        ```
-    * Ubuntu
+    ```
+    $ openbrowser https://grafana.${DOMAIN}/login
+    ```
 
-        ```
-        $ xdg-open https://grafana.${DOMAIN}/login
-        ```
 1. grafanaのWEB管理画面が表示されたことを確認
 
     ![grafana2-001](images/grafana2/grafana2-001.png)

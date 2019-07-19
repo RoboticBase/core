@@ -1,6 +1,6 @@
 # RoboticBase Coreインストールマニュアル #2
 
-## 構築環境(2019年4月26日現在)
+## 構築環境(2019年7月18日現在)
 # minikubeでAPI GatewayやMessage Broker、KeyValue DBのpodsを開始
 
 
@@ -23,6 +23,19 @@
     $ source ${CORE_ROOT}/docs/environments/minikube/env
     ```
 
+## コマンドのエイリアスを設定
+1. エイリアスの設定
+
+    ```
+    $ if [ "$(uname)" == 'Darwin' ]; then
+      alias randomstr32='cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32'
+    elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
+      alias randomstr32='cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32'
+    else
+      echo "Your platform ($(uname -a)) is not supported."
+      exit 1
+    fi
+    ```
 
 ## minikubeにRabbitMQの設定
 
@@ -107,24 +120,10 @@
 
 
 ## ゲストパスワードの変更
-### macOS
 1. ゲストパスワードの変更
 
     ```
-    $ kubectl exec rabbitmq-0 -- rabbitmqctl change_password guest $(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)
-    ```
-
-    - 実行結果（例）
-
-        ```
-        Changing password for user "guest" ...
-        ```
-
-### Ubuntu
-1. ゲストパスワードの変更
-
-    ```
-    $ kubectl exec rabbitmq-0 -- rabbitmqctl change_password guest $(cat /dev/urandom 2>/dev/null | head -n 40 | tr -cd 'a-zA-Z0-9' | head -c 32)
+    $ kubectl exec rabbitmq-0 -- rabbitmqctl change_password guest $(randomstr32)
     ```
 
     - 実行結果（例）
@@ -335,10 +334,10 @@
     - 実行結果（例）
 
         ```
-        MongoDB shell version v4.1.10
+        MongoDB shell version v4.1.13
         connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
-        Implicit session: session { "id" : UUID("e906c596-1557-4a1a-9995-98fb22159488") }
-        MongoDB server version: 4.1.10
+        Implicit session: session { "id" : UUID("21eaa109-63dd-4b65-88b4-e6ba9f8bb338") }
+        MongoDB server version: 4.1.13
         [
             {
                 "name" : "mongodb-0.mongodb.default.svc.cluster.local:27017",
@@ -378,9 +377,20 @@
     - 実行結果（例）
 
         ```
+        service/ambassador-admin created
         clusterrole.rbac.authorization.k8s.io/ambassador created
         serviceaccount/ambassador created
         clusterrolebinding.rbac.authorization.k8s.io/ambassador created
+        customresourcedefinition.apiextensions.k8s.io/authservices.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/consulresolvers.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/kubernetesendpointresolvers.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/kubernetesserviceresolvers.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/mappings.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/modules.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/ratelimitservices.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/tcpmappings.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/tlscontexts.getambassador.io created
+        customresourcedefinition.apiextensions.k8s.io/tracingservices.getambassador.io created
         deployment.apps/ambassador created
         ```
 
@@ -394,9 +404,9 @@
 
         ```
         NAME                          READY   STATUS    RESTARTS   AGE
-        ambassador-69dcd7cb7c-2xhns   2/2     Running   0          2m
-        ambassador-69dcd7cb7c-7w6w8   2/2     Running   0          2m
-        ambassador-69dcd7cb7c-gskqv   2/2     Running   0          2m
+        ambassador-69dcd7cb7c-2xhns   1/1     Running   0          2m
+        ambassador-69dcd7cb7c-7w6w8   1/1     Running   0          2m
+        ambassador-69dcd7cb7c-gskqv   1/1     Running   0          2m
         ```
 
 1. ambassadorのservices状態確認

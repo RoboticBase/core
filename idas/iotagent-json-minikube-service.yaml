@@ -26,6 +26,8 @@ spec:
     app: iotagent-json
   ports:
   - port: 4041
+    targetPort: manage
     name: iotagent-json-manage-binding
   - port: 7896
+    targetPort: http
     name: iotagent-json-http-binding
