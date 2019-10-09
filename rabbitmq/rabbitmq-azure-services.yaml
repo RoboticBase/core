@@ -56,6 +56,23 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
+  name: rabbitmq-web-mqtts
+  labels:
+    app: rabbitmq
+    service: web-mqtts
+spec:
+  type: LoadBalancer
+  selector:
+    app: rabbitmq
+  ports:
+   - name: web-mqtts
+     protocol: TCP
+     port: 15673
+     targetPort: 15673
+---
+kind: Service
+apiVersion: v1
+metadata:
   name: rabbitmq
   labels:
     app: rabbitmq
