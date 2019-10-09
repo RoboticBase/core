@@ -58,6 +58,9 @@ spec:
           - name: mqtt
             protocol: TCP
             containerPort: 1883
+          - name: web-mqtt
+            protocol: TCP
+            containerPort: 15675
         livenessProbe:
           exec:
             command: ["rabbitmqctl", "status"]
