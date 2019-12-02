@@ -39,6 +39,23 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
+  name: rabbitmq-web-mqtt
+  labels:
+    app: rabbitmq
+    service: web-mqtt
+spec:
+  type: NodePort
+  selector:
+    app: rabbitmq
+  ports:
+   - name: web-mqtt
+     protocol: TCP
+     port: 15675
+     targetPort: 15675
+---
+kind: Service
+apiVersion: v1
+metadata:
   name: rabbitmq
   labels:
     app: rabbitmq
