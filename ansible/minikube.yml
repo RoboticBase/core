@@ -1,0 +1,7 @@
+---
+- hosts: minikube
+  connection: local
+  roles:
+    - prepare_minikube
+  vars:
+    - root_dir: "{{ inventory_dir | dirname }}/../.."
