@@ -1,0 +1,11 @@
+---
+minikube:
+  name: minikube_rb
+  vm_driver: virtualbox
+k8s:
+  version: 1.17.0
+docker:
+  registry:
+    version: 2.7.1
+    name: registry
+    port: 5000

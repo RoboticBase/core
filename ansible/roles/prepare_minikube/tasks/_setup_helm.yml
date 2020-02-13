@@ -1,0 +1,19 @@
+- name: add stable helm repository
+  command: |
+    helm repo add stable https://kubernetes-charts.storage.googleapis.com
+  register: helm_repo_add_result
+  until: helm_repo_add_result.stdout.find('"stable" has been added to your repositories') != -1
+- debug: var=helm_repo_add_result.stdout_lines
+
+- name: update helm repository
+  command: |
+    helm repo update
+  register: helm_repo_update_result
+  until: helm_repo_update_result.stdout.find('Update Complete. ⎈ Happy Helming!⎈ ') != -1
+- debug: var=helm_repo_update_result.stdout_lines
+
+- name: show helm version
+  command: |
+    helm version
+  register: helm_version_result
+- debug: var=helm_version_result.stdout_lines

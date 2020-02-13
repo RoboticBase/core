@@ -1,0 +1,19 @@
+- name: setup default rbac
+  command: |
+    kubectl apply -f "{{ root_dir }}/rbac/default-rbac.yaml"
+
+- name: check role status
+  shell: |
+    kubectl get clusterroles | grep default-read
+  register: clusterroles_result
+  until: clusterroles_result.stdout | regex_replace('^(\\S+)\\s+.*$', '\\1') == "default-read"
+  retries: 6
+  delay: 10
+
+- name: check rolebinding status
+  shell: |
+    kubectl get clusterrolebindings | grep default
+  register: clusterrolebindings_result
+  until: clusterrolebindings_result.stdout | regex_replace('^(\\S+)\\s+.*$', '\\1') == "default"
+  retries: 6
+  delay: 10

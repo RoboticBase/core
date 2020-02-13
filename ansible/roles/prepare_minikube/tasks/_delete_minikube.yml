@@ -1,0 +1,9 @@
+- name: delete minikube
+  command: |
+    minikube delete \
+    --profile {{ minikube.name }}
+  register: minikube_delete_result
+  when: minikube_status.Host == "Running"
+
+- debug: var=minikube_delete_result.stdout_lines
+  when: minikube_status.Host == "Running"

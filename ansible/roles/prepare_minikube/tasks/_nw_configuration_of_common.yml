@@ -1,0 +1,9 @@
+- name: retrieve network name
+  shell: |
+    VBoxManage showvminfo {{ minikube.name }} | \
+    grep "Host-only Interface" | \
+    awk 'match($0, /vboxnet[0-9]+/){print substr($0,RSTART,RLENGTH)}'
+  register: vbox_vminfo_result
+- name: set nwname
+  set_fact:
+    nwname: "{{ vbox_vminfo_result.stdout }}"

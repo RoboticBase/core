@@ -1,0 +1,12 @@
+- name: get InsecureRegistries
+  set_fact:
+    InsecureRegistry: "{{ lookup('file', machine_config_path) | from_json | json_query('HostOptions.EngineOptions.InsecureRegistry') }}"
+  vars:
+    machine_config_path: "~/.minikube/machines/{{ minikube.name }}/config.json"
+
+- name: edit configuration of minikube
+  lineinfile:
+    path: "~/.minikube/machines/{{ minikube.name }}/config.json"
+    insertafter: '"InsecureRegistry": \['
+    line: "                \"{{ host_ipaddr }}/{{ netmask }}\","
+  when: InsecureRegistry | length == 1
