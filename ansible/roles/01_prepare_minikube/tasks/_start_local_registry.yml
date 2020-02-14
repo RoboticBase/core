@@ -1,13 +1,7 @@
-- name: check the existing docker local registry
-  command: |
-    docker ps -aq -f "name={{ docker.registry.name }}"
-  register: docker_ps_result
-
-- name: stop existing docker local registry
-  command: |
-    docker rm -f {{ docker_ps_result.stdout }}
-  when: docker_ps_result.stdout != ""
-
 - name: start docker local registry
-  command: |
-    docker run --name {{ docker.registry.name }} -p {{ docker.registry.port }}:5000 -d registry:{{ docker.registry.version }}
+  docker_container:
+    name: "{{ docker.registry.name }}"
+    image: "registry:{{ docker.registry.version }}"
+    state: started
+    ports:
+      - "{{ docker.registry.port }}:5000"
