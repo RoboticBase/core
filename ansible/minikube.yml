@@ -3,5 +3,3 @@
   connection: local
   roles:
     - 01_prepare_minikube
-  vars:
-    - root_dir: "{{ inventory_dir | dirname }}/../.."

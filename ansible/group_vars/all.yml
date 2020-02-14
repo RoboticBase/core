@@ -1,2 +1,3 @@
 ---
+root_dir: "{{ inventory_dir }}/../../.."
 mqtt__iotagent: password_of_iotagent
