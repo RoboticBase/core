@@ -1,0 +1,63 @@
+# rabbitmq-mqtt
+- name: get rabbitmq-mqtt service
+  k8s_info:
+    kind: Service
+    name: rabbitmq-mqtt
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_mqtt_service_result
+
+- name: delete rabbitmq-mqtt nat settings
+  command: |
+    VBoxManage controlvm "{{ minikube.name }}" natpf1 delete mqtt
+  register: vboxmanage_delete_nat_mqtt_result
+  failed_when: vboxmanage_delete_nat_mqtt_result.rc not in [0, 1]
+- debug: var=vboxmanage_delete_nat_mqtt_result.stdout_lines
+- debug: var=vboxmanage_delete_nat_mqtt_result.stderr_lines
+
+- name: add rabbitmq-mqtt nat settings
+  command: |
+    VBoxManage controlvm "{{ minikube.name }}" natpf1 "mqtt,tcp,0.0.0.0,1883,,{{ mqtt_nodePort }}"
+  vars:
+    - mqtt_nodePort: "{{ rabbitmq_mqtt_service_result.resources[0] | json_query('spec.ports[?name==`mqtt`] | [0].nodePort') }}"
+  register: vboxmanage_add_nat_mqtt_result
+- debug: var=vboxmanage_add_nat_mqtt_result.stdout_lines
+
+- name: confirm rabbitmq-mqtt nat settings
+  shell: |
+    VBoxManage showvminfo "{{ minikube.name }}" | grep "name = mqtt,"
+  register: vboxmanage_show_nat_mqtt_result
+- debug: var=vboxmanage_show_nat_mqtt_result.stdout_lines
+
+# rabbitmq-web-mqtt
+- name: get rabbitmq-web-mqtt service
+  k8s_info:
+    kind: Service
+    name: rabbitmq-web-mqtt
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_web_mqtt_service_result
+
+- name: delete rabbitmq-web-mqtt nat settings
+  command: |
+    VBoxManage controlvm "{{ minikube.name }}" natpf1 delete web-mqtt
+  register: vboxmanage_delete_nat_web_mqtt_result
+  failed_when: vboxmanage_delete_nat_web_mqtt_result.rc not in [0, 1]
+- debug: var=vboxmanage_delete_nat_web_mqtt_result.stdout_lines
+- debug: var=vboxmanage_delete_nat_web_mqtt_result.stderr_lines
+
+- name: add rabbitmq-web-mqtt nat settings
+  command: |
+    VBoxManage controlvm "{{ minikube.name }}" natpf1 "web-mqtt,tcp,0.0.0.0,15675,,{{ web_mqtt_nodePort }}"
+  vars:
+    - web_mqtt_nodePort: "{{ rabbitmq_web_mqtt_service_result.resources[0] | json_query('spec.ports[?name==`web-mqtt`] | [0].nodePort') }}"
+  register: vboxmanage_add_nat_web_mqtt_result
+- debug: var=vboxmanage_add_nat_web_mqtt_result.stdout_lines
+
+- name: confirm rabbitmq-web-mqtt nat settings
+  shell: |
+    VBoxManage showvminfo "{{ minikube.name }}" | grep "name = web-mqtt,"
+  register: vboxmanage_show_nat_web_mqtt_result
+- debug: var=vboxmanage_show_nat_web_mqtt_result.stdout_lines

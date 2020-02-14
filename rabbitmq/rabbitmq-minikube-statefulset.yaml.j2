@@ -31,7 +31,7 @@ metadata:
   name: rabbitmq
 spec:
   serviceName: rabbitmq
-  replicas: 3
+  replicas: {{ containers.rabbitmq.replicas }}
   selector:
     matchLabels:
       app: rabbitmq
@@ -44,7 +44,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: rabbitmq-k8s
-        image: rabbitmq:3.7.16
+        image: {{ containers.rabbitmq.image }}
         volumeMounts:
           - name: config-volume
             mountPath: /etc/rabbitmq

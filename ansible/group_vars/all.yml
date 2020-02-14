@@ -1,3 +1,13 @@
 ---
 root_dir: "{{ inventory_dir }}/../../.."
 envfile_path: "{{ inventory_dir  }}/../../../docs/environments/minikube/env"
+
+containers:
+  rabbitmq:
+    replicas: 3
+    image: rabbitmq:3.8.2
+
+mqtt:
+  users:
+    - name: iotagent
+      password: password_of_iotagent

@@ -3,3 +3,4 @@
   connection: local
   roles:
     - 01_prepare_minikube
+    - 02_start_base_pods
