@@ -1,7 +1,3 @@
-- name: set envfile path
-  set_fact:
-    envfile_path: "{{ inventory_dir | dirname }}/../../docs/environments/minikube/env"
-
 - name: clear envfile
   file:
     path: "{{ envfile_path }}"
