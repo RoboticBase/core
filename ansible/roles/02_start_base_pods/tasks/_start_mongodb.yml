@@ -41,7 +41,7 @@
   retries: 6
   delay: 10
 
-- name: check rabbitmq statefulset
+- name: check mongodb statefulset
   k8s_info:
     kind: StatefulSet
     name: mongodb
