@@ -4,3 +4,4 @@
   roles:
     - 01_prepare_minikube
     - 02_start_base_pods
+    - 03_start_auth_pods

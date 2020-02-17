@@ -1,0 +1,4 @@
+- include_tasks: _create_{{ ansible_play_name }}_auth_tokens.yml
+- import_tasks: _create_auth_token_secret.yml
+
+- import_tasks: _start_auth.yml

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: auth
 spec:
-  replicas: 3
+  replicas: {{ containers.auth.replicas }}
   selector:
     matchLabels:
       app: auth
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: roboticbase/fiware-ambassador-auth:0.3.0
+        image: {{ containers.auth.image }}
         imagePullPolicy: Always
         env:
         - name: LISTEN_PORT

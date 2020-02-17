@@ -13,6 +13,9 @@ containers:
   ambassador:
     replicas: 3
     image: quay.io/datawire/ambassador:1.1.1
+  auth:
+    replicas: 3
+    image: roboticbase/fiware-ambassador-auth:0.3.0
 
 mqtt:
   users:

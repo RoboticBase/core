@@ -1,0 +1,49 @@
+- name: start auth service
+  k8s:
+    state: present
+    namespace: default
+    src: "{{ root_dir }}/auth/auth-service.yaml"
+
+- name: check auth service
+  k8s_info:
+    kind: Service
+    name: auth
+    namespace: default
+    label_selectors:
+      - app = auth
+  register: auth_service_result
+  until: auth_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: start auth deployment
+  k8s:
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', '{{ root_dir }}/auth/auth-deployment.yaml.j2') }}"
+
+- name: check auth deployment
+  k8s_info:
+    kind: Deployment
+    name: auth
+    namespace: default
+  register: auth_deployment_result
+  until:
+    - auth_deployment_result.resources | length == 1
+    - auth_deployment_result.resources[0].status is defined
+    - auth_deployment_result.resources[0].status.readyReplicas is defined
+    - auth_deployment_result.resources[0].status.readyReplicas == containers.auth.replicas
+  retries: 45
+  delay: 10
+
+- name: check auth pods
+  k8s_info:
+    kind: Pod
+    namespace: default
+    label_selectors:
+      - app = auth
+  register: auth_pods_result
+  until:
+    - auth_pods_result.resources | length == containers.auth.replicas
+    - auth_pods_result.resources | json_query('[?status.phase==`Running`]') | length == containers.auth.replicas
+    - auth_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == containers.auth.replicas

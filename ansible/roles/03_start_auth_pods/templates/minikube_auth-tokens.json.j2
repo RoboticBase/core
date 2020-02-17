@@ -1,0 +1,17 @@
+[
+    {
+        "host": ".*",
+        "settings": {
+            "bearer_tokens": [
+                {
+                    "token": "{{ api_token.randomstr }}",
+                    "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
+                }
+            ],
+            "basic_auths": [],
+            "no_auths": {
+                "allowed_paths": []
+            }
+        }
+    }
+]
