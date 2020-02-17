@@ -10,6 +10,9 @@ containers:
     replicas: 3
     repository: mongo
     tag: 4.2.3
+  ambassador:
+    replicas: 3
+    image: quay.io/datawire/ambassador:1.1.1
 
 mqtt:
   users:

@@ -1,0 +1,30 @@
+- name: get ambassador service
+  k8s_info:
+    kind: Service
+    name: ambassador
+    namespace: default
+    label_selectors:
+      - app = ambassador
+  register: ambassador_service_result
+
+- name: delete ambassador nat settings
+  command: |
+    VBoxManage controlvm "{{ minikube.name }}" natpf1 delete http
+  register: vboxmanage_delete_nat_http_result
+  failed_when: vboxmanage_delete_nat_http_result.rc not in [0, 1]
+- debug: var=vboxmanage_delete_nat_http_result.stdout_lines
+- debug: var=vboxmanage_delete_nat_http_result.stderr_lines
+
+- name: add ambassador nat settings
+  command: |
+    VBoxManage controlvm "{{ minikube.name }}" natpf1 "http,tcp,0.0.0.0,8080,,{{ http_nodePort }}"
+  vars:
+    - http_nodePort: "{{ ambassador_service_result.resources[0] | json_query('spec.ports[?name==`ambassador`] | [0].nodePort') }}"
+  register: vboxmanage_add_nat_http_result
+- debug: var=vboxmanage_add_nat_http_result.stdout_lines
+
+- name: confirm ambassador nat settings
+  shell: |
+    VBoxManage showvminfo "{{ minikube.name }}" | grep "name = http,"
+  register: vboxmanage_show_nat_http_result
+- debug: var=vboxmanage_show_nat_http_result.stdout_lines
