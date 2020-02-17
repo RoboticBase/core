@@ -1,0 +1,71 @@
+- name: generate tempfile
+  tempfile:
+    state: file
+    suffix: values.yaml
+  register: values_tempfile
+
+- name: write generated values.yaml to tempfile
+  template:
+    src: "{{ root_dir }}/mongodb/mongodb-replicaset-values-{{ ansible_play_name }}.yaml.j2"
+    dest: "{{ values_tempfile.path }}"
+
+- name: start mongodb cluster using heml
+  command: |
+    helm install --name-template mongodb -f {{ values_tempfile.path }} stable/mongodb-replicaset
+  register: mongodb_replicaset_result
+- debug: var=mongodb_replicaset_result.stdout_lines
+
+- name: check mongodb services
+  k8s_info:
+    kind: Service
+    name: mongodb
+    namespace: default
+    label_selectors:
+      - release = mongodb
+      - app = mongodb-replicaset
+  register: mongodb_service_result
+  until: mongodb_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check mongodb-client services
+  k8s_info:
+    kind: Service
+    name: mongodb-client
+    namespace: default
+    label_selectors:
+      - release = mongodb
+      - app = mongodb-replicaset
+  register: mongodb_client_service_result
+  until: mongodb_client_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check rabbitmq statefulset
+  k8s_info:
+    kind: StatefulSet
+    name: mongodb
+    namespace: default
+    label_selectors:
+      - release = mongodb
+      - app = mongodb-replicaset
+  register: mongodb_statefulset_result
+  until:
+    - mongodb_statefulset_result.resources | length == 1
+    - mongodb_statefulset_result.resources[0].status is defined
+    - mongodb_statefulset_result.resources[0].status.readyReplicas is defined
+    - mongodb_statefulset_result.resources[0].status.readyReplicas == containers.mongodb.replicas
+  retries: 45
+  delay: 10
+
+- include_tasks: __check_mongodb_pod.yml
+  with_sequence: start=0 count={{ containers.mongodb.replicas }}
+
+- name: check mongodb cluster state
+  command: |
+    kubectl exec mongodb-0 -c mongodb-replicaset -- mongo --quiet --eval 'rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};})'
+  register: mongodb_cluster_status_result
+  until:
+    - mongodb_cluster_status_result.stdout | from_json | length == containers.mongodb.replicas
+    - mongodb_cluster_status_result.stdout | from_json | json_query('[?stateStr==`PRIMARY`]') | length == 1
+    - mongodb_cluster_status_result.stdout | from_json | json_query('[?stateStr==`SECONDARY`]') | length == containers.mongodb.replicas - 1

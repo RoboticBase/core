@@ -5,3 +5,5 @@
 - import_tasks: _register_users_to_rabbitmq.yml
 - import_tasks: _nat_mqtt_port.yml
   when: ansible_play_name == "minikube"
+
+- import_tasks: _start_mongodb.yml

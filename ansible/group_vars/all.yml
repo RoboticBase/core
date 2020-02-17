@@ -6,6 +6,10 @@ containers:
   rabbitmq:
     replicas: 3
     image: rabbitmq:3.8.2
+  mongodb:
+    replicas: 3
+    repository: mongo
+    tag: 4.2.3
 
 mqtt:
   users:
