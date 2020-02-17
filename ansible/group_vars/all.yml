@@ -16,6 +16,9 @@ containers:
   auth:
     replicas: 3
     image: roboticbase/fiware-ambassador-auth:0.3.0
+  orion:
+    replicas: 3
+    image: fiware/orion:2.3.0
 
 mqtt:
   users:

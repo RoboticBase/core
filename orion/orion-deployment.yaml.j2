@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: orion
 spec:
-  replicas: 3
+  replicas: {{ containers.orion.replicas }}
   selector:
     matchLabels:
       app: orion
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: orion
-        image: fiware/orion:2.2.0
+        image: {{ containers.orion.image }}
         args: ["-dbhost", "mongodb-client", "-rplSet", "rs0", "-dbTimeout", "10000", "-logLevel", "DEBUG"]
         ports:
         - containerPort: 1026

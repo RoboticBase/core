@@ -28,3 +28,7 @@
     VBoxManage showvminfo "{{ minikube.name }}" | grep "name = http,"
   register: vboxmanage_show_nat_http_result
 - debug: var=vboxmanage_show_nat_http_result.stdout_lines
+
+- name: set base_url
+  set_fact:
+    base_url: "http://{{ host_ipaddr }}:8080"
