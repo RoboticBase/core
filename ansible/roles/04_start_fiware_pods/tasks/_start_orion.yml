@@ -63,6 +63,9 @@
     method: GET
     status_code: 200
   register: orion_get_entities_valid_auth_result
-  failed_when: orion_get_entities_valid_auth_result.json != []
+  until:
+    - orion_get_entities_valid_auth_result.json == []
+  retries: 45
+  delay: 10
   vars:
     api_token: "{{ lookup('file', '{{ root_dir }}/secrets/auth-tokens.json') | from_json | json_query('[0].settings.bearer_tokens[0].token') }}"
