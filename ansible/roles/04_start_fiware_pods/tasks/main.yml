@@ -5,3 +5,6 @@
 
 - import_tasks: _start_iotagent_ul.yml
   when: containers.iotagent_ul.is_provisioning
+
+- import_tasks: _start_cygnus_mongo.yml
+  when: containers.cygnus_mongo.is_provisioning

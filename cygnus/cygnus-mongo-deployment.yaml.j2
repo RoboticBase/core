@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: cygnus-mongo
 spec:
-  replicas: 3
+  replicas: {{ containers.cygnus_mongo.replicas }}
   selector:
     matchLabels:
       app: cygnus-mongo
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: cygnus-mongo
-        image: fiware/cygnus-ngsi:1.15.0
+        image: {{ containers.cygnus_mongo.image }}
         ports:
         - containerPort: 5051
           name: service
