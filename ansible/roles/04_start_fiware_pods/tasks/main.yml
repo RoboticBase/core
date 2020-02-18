@@ -2,3 +2,6 @@
 
 - import_tasks: _start_iotagent_json.yml
   when: containers.iotagent_json.is_provisioning
+
+- import_tasks: _start_iotagent_ul.yml
+  when: containers.iotagent_ul.is_provisioning

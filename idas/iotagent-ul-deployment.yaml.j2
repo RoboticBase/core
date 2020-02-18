@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: iotagent-ul
 spec:
-  replicas: 3
+  replicas: {{ containers.iotagent_ul.replicas }}
   selector:
     matchLabels:
       app: iotagent-ul
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: iotagent-ul
-        image: fiware/iotagent-ul:1.9.0
+        image: {{ containers.iotagent_ul.image }}
         command: ["pm2-runtime", "bin/iotagent-ul"]
         args: ["--", "rb-config-ul.js"]
         ports:
@@ -24,7 +24,9 @@ spec:
           name: http
         env:
         - name: IOTA_CB_NGSI_VERSION
-          value: "${IOTAGENT_UL_NGSI_VERSION}"
+          value: "{{ containers.iotagent_ul.cb_ngsi_version }}"
+        - name: IOTA_AUTOCAST
+          value: "{{ containers.iotagent_ul.autocast }}"
         volumeMounts:
           - name: config-volume
             mountPath: "/opt/iotaul/rb-config-ul.js"
