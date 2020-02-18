@@ -17,7 +17,7 @@
 
 - name: add ambassador nat settings
   command: |
-    VBoxManage controlvm "{{ minikube.name }}" natpf1 "http,tcp,0.0.0.0,8080,,{{ http_nodePort }}"
+    VBoxManage controlvm "{{ minikube.name }}" natpf1 "http,tcp,0.0.0.0,{{ nat.http }},,{{ http_nodePort }}"
   vars:
     - http_nodePort: "{{ ambassador_service_result.resources[0] | json_query('spec.ports[?name==`ambassador`] | [0].nodePort') }}"
   register: vboxmanage_add_nat_http_result
@@ -28,7 +28,3 @@
     VBoxManage showvminfo "{{ minikube.name }}" | grep "name = http,"
   register: vboxmanage_show_nat_http_result
 - debug: var=vboxmanage_show_nat_http_result.stdout_lines
-
-- name: set base_url
-  set_fact:
-    base_url: "http://{{ host_ipaddr }}:8080"

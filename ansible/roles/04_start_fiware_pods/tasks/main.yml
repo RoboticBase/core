@@ -1,3 +1,7 @@
+- include_role:
+    name: 00_common
+    tasks_from: set_baseurl_{{ ansible_play_name }}.yml
+
 - import_tasks: _start_orion.yml
 
 - import_tasks: _start_iotagent_json.yml

@@ -7,7 +7,10 @@
 - import_tasks: _check_minikube_status.yml
 - import_tasks: _start_minikube.yml
 
-- import_tasks: _nw_configuration.yml
+- import_role:
+    name: 00_common
+    tasks_from: nw_configuration_minikube.yml
+
 - import_tasks: _add_nw_configuration_to_envfile.yml
 
 - import_tasks: _edit_configuration_of_minikube.yml

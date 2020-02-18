@@ -18,7 +18,7 @@
 
 - name: add rabbitmq-mqtt nat settings
   command: |
-    VBoxManage controlvm "{{ minikube.name }}" natpf1 "mqtt,tcp,0.0.0.0,1883,,{{ mqtt_nodePort }}"
+    VBoxManage controlvm "{{ minikube.name }}" natpf1 "mqtt,tcp,0.0.0.0,{{ nat.mqtt }},,{{ mqtt_nodePort }}"
   vars:
     - mqtt_nodePort: "{{ rabbitmq_mqtt_service_result.resources[0] | json_query('spec.ports[?name==`mqtt`] | [0].nodePort') }}"
   register: vboxmanage_add_nat_mqtt_result
@@ -50,7 +50,7 @@
 
 - name: add rabbitmq-web-mqtt nat settings
   command: |
-    VBoxManage controlvm "{{ minikube.name }}" natpf1 "web-mqtt,tcp,0.0.0.0,15675,,{{ web_mqtt_nodePort }}"
+    VBoxManage controlvm "{{ minikube.name }}" natpf1 "web-mqtt,tcp,0.0.0.0,{{ nat.web_mqtt }},,{{ web_mqtt_nodePort }}"
   vars:
     - web_mqtt_nodePort: "{{ rabbitmq_web_mqtt_service_result.resources[0] | json_query('spec.ports[?name==`web-mqtt`] | [0].nodePort') }}"
   register: vboxmanage_add_nat_web_mqtt_result
