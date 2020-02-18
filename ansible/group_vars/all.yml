@@ -19,6 +19,12 @@ containers:
   orion:
     replicas: 3
     image: fiware/orion:2.3.0
+  iotagent_json:
+    is_provisioning: true
+    replicas: 3
+    image: fiware/iotagent-json:1.13.0
+    cb_ngsi_version: v1
+    autocast: true
 
 mqtt:
   users:

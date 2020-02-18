@@ -1,1 +1,4 @@
 - import_tasks: _start_orion.yml
+
+- import_tasks: _start_iotagent_json.yml
+  when: containers.iotagent_json.is_provisioning
