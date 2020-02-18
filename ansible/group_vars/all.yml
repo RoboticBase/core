@@ -35,6 +35,10 @@ containers:
     is_provisioning: true
     replicas: 3
     image: fiware/cygnus-ngsi:1.17.1
+  sth_comet:
+    is_provisioning: true
+    replicas: 3
+    image: fiware/sth-comet:2.7.0
 
 mqtt:
   users:

@@ -8,3 +8,6 @@
 
 - import_tasks: _start_cygnus_mongo.yml
   when: containers.cygnus_mongo.is_provisioning
+
+- import_tasks: _start_sth_comet.yml
+  when: containers.sth_comet.is_provisioning

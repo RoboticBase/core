@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: comet
 spec:
-  replicas: 3
+  replicas: {{ containers.sth_comet.replicas }}
   selector:
     matchLabels:
       app: comet
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: comet
-        image: fiware/sth-comet:2.5.0
+        image: {{ containers.sth_comet.image }}
         env:
         - name: STH_HOST
           value: "0.0.0.0"
