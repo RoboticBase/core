@@ -1,17 +1,17 @@
 - name: generate tempfile
   tempfile:
     state: file
-    suffix: values.yaml
-  register: values_tempfile
+    suffix: mongodb_values.yaml
+  register: mongodb_values_tempfile
 
 - name: write generated values.yaml to tempfile
   template:
     src: "{{ root_dir }}/mongodb/mongodb-replicaset-values-{{ ansible_play_name }}.yaml.j2"
-    dest: "{{ values_tempfile.path }}"
+    dest: "{{ mongodb_values_tempfile.path }}"
 
 - name: start mongodb cluster using heml
   command: |
-    helm install --name-template mongodb -f {{ values_tempfile.path }} stable/mongodb-replicaset
+    helm install --name-template mongodb -f {{ mongodb_values_tempfile.path }} stable/mongodb-replicaset
   register: mongodb_replicaset_result
 - debug: var=mongodb_replicaset_result.stdout_lines
 

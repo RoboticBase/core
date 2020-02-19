@@ -1,0 +1,25 @@
+alertmanager:
+  alertmanagerSpec:
+    image:
+      repository: {{ containers.prometheus_operator.alertmanager.repository }}
+      tag: {{ containers.prometheus_operator.alertmanager.tag }}
+
+prometheus:
+  prometheusSpec:
+    image:
+      repository: {{ containers.prometheus_operator.prometheus.repository }}
+      tag: {{ containers.prometheus_operator.prometheus.tag }}
+
+grafana:
+  image:
+    repository: {{ containers.prometheus_operator.grafana.repository }}
+    tag: {{ containers.prometheus_operator.grafana.tag }}
+  auth:
+    anonymous:
+      enabled: "false"
+
+prometheusOperator:
+  configReloaderCpu: 400m
+
+kubeEtcd:
+  enabled: false

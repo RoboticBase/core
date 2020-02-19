@@ -39,6 +39,21 @@ containers:
     is_provisioning: true
     replicas: 3
     image: fiware/sth-comet:2.7.0
+  cygnus_elasticsearch:
+    is_provisioning: true
+    replicas: 3
+    image: fiware/cygnus-ngsi:1.17.1
+  prometheus_operator:
+    is_provisioning: true
+    alertmanager:
+      repository: quay.io/prometheus/alertmanager
+      tag: v0.20.0
+    prometheus:
+      repository: quay.io/prometheus/prometheus
+      tag: v2.16.0
+    grafana:
+      repository: grafana/grafana
+      tag: 6.6.1
 
 mqtt:
   users:

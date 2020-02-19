@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: cygnus-elasticsearch
 spec:
-  replicas: 3
+  replicas: {{ containers.cygnus_elasticsearch.replicas }}
   selector:
     matchLabels:
       app: cygnus-elasticsearch
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: cygnus-elasticsearch
-        image: fiware/cygnus-ngsi:1.15.0
+        image: {{ containers.cygnus_elasticsearch.image }}
         ports:
         - containerPort: 5058
           name: service
