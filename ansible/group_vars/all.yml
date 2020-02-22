@@ -68,6 +68,11 @@ containers:
       coordinating:
         name: client
         replicas: 1
+    fluentd:
+      repository: quay.io/fluentd_elasticsearch/fluentd
+      tag: v2.9.0
+      host: es-elasticsearch-client
+      port: 9200
 
 mqtt:
   users:

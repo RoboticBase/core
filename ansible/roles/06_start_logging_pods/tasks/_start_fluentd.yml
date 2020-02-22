@@ -1,0 +1,38 @@
+- name: get helm release list
+  command: |
+    helm list --namespace logging -o json
+  register: helm_release_list_result
+
+- name: start fluentd using helm if does not exist
+  command: |
+    helm install --name-template fd --namespace logging \
+    --set image.repository={{ containers.ekf.fluentd.repository }} \
+    --set image.tag={{ containers.ekf.fluentd.tag }} \
+    --set elasticsearch.host={{ containers.ekf.fluentd.host }} \
+    --set elasticsearch.port={{ containers.ekf.fluentd.port }} \
+    kiwigrid/fluentd-elasticsearch
+  register: install_fluentd_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`fd`]') | length == 0
+- debug: var=install_fluentd_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`fd`]') | length == 0
+
+- name: get node info
+  k8s_info:
+    kind: Node
+  register: k8s_node_result
+
+- name: check fluentd daemonset
+  k8s_info:
+    kind: DaemonSet
+    name: fd-fluentd-elasticsearch
+    namespace: logging
+    label_selectors:
+      - app.kubernetes.io/instance = fd
+  register: fluentd_daemonset_result
+  until:
+    - fluentd_daemonset_result.resources | length == 1
+    - fluentd_daemonset_result.resources[0].status is defined
+    - fluentd_daemonset_result.resources[0].status.numberReady is defined
+    - fluentd_daemonset_result.resources[0].status.numberReady == k8s_node_result.resources | length
+  retries: 60
+  delay: 10
