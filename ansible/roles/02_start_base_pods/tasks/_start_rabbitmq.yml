@@ -100,17 +100,17 @@
     - rabbitmq_statefulset_result.resources | length == 1
     - rabbitmq_statefulset_result.resources[0].status is defined
     - rabbitmq_statefulset_result.resources[0].status.readyReplicas is defined
-    - rabbitmq_statefulset_result.resources[0].status.readyReplicas == containers.rabbitmq.replicas
+    - rabbitmq_statefulset_result.resources[0].status.readyReplicas == replicas.rabbitmq
   retries: 60
   delay: 10
 
 - include_tasks: __check_rabbitmq_pod.yml
-  with_sequence: start=0 count={{ containers.rabbitmq.replicas }}
+  with_sequence: start=0 count={{ replicas.rabbitmq }}
 
 - name: check rabbitmq cluster state
   command: |
     kubectl exec rabbitmq-0 -- rabbitmqctl cluster_status --formatter json
   register: rabbitmq_cluster_status_result
-  until: rabbitmq_cluster_status_result.stdout | from_json | json_query('running_nodes') | length == containers.rabbitmq.replicas
+  until: rabbitmq_cluster_status_result.stdout | from_json | json_query('running_nodes') | length == replicas.rabbitmq
   retries: 60
   delay: 10

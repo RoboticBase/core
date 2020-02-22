@@ -63,18 +63,18 @@
     - mongodb_statefulset_result.resources | length == 1
     - mongodb_statefulset_result.resources[0].status is defined
     - mongodb_statefulset_result.resources[0].status.readyReplicas is defined
-    - mongodb_statefulset_result.resources[0].status.readyReplicas == containers.mongodb.replicas
+    - mongodb_statefulset_result.resources[0].status.readyReplicas == replicas.mongodb
   retries: 45
   delay: 10
 
 - include_tasks: __check_mongodb_pod.yml
-  with_sequence: start=0 count={{ containers.mongodb.replicas }}
+  with_sequence: start=0 count={{ replicas.mongodb }}
 
 - name: check mongodb cluster state
   command: |
     kubectl exec mongodb-0 -c mongodb-replicaset -- mongo --quiet --eval 'rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};})'
   register: mongodb_cluster_status_result
   until:
-    - mongodb_cluster_status_result.stdout | from_json | length == containers.mongodb.replicas
+    - mongodb_cluster_status_result.stdout | from_json | length == replicas.mongodb
     - mongodb_cluster_status_result.stdout | from_json | json_query('[?stateStr==`PRIMARY`]') | length == 1
-    - mongodb_cluster_status_result.stdout | from_json | json_query('[?stateStr==`SECONDARY`]') | length == containers.mongodb.replicas - 1
+    - mongodb_cluster_status_result.stdout | from_json | json_query('[?stateStr==`SECONDARY`]') | length == replicas.mongodb - 1

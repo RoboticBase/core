@@ -64,7 +64,7 @@ kind: Deployment
 metadata:
   name: ambassador
 spec:
-  replicas: {{ containers.ambassador.replicas }}
+  replicas: {{ replicas.ambassador }}
   selector:
     matchLabels:
       app: ambassador

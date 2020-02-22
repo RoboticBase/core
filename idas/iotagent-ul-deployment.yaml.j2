@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: iotagent-ul
 spec:
-  replicas: {{ containers.iotagent_ul.replicas }}
+  replicas: {{ replicas.iotagent_ul }}
   selector:
     matchLabels:
       app: iotagent-ul

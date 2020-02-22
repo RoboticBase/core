@@ -4,44 +4,34 @@ envfile_path: "{{ inventory_dir  }}/../../../docs/environments/minikube/env"
 
 containers:
   rabbitmq:
-    replicas: 2
     image: rabbitmq:3.8.2
   mongodb:
-    replicas: 2
     repository: mongo
     tag: 4.2.3
   ambassador:
-    replicas: 1
     image: quay.io/datawire/ambassador:1.1.1
   auth:
-    replicas: 1
     image: roboticbase/fiware-ambassador-auth:0.3.0
   orion:
-    replicas: 1
     image: fiware/orion:2.3.0
   iotagent_json:
     is_provisioning: true
-    replicas: 1
     image: fiware/iotagent-json:1.13.0
     cb_ngsi_version: v1
     autocast: true
   iotagent_ul:
     is_provisioning: true
-    replicas: 1
     image: fiware/iotagent-ul:1.12.0
     cb_ngsi_version: v1
     autocast: true
   cygnus_mongo:
     is_provisioning: true
-    replicas: 1
     image: fiware/cygnus-ngsi:1.17.1
   sth_comet:
     is_provisioning: true
-    replicas: 1
     image: fiware/sth-comet:2.7.0
   cygnus_elasticsearch:
     is_provisioning: true
-    replicas: 1
     image: fiware/cygnus-ngsi:1.17.1
   prometheus_operator:
     is_provisioning: true
@@ -61,13 +51,10 @@ containers:
       tag: 7.6.0
       master:
         name: master
-        replicas: 2
       data:
         name: data
-        replicas: 2
       coordinating:
         name: client
-        replicas: 1
     fluentd:
       repository: quay.io/fluentd_elasticsearch/fluentd
       tag: v2.9.0
@@ -76,7 +63,6 @@ containers:
     kibana:
       repository: bitnami/kibana
       tag: 7.6.0
-      replicas: 1
       host: es-elasticsearch-client
       port: 9200
 

@@ -9,11 +9,11 @@
     --set image.repository={{ containers.ekf.elasticsearch.repository }} \
     --set image.tag={{ containers.ekf.elasticsearch.tag }} \
     --set master.name={{ containers.ekf.elasticsearch.master.name }} \
-    --set master.replicas={{ containers.ekf.elasticsearch.master.replicas }} \
+    --set master.replicas={{ replicas.ekf.elasticsearch.master }} \
     --set data.name={{ containers.ekf.elasticsearch.data.name }} \
-    --set data.replicas={{ containers.ekf.elasticsearch.data.replicas }} \
+    --set data.replicas={{ replicas.ekf.elasticsearch.data }} \
     --set global.coordinating.name={{ containers.ekf.elasticsearch.coordinating.name }} \
-    --set coordinating.replicas={{ containers.ekf.elasticsearch.coordinating.replicas }} \
+    --set coordinating.replicas={{ replicas.ekf.elasticsearch.coordinating }} \
     bitnami/elasticsearch
   register: install_elasticsearch_result
   when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
@@ -36,10 +36,10 @@
     - "{{ containers.ekf.elasticsearch.coordinating.name }}"
     - "discovery"
 
-- name: check elasticsearcb statefulsets
+- name: check elasticsearch master statefulsets
   k8s_info:
     kind: StatefulSet
-    name: "es-elasticsearch-{{ item.name }}"
+    name: "es-elasticsearch-{{ containers.ekf.elasticsearch.master.name }}"
     namespace: logging
     label_selectors:
       - app = elasticsearch
@@ -48,17 +48,30 @@
     - elasticsearch_statefulset_result.resources | length == 1
     - elasticsearch_statefulset_result.resources[0].status is defined
     - elasticsearch_statefulset_result.resources[0].status.readyReplicas is defined
-    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == item.replicas
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == replicas.ekf.elasticsearch.master
   retries: 60
   delay: 10
-  with_items:
-    - "{{ containers.ekf.elasticsearch.master }}"
-    - "{{ containers.ekf.elasticsearch.data }}"
 
-- name: check elasticsearcb deployment
+- name: check elasticsearch data statefulsets
+  k8s_info:
+    kind: StatefulSet
+    name: "es-elasticsearch-{{ containers.ekf.elasticsearch.data.name }}"
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+  register: elasticsearch_statefulset_result
+  until:
+    - elasticsearch_statefulset_result.resources | length == 1
+    - elasticsearch_statefulset_result.resources[0].status is defined
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas is defined
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == replicas.ekf.elasticsearch.data
+  retries: 60
+  delay: 10
+
+- name: check elasticsearch coordinating deployment
   k8s_info:
     kind: Deployment
-    name: "es-elasticsearch-{{ item.name }}"
+    name: "es-elasticsearch-{{ containers.ekf.elasticsearch.coordinating.name }}"
     namespace: logging
     label_selectors:
       - app = elasticsearch
@@ -67,22 +80,24 @@
     - elasticsearch_deployment_result.resources | length == 1
     - elasticsearch_deployment_result.resources[0].status is defined
     - elasticsearch_deployment_result.resources[0].status.readyReplicas is defined
-    - elasticsearch_deployment_result.resources[0].status.readyReplicas == item.replicas
+    - elasticsearch_deployment_result.resources[0].status.readyReplicas == replicas.ekf.elasticsearch.coordinating
   retries: 60
   delay: 10
-  with_items:
-    - "{{ containers.ekf.elasticsearch.coordinating }}"
+
+- name: wait 120sec
+  wait_for:
+    timeout: 120
 
 - name: check cluster status
   command: |
     kubectl -n logging exec -it es-elasticsearch-{{ master_name }}-0 \
-    -- curl -sS "http://es-elasticsearch-{{ coordinating_name }}:9200/_cluster/health/?wait_for_status=green&timeout=60s"
+    -- curl -sS "http://es-elasticsearch-{{ coordinating_name }}:9200/_cluster/health/?wait_for_status=green&timeout=300s"
   vars:
     master_name: "{{ containers.ekf.elasticsearch.master.name }}"
     coordinating_name: "{{ containers.ekf.elasticsearch.coordinating.name }}"
   register: elasticsearch_cluster_status_result
   until:
     - elasticsearch_cluster_status_result.stdout | from_json | json_query('status') == "green"
-    - elasticsearch_cluster_status_result.stdout | from_json | json_query('number_of_nodes') == containers.ekf.elasticsearch.master.replicas + containers.ekf.elasticsearch.data.replicas + containers.ekf.elasticsearch.coordinating.replicas
-  retries: 6
+    - elasticsearch_cluster_status_result.stdout | from_json | json_query('number_of_nodes') == replicas.ekf.elasticsearch.master + replicas.ekf.elasticsearch.data + replicas.ekf.elasticsearch.coordinating
+  retries: 60
   delay: 10

@@ -32,7 +32,7 @@
     - auth_deployment_result.resources | length == 1
     - auth_deployment_result.resources[0].status is defined
     - auth_deployment_result.resources[0].status.readyReplicas is defined
-    - auth_deployment_result.resources[0].status.readyReplicas == containers.auth.replicas
+    - auth_deployment_result.resources[0].status.readyReplicas == replicas.auth
   retries: 60
   delay: 10
 
@@ -44,8 +44,8 @@
       - app = auth
   register: auth_pods_result
   until:
-    - auth_pods_result.resources | length == containers.auth.replicas
-    - auth_pods_result.resources | json_query('[?status.phase==`Running`]') | length == containers.auth.replicas
-    - auth_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == containers.auth.replicas
+    - auth_pods_result.resources | length == replicas.auth
+    - auth_pods_result.resources | json_query('[?status.phase==`Running`]') | length == replicas.auth
+    - auth_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == replicas.auth
   retries: 60
   delay: 10

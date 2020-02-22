@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: cygnus-elasticsearch
 spec:
-  replicas: {{ containers.cygnus_elasticsearch.replicas }}
+  replicas: {{ replicas.cygnus_elasticsearch }}
   selector:
     matchLabels:
       app: cygnus-elasticsearch

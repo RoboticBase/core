@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: orion
 spec:
-  replicas: {{ containers.orion.replicas }}
+  replicas: {{ replicas.orion }}
   selector:
     matchLabels:
       app: orion

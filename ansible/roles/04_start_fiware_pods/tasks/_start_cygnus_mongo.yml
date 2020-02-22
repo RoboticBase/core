@@ -32,7 +32,7 @@
     - cygnus_mongo_deployment_result.resources | length == 1
     - cygnus_mongo_deployment_result.resources[0].status is defined
     - cygnus_mongo_deployment_result.resources[0].status.readyReplicas is defined
-    - cygnus_mongo_deployment_result.resources[0].status.readyReplicas == containers.cygnus_mongo.replicas
+    - cygnus_mongo_deployment_result.resources[0].status.readyReplicas == replicas.cygnus_mongo
   retries: 60
   delay: 10
 
@@ -44,8 +44,8 @@
       - app = cygnus-mongo
   register: cygnus_mongo_pods_result
   until:
-    - cygnus_mongo_pods_result.resources | length == containers.cygnus_mongo.replicas
-    - cygnus_mongo_pods_result.resources | json_query('[?status.phase==`Running`]') | length == containers.cygnus_mongo.replicas
-    - cygnus_mongo_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == containers.cygnus_mongo.replicas
+    - cygnus_mongo_pods_result.resources | length == replicas.cygnus_mongo
+    - cygnus_mongo_pods_result.resources | json_query('[?status.phase==`Running`]') | length == replicas.cygnus_mongo
+    - cygnus_mongo_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == replicas.cygnus_mongo
   retries: 60
   delay: 10
