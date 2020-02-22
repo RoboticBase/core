@@ -49,7 +49,7 @@
     - iotagent_ul_deployment_result.resources[0].status is defined
     - iotagent_ul_deployment_result.resources[0].status.readyReplicas is defined
     - iotagent_ul_deployment_result.resources[0].status.readyReplicas == containers.iotagent_ul.replicas
-  retries: 45
+  retries: 60
   delay: 10
 
 - name: check iotagent-ul pods
@@ -63,20 +63,19 @@
     - iotagent_ul_pods_result.resources | length == containers.iotagent_ul.replicas
     - iotagent_ul_pods_result.resources | json_query('[?status.phase==`Running`]') | length == containers.iotagent_ul.replicas
     - iotagent_ul_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == containers.iotagent_ul.replicas
+  retries: 60
+  delay: 10
 
 - name: call iotagent-ul REST API
   uri:
     url: "{{ base_url }}/idas/ul20/manage/iot/services/"
     headers:
-      Authorization: "bearer {{ api_token }}"
+      Authorization: "bearer {{ token_str }}"
       Fiware-Service: "test"
       Fiware-Servicepath: "/*"
     method: GET
     status_code: 200
-  register: iotagent_ul_get_entities_valid_auth_result
-  until:
-    - iotagent_ul_get_entities_valid_auth_result.json == {"count":0,"services":[]}
-  retries: 45
+  retries: 60
   delay: 10
   vars:
-    api_token: "{{ lookup('file', '{{ root_dir }}/secrets/auth-tokens.json') | from_json | json_query('[0].settings.bearer_tokens[0].token') }}"
+    token_str: "{{ lookup('file', '{{ root_dir }}/secrets/auth-tokens.json') | from_json | json_query('[0].settings.bearer_tokens[0].token') }}"

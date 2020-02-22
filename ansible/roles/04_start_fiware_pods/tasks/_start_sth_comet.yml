@@ -33,7 +33,7 @@
     - sth_comet_deployment_result.resources[0].status is defined
     - sth_comet_deployment_result.resources[0].status.readyReplicas is defined
     - sth_comet_deployment_result.resources[0].status.readyReplicas == containers.sth_comet.replicas
-  retries: 45
+  retries: 60
   delay: 10
 
 - name: check sth-comet pods
@@ -47,20 +47,19 @@
     - sth_comet_pods_result.resources | length == containers.sth_comet.replicas
     - sth_comet_pods_result.resources | json_query('[?status.phase==`Running`]') | length == containers.sth_comet.replicas
     - sth_comet_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == containers.sth_comet.replicas
+  retries: 60
+  delay: 10
 
 - name: call sth-comet REST API
   uri:
     url: "{{ base_url }}/comet/STH/v1/contextEntities/"
     headers:
-      Authorization: "bearer {{ api_token }}"
+      Authorization: "bearer {{ token_str }}"
       Fiware-Service: "test"
       Fiware-Servicepath: "/*"
     method: GET
     status_code: 404
-  register: sth_comet_get_entities_valid_auth_result
-  until:
-    - sth_comet_get_entities_valid_auth_result.status == 404
-  retries: 45
+  retries: 60
   delay: 10
   vars:
-    api_token: "{{ lookup('file', '{{ root_dir }}/secrets/auth-tokens.json') | from_json | json_query('[0].settings.bearer_tokens[0].token') }}"
+    token_str: "{{ lookup('file', '{{ root_dir }}/secrets/auth-tokens.json') | from_json | json_query('[0].settings.bearer_tokens[0].token') }}"
