@@ -31,3 +31,13 @@ spec:
         ports:
         - containerPort: 8666
           name: comet
+        livenessProbe:
+          tcpSocket:
+            port: 8666
+          failureThreshold: 12
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8666
+          failureThreshold: 12
+          periodSeconds: 10

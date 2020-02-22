@@ -27,6 +27,16 @@ spec:
         ports:
           - name: auth
             containerPort: 3000
+        livenessProbe:
+          tcpSocket:
+            port: 3000
+          failureThreshold: 12
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 3000
+          failureThreshold: 12
+          periodSeconds: 10
       volumes:
         - name: auth-tokens-volume
           secret:

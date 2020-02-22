@@ -22,6 +22,16 @@ spec:
           name: manage
         - containerPort: 7896
           name: http
+        livenessProbe:
+          tcpSocket:
+            port: 4041
+          failureThreshold: 12
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 4041
+          failureThreshold: 12
+          periodSeconds: 10
         env:
         - name: IOTA_CB_NGSI_VERSION
           value: "{{ containers.iotagent_json.cb_ngsi_version }}"

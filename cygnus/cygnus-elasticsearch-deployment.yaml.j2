@@ -20,6 +20,16 @@ spec:
           name: service
         - containerPort: 8081
           name: api
+        livenessProbe:
+          tcpSocket:
+            port: 8081
+          failureThreshold: 12
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8081
+          failureThreshold: 12
+          periodSeconds: 10
         env:
         - name: CYGNUS_API_PORT
           value: "8081"

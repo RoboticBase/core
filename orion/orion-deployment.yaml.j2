@@ -19,3 +19,13 @@ spec:
         ports:
         - containerPort: 1026
           name: orion
+        livenessProbe:
+          tcpSocket:
+            port: 1026
+          failureThreshold: 12
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 1026
+          failureThreshold: 12
+          periodSeconds: 10
