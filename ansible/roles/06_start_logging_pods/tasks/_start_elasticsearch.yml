@@ -1,0 +1,88 @@
+- name: get helm release list
+  command: |
+    helm list --namespace logging -o json
+  register: helm_release_list_result
+
+- name: start elasticsearch using helm if does not exist
+  command: |
+    helm install --name-template es --namespace logging \
+    --set image.repository={{ containers.ekf.elasticsearch.repository }} \
+    --set image.tag={{ containers.ekf.elasticsearch.tag }} \
+    --set master.name={{ containers.ekf.elasticsearch.master.name }} \
+    --set master.replicas={{ containers.ekf.elasticsearch.master.replicas }} \
+    --set data.name={{ containers.ekf.elasticsearch.data.name }} \
+    --set data.replicas={{ containers.ekf.elasticsearch.data.replicas }} \
+    --set global.coordinating.name={{ containers.ekf.elasticsearch.coordinating.name }} \
+    --set coordinating.replicas={{ containers.ekf.elasticsearch.coordinating.replicas }} \
+    bitnami/elasticsearch
+  register: install_elasticsearch_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
+- debug: var=install_elasticsearch_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
+
+- name: check elasticsearch services
+  k8s_info:
+    kind: Service
+    name: "es-elasticsearch-{{ item }}"
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+  register: elasticsearch_service_result
+  until: elasticsearch_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+  with_items:
+    - "{{ containers.ekf.elasticsearch.master.name }}"
+    - "{{ containers.ekf.elasticsearch.coordinating.name }}"
+    - "discovery"
+
+- name: check elasticsearcb statefulsets
+  k8s_info:
+    kind: StatefulSet
+    name: "es-elasticsearch-{{ item.name }}"
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+  register: elasticsearch_statefulset_result
+  until:
+    - elasticsearch_statefulset_result.resources | length == 1
+    - elasticsearch_statefulset_result.resources[0].status is defined
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas is defined
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == item.replicas
+  retries: 60
+  delay: 10
+  with_items:
+    - "{{ containers.ekf.elasticsearch.master }}"
+    - "{{ containers.ekf.elasticsearch.data }}"
+
+- name: check elasticsearcb deployment
+  k8s_info:
+    kind: Deployment
+    name: "es-elasticsearch-{{ item.name }}"
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+  register: elasticsearch_deployment_result
+  until:
+    - elasticsearch_deployment_result.resources | length == 1
+    - elasticsearch_deployment_result.resources[0].status is defined
+    - elasticsearch_deployment_result.resources[0].status.readyReplicas is defined
+    - elasticsearch_deployment_result.resources[0].status.readyReplicas == item.replicas
+  retries: 60
+  delay: 10
+  with_items:
+    - "{{ containers.ekf.elasticsearch.coordinating }}"
+
+- name: check cluster status
+  command: |
+    kubectl -n logging exec -it es-elasticsearch-{{ master_name }}-0 \
+    -- curl -sS "http://es-elasticsearch-{{ coordinating_name }}:9200/_cluster/health/?wait_for_status=green&timeout=60s"
+  vars:
+    master_name: "{{ containers.ekf.elasticsearch.master.name }}"
+    coordinating_name: "{{ containers.ekf.elasticsearch.coordinating.name }}"
+  register: elasticsearch_cluster_status_result
+  until:
+    - elasticsearch_cluster_status_result.stdout | from_json | json_query('status') == "green"
+    - elasticsearch_cluster_status_result.stdout | from_json | json_query('number_of_nodes') == containers.ekf.elasticsearch.master.replicas + containers.ekf.elasticsearch.data.replicas + containers.ekf.elasticsearch.coordinating.replicas
+  retries: 6
+  delay: 10

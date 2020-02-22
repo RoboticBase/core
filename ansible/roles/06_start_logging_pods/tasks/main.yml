@@ -1,0 +1,8 @@
+- import_tasks: _set_helm_repo.yml
+  when: containers.ekf.is_provisioning
+
+- import_tasks: _create_namespace.yml
+  when: containers.ekf.is_provisioning
+
+- import_tasks: _start_elasticsearch.yml
+  when: containers.ekf.is_provisioning
