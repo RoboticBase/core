@@ -1,19 +1,28 @@
+- name: get helm release list
+  command: |
+    helm list -o json
+  register: helm_release_list_result
+
 - name: generate tempfile
   tempfile:
     state: file
     suffix: mongodb_values.yaml
   register: mongodb_values_tempfile
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`mongodb`]') | length == 0
 
 - name: write generated values.yaml to tempfile
   template:
     src: "{{ root_dir }}/mongodb/mongodb-replicaset-values-{{ ansible_play_name }}.yaml.j2"
     dest: "{{ mongodb_values_tempfile.path }}"
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`mongodb`]') | length == 0
 
 - name: start mongodb cluster using heml
   command: |
     helm install --name-template mongodb -f {{ mongodb_values_tempfile.path }} stable/mongodb-replicaset
   register: mongodb_replicaset_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`mongodb`]') | length == 0
 - debug: var=mongodb_replicaset_result.stdout_lines
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`mongodb`]') | length == 0
 
 - name: check mongodb services
   k8s_info:

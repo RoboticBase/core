@@ -1,0 +1,8 @@
+- name: create namespace for monitoring
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: monitoring

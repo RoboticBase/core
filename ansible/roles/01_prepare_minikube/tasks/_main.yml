@@ -1,0 +1,28 @@
+- import_tasks: _clear_envfile.yml
+
+- import_tasks: _check_minikube_status.yml
+- import_tasks: _stop_minikube.yml
+- import_tasks: _delete_minikube.yml
+
+- import_tasks: _check_minikube_status.yml
+- import_tasks: _start_minikube.yml
+
+- import_role:
+    name: 00_common
+    tasks_from: nw_configuration_minikube.yml
+
+- import_tasks: _add_nw_configuration_to_envfile.yml
+
+- import_tasks: _edit_configuration_of_minikube.yml
+
+- import_tasks: _check_minikube_status.yml
+- import_tasks: _stop_minikube.yml
+
+- import_tasks: _check_minikube_status.yml
+- import_tasks: _start_minikube.yml
+
+- import_tasks: _start_local_registry.yml
+
+- import_tasks: _setup_rbac.yml
+
+- import_tasks: _setup_helm.yml
