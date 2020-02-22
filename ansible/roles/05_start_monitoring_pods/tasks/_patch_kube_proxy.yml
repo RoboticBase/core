@@ -79,4 +79,6 @@
     - kube_proxy_pod_result.resources | length == 1
     - kube_proxy_pod_result.resources[0].status.phase == 'Running'
     - kube_proxy_pod_result.resources[0].status.containerStatuses[0].ready
+  retries: 60
+  delay: 10
   with_items: "{{ kube_proxy_pods_result.resources | json_query('[*].metadata.name') }}"

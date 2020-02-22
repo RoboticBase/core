@@ -57,7 +57,7 @@
     - po_daemonset_result.resources[0].status.numberAvailable == 1
     - po_daemonset_result.resources[0].status.numberReady is defined
     - po_daemonset_result.resources[0].status.numberReady == 1
-  retries: 6
+  retries: 60
   delay: 10
   with_items:
     - "po-prometheus-node-exporter"
@@ -75,7 +75,7 @@
     - po_statefulset_result.resources[0].status is defined
     - po_statefulset_result.resources[0].status.readyReplicas is defined
     - po_statefulset_result.resources[0].status.readyReplicas == 1
-  retries: 6
+  retries: 60
   delay: 10
   with_items:
     - "alertmanager-po-prometheus-operator-alertmanager"
@@ -94,7 +94,7 @@
     - po_deployment_result.resources[0].status is defined
     - po_deployment_result.resources[0].status.readyReplicas is defined
     - po_deployment_result.resources[0].status.readyReplicas == 1
-  retries: 6
+  retries: 60
   delay: 10
   with_items:
     - "po-grafana"
