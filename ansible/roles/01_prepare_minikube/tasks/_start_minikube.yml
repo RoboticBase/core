@@ -4,6 +4,7 @@
     --cpus {{ resources.cpu_core_num }} \
     --memory {{ resources.memory_mb }} \
     --kubernetes-version {{ k8s.version }} \
+    --disk-size {{ resources.disk_size }} \
     --profile {{ minikube.name }} \
     --vm-driver {{ minikube.vm_driver }}
   register: minikube_start_result
