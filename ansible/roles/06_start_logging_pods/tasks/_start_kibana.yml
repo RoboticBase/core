@@ -1,0 +1,46 @@
+- name: get helm release list
+  command: |
+    helm list --namespace logging -o json
+  register: helm_release_list_result
+
+- name: start kibana using helm if does not exist
+  command: |
+    helm install --name-template kibana --namespace logging \
+    --set image.repository={{ containers.ekf.kibana.repository }} \
+    --set image.tag={{ containers.ekf.kibana.tag }} \
+    --set replicaCount={{ containers.ekf.kibana.replicas }} \
+    --set elasticsearch.hosts[0]={{ containers.ekf.kibana.host }} \
+    --set elasticsearch.port={{ containers.ekf.kibana.port }} \
+    bitnami/kibana
+  register: install_kibana_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`kibana`]') | length == 0
+- debug: var=install_kibana_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`kibana`]') | length == 0
+
+- name: check kibana service
+  k8s_info:
+    kind: Service
+    name: "kibana"
+    namespace: logging
+    label_selectors:
+      - app.kubernetes.io/instance = kibana
+  register: kibana_service_result
+  until: kibana_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check kibana deployment
+  k8s_info:
+    kind: Deployment
+    name: "kibana"
+    namespace: logging
+    label_selectors:
+      - app.kubernetes.io/instance = kibana
+  register: kibana_deployment_result
+  until:
+    - kibana_deployment_result.resources | length == 1
+    - kibana_deployment_result.resources[0].status is defined
+    - kibana_deployment_result.resources[0].status.readyReplicas is defined
+    - kibana_deployment_result.resources[0].status.readyReplicas == containers.ekf.kibana.replicas
+  retries: 60
+  delay: 10

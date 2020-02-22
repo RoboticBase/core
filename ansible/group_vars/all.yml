@@ -73,6 +73,12 @@ containers:
       tag: v2.9.0
       host: es-elasticsearch-client
       port: 9200
+    kibana:
+      repository: bitnami/kibana
+      tag: 7.6.0
+      replicas: 1
+      host: es-elasticsearch-client
+      port: 9200
 
 mqtt:
   users:
