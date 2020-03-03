@@ -1,6 +1,6 @@
 ---
 minikube:
-  name: minikube_rb
+  name: minikube-rb
   vm_driver: virtualbox
 
 k8s:
