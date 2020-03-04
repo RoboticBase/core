@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: auth
 spec:
-  replicas: {{ replicas.auth }}
+  replicas: {{ containers_extra.auth.replicas }}
   selector:
     matchLabels:
       app: auth

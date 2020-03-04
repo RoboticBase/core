@@ -8,7 +8,7 @@
     helm install --name-template kibana --namespace logging \
     --set image.repository={{ containers.ekf.kibana.repository }} \
     --set image.tag={{ containers.ekf.kibana.tag }} \
-    --set replicaCount={{ replicas.ekf.kibana }} \
+    --set replicaCount={{ containers_extra.ekf.kibana.replicas }} \
     --set elasticsearch.hosts[0]={{ containers.ekf.kibana.host }} \
     --set elasticsearch.port={{ containers.ekf.kibana.port }} \
     bitnami/kibana
@@ -41,6 +41,6 @@
     - kibana_deployment_result.resources | length == 1
     - kibana_deployment_result.resources[0].status is defined
     - kibana_deployment_result.resources[0].status.readyReplicas is defined
-    - kibana_deployment_result.resources[0].status.readyReplicas == replicas.ekf.kibana
+    - kibana_deployment_result.resources[0].status.readyReplicas == containers_extra.ekf.kibana.replicas
   retries: 60
   delay: 10

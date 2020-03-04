@@ -19,20 +19,34 @@ nat:
   web_mqtt: 15675
   http: 8080
 
-replicas:
-  rabbitmq: 2
-  mongodb: 2
-  ambassador: 1
-  auth: 1
-  orion: 1
-  iotagent_json: 1
-  iotagent_ul: 1
-  cygnus_mongo: 1
-  sth_comet: 1
-  cygnus_elasticsearch: 1
+containers_extra:
+  rabbitmq:
+    replicas: 2
+  mongodb:
+    replicas: 2
+  ambassador:
+    replicas: 1
+  auth:
+    replicas: 1
+  orion:
+    replicas: 1
+  iotagent_json:
+    replicas: 1
+  iotagent_ul:
+    replicas: 1
+  cygnus_mongo:
+    replicas: 1
+  sth_comet:
+    replicas: 1
+  cygnus_elasticsearch:
+    replicas: 1
   ekf:
     elasticsearch:
-      master: 2
-      data: 2
-      coordinating: 1
-    kibana: 1
+      master:
+        replicas: 2
+      data:
+        replicas: 2
+      coordinating:
+        replicas: 1
+    kibana:
+      replicas: 1

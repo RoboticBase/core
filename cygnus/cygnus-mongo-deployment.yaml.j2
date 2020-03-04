@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: cygnus-mongo
 spec:
-  replicas: {{ replicas.cygnus_mongo }}
+  replicas: {{ containers_extra.cygnus_mongo.replicas }}
   selector:
     matchLabels:
       app: cygnus-mongo

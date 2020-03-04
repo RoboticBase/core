@@ -19,5 +19,6 @@ dns:
   domain: example.com # change to your domain
   email: foo@example.com # change to your domain
 
-replicas:
-  rabbitmq: 3
+containers_extra:
+  rabbitmq:
+    replicas: 3

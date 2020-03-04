@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: comet
 spec:
-  replicas: {{ replicas.sth_comet }}
+  replicas: {{ containers_extra.sth_comet.replicas }}
   selector:
     matchLabels:
       app: comet

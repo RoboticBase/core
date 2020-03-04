@@ -9,11 +9,11 @@
     --set image.repository={{ containers.ekf.elasticsearch.repository }} \
     --set image.tag={{ containers.ekf.elasticsearch.tag }} \
     --set master.name={{ containers.ekf.elasticsearch.master.name }} \
-    --set master.replicas={{ replicas.ekf.elasticsearch.master }} \
+    --set master.replicas={{ containers_extra.ekf.elasticsearch.master.replicas }} \
     --set data.name={{ containers.ekf.elasticsearch.data.name }} \
-    --set data.replicas={{ replicas.ekf.elasticsearch.data }} \
+    --set data.replicas={{ containers_extra.ekf.elasticsearch.data.replicas }} \
     --set global.coordinating.name={{ containers.ekf.elasticsearch.coordinating.name }} \
-    --set coordinating.replicas={{ replicas.ekf.elasticsearch.coordinating }} \
+    --set coordinating.replicas={{ containers_extra.ekf.elasticsearch.coordinating.replicas }} \
     bitnami/elasticsearch
   register: install_elasticsearch_result
   when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
@@ -48,7 +48,7 @@
     - elasticsearch_statefulset_result.resources | length == 1
     - elasticsearch_statefulset_result.resources[0].status is defined
     - elasticsearch_statefulset_result.resources[0].status.readyReplicas is defined
-    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == replicas.ekf.elasticsearch.master
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == containers_extra.ekf.elasticsearch.master.replicas
   retries: 60
   delay: 10
 
@@ -64,7 +64,7 @@
     - elasticsearch_statefulset_result.resources | length == 1
     - elasticsearch_statefulset_result.resources[0].status is defined
     - elasticsearch_statefulset_result.resources[0].status.readyReplicas is defined
-    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == replicas.ekf.elasticsearch.data
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == containers_extra.ekf.elasticsearch.data.replicas
   retries: 60
   delay: 10
 
@@ -80,7 +80,7 @@
     - elasticsearch_deployment_result.resources | length == 1
     - elasticsearch_deployment_result.resources[0].status is defined
     - elasticsearch_deployment_result.resources[0].status.readyReplicas is defined
-    - elasticsearch_deployment_result.resources[0].status.readyReplicas == replicas.ekf.elasticsearch.coordinating
+    - elasticsearch_deployment_result.resources[0].status.readyReplicas == containers_extra.ekf.elasticsearch.coordinating.replicas
   retries: 60
   delay: 10
 
@@ -98,6 +98,6 @@
   register: elasticsearch_cluster_status_result
   until:
     - elasticsearch_cluster_status_result.stdout | from_json | json_query('status') == "green"
-    - elasticsearch_cluster_status_result.stdout | from_json | json_query('number_of_nodes') == replicas.ekf.elasticsearch.master + replicas.ekf.elasticsearch.data + replicas.ekf.elasticsearch.coordinating
+    - elasticsearch_cluster_status_result.stdout | from_json | json_query('number_of_nodes') == containers_extra.ekf.elasticsearch.master.replicas + containers_extra.ekf.elasticsearch.data.replicas + containers_extra.ekf.elasticsearch.coordinating.replicas
   retries: 60
   delay: 10

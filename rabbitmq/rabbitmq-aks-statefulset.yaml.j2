@@ -42,7 +42,7 @@ metadata:
   name: rabbitmq
 spec:
   serviceName: rabbitmq
-  replicas: {{ replicas.rabbitmq }}
+  replicas: {{ containers_extra.rabbitmq.replicas }}
   selector:
     matchLabels:
       app: rabbitmq
