@@ -13,6 +13,11 @@
 
 - import_tasks: _start_mongodb.yml
 
+- import_tasks: _register_ambassador_certifications.yml
+  when: ansible_play_name == "aks"
+
 - import_tasks: _start_ambassador.yml
 - import_tasks: _nat_http_port.yml
   when: ansible_play_name == "minikube"
+- import_tasks: _register_dns_ambassador.yml
+  when: ansible_play_name == "aks"

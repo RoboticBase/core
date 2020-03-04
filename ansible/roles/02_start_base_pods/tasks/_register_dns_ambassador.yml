@@ -1,0 +1,21 @@
+- name: get external ip of ambassador
+  k8s_info:
+    kind: Service
+    name: ambassador
+    namespace: default
+    label_selectors:
+      - app = ambassador
+  register: ambassador_services_result
+
+- name: add an A record to azure dns for ambassador
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resources.dns_zone }}"
+    zone_name: "{{ dns.domain }}"
+    relative_name: api
+    record_type: A
+    records:
+      - entry: "{{ ambassador_services_result.resources[0].status.loadBalancer.ingress[0].ip }}"
+  register: add_a_record_ambassador_result
+
+- debug:
+    var: add_a_record_ambassador_result

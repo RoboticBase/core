@@ -27,3 +27,5 @@ containers_extra:
     storage:
       class: "managed-premium"
       size: "30Gi"
+  ambassador:
+    replicas: 3

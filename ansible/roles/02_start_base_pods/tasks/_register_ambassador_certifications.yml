@@ -1,0 +1,26 @@
+- name: create ambassador-certifications secret
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: kubernetes.io/tls
+      metadata:
+        name: ambassador-certs
+        namespace: default
+      data:
+        tls.crt: "{{ encoded_fullchain_pem }}"
+        tls.key: "{{ encoded_privkey_pem }}"
+  vars:
+    encoded_fullchain_pem: "{{ lookup('file', '{{ root_dir }}/secrets/ansible/{{ dns.domain }}/fullchain.pem') | b64encode }}"
+    encoded_privkey_pem: "{{ lookup('file', '{{ root_dir }}/secrets/ansible/{{ dns.domain }}/privkey.pem') | b64encode }}"
+
+- name: check ambassador-certifications secret
+  k8s_info:
+    kind: Secret
+    name: ambassador-certs
+    namespace: default
+  register: ambassador_certifications_secret_result
+  until: ambassador_certifications_secret_result.resources | length == 1
+  retries: 6
+  delay: 10
