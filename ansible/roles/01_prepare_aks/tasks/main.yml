@@ -1,0 +1,17 @@
+- import_tasks: _clear_envfile.yml
+
+- import_tasks: _create_dns_zone.yml
+
+- import_tasks: _create_resource_group.yml
+
+- import_tasks: _create_container_registry.yml
+
+- import_tasks: _start_aks.yml
+
+- import_role:
+    name: 00_common
+    tasks_from: setup_rbac.yml
+
+- import_role:
+    name: 00_common
+    tasks_from: setup_helm.yml

@@ -1,0 +1,8 @@
+---
+resources:
+  region: japaneast
+  dns_zone: dns-zone
+  resource_group: rbcore
+  storage_account: rbstorageaccount
+  storage_container: mongodump
+  ssh_key_file_path: "{{ ansible_env.HOME }}/.ssh/azure.pub" # change to your key file path

@@ -1,0 +1,20 @@
+---
+envfile_path: "{{ inventory_dir  }}/../../../docs/environments/azure_aks/env"
+
+aks:
+  name: aksrb
+  agent:
+    vm_size: Standard_D2s_v3
+    count: 3
+    disk_gb: 64
+
+k8s:
+  version: 1.14.8
+
+acr:
+  name: acrrb
+  sku: Basic
+
+dns:
+  # domain: example.com # change to your domain
+  domain: nmatsui.work # change to your domain

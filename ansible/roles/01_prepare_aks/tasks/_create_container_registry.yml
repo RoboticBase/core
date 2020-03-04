@@ -1,0 +1,18 @@
+- name: create container registry
+  azure_rm_containerregistry:
+    name: "{{ acr.name }}"
+    location: "{{ resources.region }}"
+    resource_group: "{{ resources.resource_group }}"
+    sku: "{{ acr.sku }}"
+    state: present
+  register: container_registry_result
+
+- debug:
+    var: container_registry_result
+
+- name: set ${REPOSITORY} to envfile
+  blockinfile:
+    dest: "{{ envfile_path }}"
+    marker: ""
+    block: |
+      export REPOSITORY="{{ container_registry_result.login_server }}"; echo "REPOSITORY=${REPOSITORY}"
