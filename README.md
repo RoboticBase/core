@@ -67,6 +67,46 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
 |kubernetes|1.14.1|
 
 ## getting started
+### ansible
+#### install ansible by using pipenv
+1. install ansible and other libraries by using pipenv
+
+    ```
+    $ cd ansible
+    $ pipenv install
+    ```
+1. start pipenv shell
+
+    ```
+    $ pipenv shell
+    ```
+
+#### start RoboticBase/core on minikube
+1. change the password of `iotagent` mqtt user defined in the following yml file:
+    * `group_vars/all.yml`
+1. change the values defined in the following yml files if necessary:
+    * `group_vars/all.yml`
+    * `inventories/minikube/host_vars/localhost.yml`
+    * `inventories/minikube/group_vars/minikube.yml`
+1. execute ansible playbook by using following command:
+
+    ```
+    $ ansible-playbook -i inventories/minikube --extra-vars="ansible_python_interpreter=$(which python)" minikube.yml
+    ```
+
+#### start RoboticBase/core on Azure AKS
+1. change the password of `iotagent` mqtt user defined in the following yml file:
+    * `group_vars/all.yml`
+1. change the values defined in the following yml files if necessary:
+    * `group_vars/all.yml`
+    * `inventories/aks/host_vars/azure.yml`
+    * `inventories/aks/group_vars/aks.yml`
+1. execute ansible playbook by using following command:
+
+    ```
+    $ ansible-playbook -i inventories/aks --extra-vars="ansible_python_interpreter=$(which python)" aks.yml
+    ```
+
 ### jupyter notebook (english)
 1. install python3
 
