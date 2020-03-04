@@ -1,4 +1,6 @@
 ---
+envfile_path: "{{ inventory_dir  }}/../../../docs/environments/minikube/env"
+
 minikube:
   name: minikube-rb
   vm_driver: virtualbox

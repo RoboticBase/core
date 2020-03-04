@@ -1,6 +1,5 @@
 ---
 root_dir: "{{ inventory_dir }}/../../.."
-envfile_path: "{{ inventory_dir  }}/../../../docs/environments/minikube/env"
 
 containers:
   rabbitmq:
@@ -69,4 +68,4 @@ containers:
 mqtt:
   users:
     - name: iotagent
-      password: password_of_iotagent
+      password: password_of_iotagent # change password of iotagent
