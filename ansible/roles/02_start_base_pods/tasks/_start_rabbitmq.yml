@@ -56,7 +56,7 @@
   until: rabbitmq_mqtts_services_result.resources | length == 1
   retries: 6
   delay: 10
-  when: ansible_play_name != "minikube"
+  when: ansible_play_name == "aks"
 
 - name: check rabbitmq-web-mqtt services
   k8s_info:
@@ -82,7 +82,7 @@
   until: rabbitmq_web_mqtts_services_result.resources | length == 1
   retries: 6
   delay: 10
-  when: ansible_play_name != "minikube"
+  when: ansible_play_name == "aks"
 
 - name: start rabbitmq statefulset
   k8s:

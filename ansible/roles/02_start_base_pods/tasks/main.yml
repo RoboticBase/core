@@ -1,10 +1,15 @@
 - import_tasks: _create_tls_cert.yml
-  when: ansible_play_name != "minikube"
+  when: ansible_play_name == "aks"
+- import_tasks: _register_rabbitmq_certifications.yml
+  when: ansible_play_name == "aks"
 
 - import_tasks: _start_rabbitmq.yml
 - import_tasks: _register_users_to_rabbitmq.yml
+
 - import_tasks: _nat_mqtt_port.yml
   when: ansible_play_name == "minikube"
+- import_tasks: _register_dns_rabbitmq.yml
+  when: ansible_play_name == "aks"
 
 - import_tasks: _start_mongodb.yml
 

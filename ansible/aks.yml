@@ -3,3 +3,4 @@
   connection: local
   roles:
     - 01_prepare_aks
+    - 02_start_base_pods
