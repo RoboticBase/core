@@ -22,3 +22,8 @@ dns:
 containers_extra:
   rabbitmq:
     replicas: 3
+  mongodb:
+    replicas: 3
+    storage:
+      class: "managed-premium"
+      size: "30Gi"

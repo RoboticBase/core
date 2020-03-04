@@ -1,4 +1,4 @@
-replicas: 3
+replicas: {{ containers_extra.mongodb.replicas }}
 port: 27017
 fullnameOverride: mongodb
 
@@ -21,8 +21,8 @@ copyConfigImage:
 
 # Specs for the MongoDB image
 image:
-  repository: mongo
-  tag: 4.1.13
+  repository: {{ containers.mongodb.repository }}
+  tag: {{ containers.mongodb.tag }}
   pullPolicy: IfNotPresent
 
 # Prometheus Metrics Exporter
@@ -52,10 +52,10 @@ resources: {}
 
 persistentVolume:
   enabled: true
-  storageClass: "managed-premium"
+  storageClass: {{ containers_extra.mongodb.storage.class }}
   accessModes:
     - ReadWriteOnce
-  size: 30Gi
+  size: {{ containers_extra.mongodb.storage.size }}
   annotations: {}
 
 # Annotations to be added to the service
