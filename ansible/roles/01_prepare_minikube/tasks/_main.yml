@@ -23,6 +23,10 @@
 
 - import_tasks: _start_local_registry.yml
 
-- import_tasks: _setup_rbac.yml
+- import_role:
+    name: 00_common
+    tasks_from: setup_rbac.yml
 
-- import_tasks: _setup_helm.yml
+- import_role:
+    name: 00_common
+    tasks_from: setup_helm.yml
