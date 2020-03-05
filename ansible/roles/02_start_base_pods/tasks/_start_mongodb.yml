@@ -64,7 +64,7 @@
     - mongodb_statefulset_result.resources[0].status is defined
     - mongodb_statefulset_result.resources[0].status.readyReplicas is defined
     - mongodb_statefulset_result.resources[0].status.readyReplicas == containers_extra.mongodb.replicas
-  retries: 45
+  retries: 60
   delay: 10
 
 - include_tasks: __check_mongodb_pod.yml
