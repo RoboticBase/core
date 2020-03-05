@@ -29,3 +29,5 @@ containers_extra:
       size: "30Gi"
   ambassador:
     replicas: 3
+  auth:
+    replicas: 3
