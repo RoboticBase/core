@@ -40,6 +40,21 @@
     - "{{ containers.ekf.elasticsearch.coordinating.name }}"
     - "discovery"
 
+- name: check elasticsearch master persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+      - role = master
+  register: elasticsearch_master_pvc_result
+  until:
+    - elasticsearch_master_pvc_result.resources is defined
+    - elasticsearch_master_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == containers_extra.ekf.elasticsearch.master.replicas
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
 - name: check elasticsearch master statefulsets
   k8s_info:
     kind: StatefulSet
@@ -55,6 +70,21 @@
     - elasticsearch_statefulset_result.resources[0].status.readyReplicas == containers_extra.ekf.elasticsearch.master.replicas
   retries: 60
   delay: 10
+
+- name: check elasticsearch data persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+      - role = data
+  register: elasticsearch_data_pvc_result
+  until:
+    - elasticsearch_data_pvc_result.resources is defined
+    - elasticsearch_data_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == containers_extra.ekf.elasticsearch.data.replicas
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
 
 - name: check elasticsearch data statefulsets
   k8s_info:

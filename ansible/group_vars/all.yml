@@ -54,6 +54,11 @@ containers:
         name: data
       coordinating:
         name: client
+    curator:
+      repository: bitnami/elasticsearch-curator
+      tag: 5.8.1
+      name: curator
+      days: 60
     fluentd:
       repository: quay.io/fluentd_elasticsearch/fluentd
       tag: v2.9.0

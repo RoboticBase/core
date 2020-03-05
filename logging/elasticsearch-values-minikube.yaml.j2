@@ -1,8 +1,10 @@
 global:
   coordinating:
     name: {{ containers.ekf.elasticsearch.coordinating.name }}
+  kibanaEnabled: false
 
 image:
+  registry: docker.io
   repository: {{ containers.ekf.elasticsearch.repository }}
   tag: {{ containers.ekf.elasticsearch.tag }}
   pullPolicy: IfNotPresent

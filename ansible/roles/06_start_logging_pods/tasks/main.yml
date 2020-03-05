@@ -12,3 +12,6 @@
 
 - import_tasks: _start_kibana.yml
   when: containers.ekf.is_provisioning
+
+- import_tasks: _register_dns_kibana.yml
+  when: containers.ekf.is_provisioning and ansible_play_name == "aks"

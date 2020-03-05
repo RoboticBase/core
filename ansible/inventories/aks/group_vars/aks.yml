@@ -52,3 +52,24 @@ containers_extra:
       storage:
         class: "managed-premium"
         size: "30Gi"
+  ekf:
+    elasticsearch:
+      master:
+        replicas: 3
+        storage:
+          class: "managed-premium"
+          size: "30Gi"
+      data:
+        replicas: 3
+        storage:
+          class: "managed-premium"
+          size: "30Gi"
+      coordinating:
+        replicas: 3
+    curator:
+      is_provisioning: true
+    kibana:
+      replicas: 1
+      storage:
+        class: "managed-premium"
+        size: "10Gi"
