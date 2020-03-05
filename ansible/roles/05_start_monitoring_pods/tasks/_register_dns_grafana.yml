@@ -7,7 +7,7 @@
       - app = ambassador
   register: ambassador_services_result
 
-- name: add an A record to azure dns for ambassador
+- name: add an A record to azure dns for grafana
   azure_rm_dnsrecordset:
     resource_group: "{{ resources.dns_zone }}"
     zone_name: "{{ dns.domain }}"
