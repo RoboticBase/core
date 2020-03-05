@@ -67,6 +67,34 @@
   with_items:
     - "po-prometheus-node-exporter"
 
+- name: check alertmanager persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: monitoring
+    label_selectors:
+      - app = alertmanager
+  register: alertmanager_pvc_result
+  until:
+    - alertmanager_pvc_result.resources is defined
+    - alertmanager_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == 1
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
+- name: check prometheus persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: monitoring
+    label_selectors:
+      - app = prometheus
+  register: prometheus_pvc_result
+  until:
+    - prometheus_pvc_result.resources is defined
+    - prometheus_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == 1
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
 - name: check prometheus-operator statefulset
   k8s_info:
     kind: StatefulSet

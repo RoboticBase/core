@@ -50,6 +50,21 @@
   retries: 6
   delay: 10
 
+- name: check mongodb persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: default
+    label_selectors:
+      - release = mongodb
+      - app = mongodb-replicaset
+  register: mongodb_pvc_result
+  until:
+    - mongodb_pvc_result.resources is defined
+    - mongodb_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == containers_extra.mongodb.replicas
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
 - name: check mongodb statefulset
   k8s_info:
     kind: StatefulSet
