@@ -88,7 +88,7 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
     * `group_vars/all.yml`
     * `inventories/minikube/host_vars/localhost.yml`
     * `inventories/minikube/group_vars/minikube.yml`
-1. execute ansible playbook by using following command:
+1. execute an ansible playbook by using following command:
 
     ```
     $ ansible-playbook -i inventories/minikube --extra-vars="ansible_python_interpreter=$(which python)" minikube.yml
@@ -101,7 +101,12 @@ Please see this repository [ogcaizu/ogc-poc1](https://github.com/ogcaizu/ogc-poc
     * `group_vars/all.yml`
     * `inventories/aks/host_vars/azure.yml`
     * `inventories/aks/group_vars/aks.yml`
-1. execute ansible playbook by using following command:
+1. execute a shell script to create azure credentials
+
+    ```
+    $ ./generate_azure_credentials.sh
+    ```
+1. execute an ansible playbook by using following command:
 
     ```
     $ ansible-playbook -i inventories/aks --extra-vars="ansible_python_interpreter=$(which python)" aks.yml
