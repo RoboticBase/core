@@ -31,3 +31,13 @@ containers_extra:
     replicas: 3
   auth:
     replicas: 3
+  orion:
+    replicas: 3
+  iotagent_json:
+    replicas: 3
+  iotagent_ul:
+    replicas: 3
+  cygnus_mongo:
+    replicas: 3
+  sth_comet:
+    replicas: 3
