@@ -1,0 +1,17 @@
+image:
+  registry: docker.io
+  repository: {{ containers.ekf.kibana.repository }}
+  tag: {{ containers.ekf.kibana.tag }}
+  pullPolicy: IfNotPresent
+
+replicaCount: {{ containers_extra.ekf.kibana.replicas }}
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+elasticsearch:
+  hosts:
+    - {{ containers.ekf.kibana.host }}
+  port: {{ containers.ekf.kibana.port }}

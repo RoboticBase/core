@@ -3,15 +3,22 @@
     helm list --namespace logging -o json
   register: helm_release_list_result
 
+- name: generate tempfile
+  tempfile:
+    state: file
+    suffix: kibana_values.yaml
+  register: kibana_values_tempfile
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`kibana`]') | length == 0
+
+- name: write generated values.yaml to tempfile
+  template:
+    src: "{{ root_dir }}/logging/kibana-values-{{ ansible_play_name }}.yaml.j2"
+    dest: "{{ kibana_values_tempfile.path }}"
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`kibana`]') | length == 0
+
 - name: start kibana using helm if does not exist
   command: |
-    helm install --name-template kibana --namespace logging \
-    --set image.repository={{ containers.ekf.kibana.repository }} \
-    --set image.tag={{ containers.ekf.kibana.tag }} \
-    --set replicaCount={{ containers_extra.ekf.kibana.replicas }} \
-    --set elasticsearch.hosts[0]={{ containers.ekf.kibana.host }} \
-    --set elasticsearch.port={{ containers.ekf.kibana.port }} \
-    bitnami/kibana
+    helm install --name-template kibana --namespace logging -f {{ kibana_values_tempfile.path }} bitnami/kibana
   register: install_kibana_result
   when: helm_release_list_result.stdout | from_json | json_query('[?name==`kibana`]') | length == 0
 - debug: var=install_kibana_result

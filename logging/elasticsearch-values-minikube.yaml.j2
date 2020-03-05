@@ -1,0 +1,19 @@
+global:
+  coordinating:
+    name: {{ containers.ekf.elasticsearch.coordinating.name }}
+
+image:
+  repository: {{ containers.ekf.elasticsearch.repository }}
+  tag: {{ containers.ekf.elasticsearch.tag }}
+  pullPolicy: IfNotPresent
+
+master:
+  name: {{ containers.ekf.elasticsearch.master.name }}
+  replicas: {{ containers_extra.ekf.elasticsearch.master.replicas }}
+
+coordinating:
+  replicas: {{ containers_extra.ekf.elasticsearch.coordinating.replicas }}
+
+data:
+  name: {{ containers.ekf.elasticsearch.data.name }}
+  replicas: {{ containers_extra.ekf.elasticsearch.data.replicas }}

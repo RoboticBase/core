@@ -3,18 +3,22 @@
     helm list --namespace logging -o json
   register: helm_release_list_result
 
+- name: generate tempfile
+  tempfile:
+    state: file
+    suffix: elasticsearch_values.yaml
+  register: elasticsearch_values_tempfile
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
+
+- name: write generated values.yaml to tempfile
+  template:
+    src: "{{ root_dir }}/logging/elasticsearch-values-{{ ansible_play_name }}.yaml.j2"
+    dest: "{{ elasticsearch_values_tempfile.path }}"
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
+
 - name: start elasticsearch using helm if does not exist
   command: |
-    helm install --name-template es --namespace logging \
-    --set image.repository={{ containers.ekf.elasticsearch.repository }} \
-    --set image.tag={{ containers.ekf.elasticsearch.tag }} \
-    --set master.name={{ containers.ekf.elasticsearch.master.name }} \
-    --set master.replicas={{ containers_extra.ekf.elasticsearch.master.replicas }} \
-    --set data.name={{ containers.ekf.elasticsearch.data.name }} \
-    --set data.replicas={{ containers_extra.ekf.elasticsearch.data.replicas }} \
-    --set global.coordinating.name={{ containers.ekf.elasticsearch.coordinating.name }} \
-    --set coordinating.replicas={{ containers_extra.ekf.elasticsearch.coordinating.replicas }} \
-    bitnami/elasticsearch
+    helm install --name-template es --namespace logging -f {{ elasticsearch_values_tempfile.path }} bitnami/elasticsearch
   register: install_elasticsearch_result
   when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
 - debug: var=install_elasticsearch_result

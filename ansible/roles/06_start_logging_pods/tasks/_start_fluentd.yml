@@ -3,14 +3,22 @@
     helm list --namespace logging -o json
   register: helm_release_list_result
 
+- name: generate tempfile
+  tempfile:
+    state: file
+    suffix: fluentd_values.yaml
+  register: fluentd_values_tempfile
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`fd`]') | length == 0
+
+- name: write generated values.yaml to tempfile
+  template:
+    src: "{{ root_dir }}/logging/fluentd-values.yaml.j2"
+    dest: "{{ fluentd_values_tempfile.path }}"
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`fd`]') | length == 0
+
 - name: start fluentd using helm if does not exist
   command: |
-    helm install --name-template fd --namespace logging \
-    --set image.repository={{ containers.ekf.fluentd.repository }} \
-    --set image.tag={{ containers.ekf.fluentd.tag }} \
-    --set elasticsearch.host={{ containers.ekf.fluentd.host }} \
-    --set elasticsearch.port={{ containers.ekf.fluentd.port }} \
-    kiwigrid/fluentd-elasticsearch
+    helm install --name-template fd --namespace logging -f {{ fluentd_values_tempfile.path }} kiwigrid/fluentd-elasticsearch
   register: install_fluentd_result
   when: helm_release_list_result.stdout | from_json | json_query('[?name==`fd`]') | length == 0
 - debug: var=install_fluentd_result
