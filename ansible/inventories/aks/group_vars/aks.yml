@@ -41,3 +41,14 @@ containers_extra:
     replicas: 3
   sth_comet:
     replicas: 3
+  cygnus_elasticsearch:
+    replicas: 3
+  prometheus_operator:
+    alertmanager:
+      storage:
+        class: "managed-premium"
+        size: "30Gi"
+    prometheus:
+      storage:
+        class: "managed-premium"
+        size: "30Gi"

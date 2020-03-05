@@ -8,4 +8,10 @@
   when: containers.prometheus_operator.is_provisioning
 
 - import_tasks: _patch_kube_proxy.yml
-  when: containers.prometheus_operator.is_provisioning
+  when: containers.prometheus_operator.is_provisioning and ansible_play_name == "minikube"
+
+- import_tasks: _patch_grafana_service.yml
+  when: containers.prometheus_operator.is_provisioning and ansible_play_name == "aks"
+
+- import_tasks: _register_dns_grafana.yml
+  when: containers.prometheus_operator.is_provisioning and ansible_play_name == "aks"

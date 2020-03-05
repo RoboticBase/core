@@ -42,6 +42,11 @@
     - "po-prometheus-operator-operator"
     - "po-prometheus-operator-prometheus"
 
+- name: get node count
+  k8s_info:
+    kind: Node
+  register: node_result
+
 - name: check prometheus-operator daemonset
   k8s_info:
     kind: DaemonSet
@@ -54,9 +59,9 @@
     - po_daemonset_result.resources | length == 1
     - po_daemonset_result.resources[0].status is defined
     - po_daemonset_result.resources[0].status.numberAvailable is defined
-    - po_daemonset_result.resources[0].status.numberAvailable == 1
+    - po_daemonset_result.resources[0].status.numberAvailable == node_result.resources | length
     - po_daemonset_result.resources[0].status.numberReady is defined
-    - po_daemonset_result.resources[0].status.numberReady == 1
+    - po_daemonset_result.resources[0].status.numberReady == node_result.resources | length
   retries: 60
   delay: 10
   with_items:
