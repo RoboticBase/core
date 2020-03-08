@@ -42,7 +42,7 @@ containers_extra:
     replicas: 1
   ekf:
     elasticsearch:
-      # master:
+      master:
         replicas: 3
       data:
         replicas: 3
