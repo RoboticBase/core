@@ -50,6 +50,10 @@
   retries: 60
   delay: 10
 
+- name: wait 120sec
+  wait_for:
+    timeout: 120
+
 - name: call orion REST API (ambassador returns 401 when the authorization header is not set)
   uri:
     url: "{{ base_url }}/orion/v2/entities/"
