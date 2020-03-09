@@ -57,28 +57,26 @@ Please see this repository [RoboticBase/uoa-poc2](https://github.com/RoboticBase
 
 ||version|
 |:--|:--|
-|OS|macOS Mojave 10.14.6 or Ubuntu 16.04|
+|OS|macOS Mojave 10.14.6<br/>Ubuntu 16.04|
+|pyenv|1.2.16|
+|pipenv|2018.11.26|
 |kubectl|1.17.3|
 |helm|3.1.1|
-|pipenv|2018.11.26|
-|openssl|2.6.5|
-|azure cli|2.1.0|
-|minikube|1.7.3|
 
-* Azure AKS
+* for Azure AKS
 
 ||version|
 |:--|:--|
-|region|japaneast|
-|AKS|1.14.8|
+|openssl|2.6.5|
+|azure cli|2.1.0|when you use Azure AKS|
 
-* minikube
+* for minikube
     * when you use monitoring & logging, you have to give **4 cpu & 8192 MB memories** to minikube.
 
 ||version|
 |:--|:--|
 |VirtualBox|6.1.2 r135662|
-|kubernetes|1.17.0|
+|minikube|1.7.3|
 
 ## getting started
 ### install ansible by using pipenv
@@ -96,11 +94,10 @@ Please see this repository [RoboticBase/uoa-poc2](https://github.com/RoboticBase
 
 ### start RoboticBase/core on minikube
 1. change the password of `iotagent` mqtt user defined in the following yml file:
-    * `group_vars/all.yml`
+    * [group\_vars/all.yml](ansible/group_vars/all.yml)
 1. change the values defined in the following yml files if necessary:
-    * `group_vars/all.yml`
-    * `inventories/minikube/host_vars/localhost.yml`
-    * `inventories/minikube/group_vars/minikube.yml`
+    * [inventories/minikube/group\_vars/minikube.yml](ansible/inventories/minikube/group_vars/minikube.yml)
+    * [inventories/minikube/host\_vars/localhost.yml](ansible/inventories/minikube/host_vars/localhost.yml)
 1. execute an ansible playbook by using following command:
 
     ```
