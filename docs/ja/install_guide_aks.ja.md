@@ -195,22 +195,22 @@ $ pipenv install
     $ ./tools/show_kibana_credentials.py
     ```
 1. ブラウザでkibana (https://kibana.{{ your domain }})にアクセスする
-    ![kibana\_00.png](../images/kibana/kibana_00.png)
+    ![kibana\_00.png](../images/aks/kibana_00.png)
 1. kibanaのユーザー名とパスワードを入力して**ログイン**する
-    ![kibana\_01.png](../images/kibana/kibana_01.png)
+    ![kibana\_01.png](../images/aks/kibana_01.png)
 1. **Explore on my own**をクリックしてホーム画面を表示する
-    ![kibana\_02.png](../images/minikube/kibana_02.png)
+    ![kibana\_02.png](../images/aks/kibana_02.png)
 1. **Management**をクリックして管理画面を表示する
-    ![kibana\_03.png](../images/minikube/kibana_03.png)
+    ![kibana\_03.png](../images/aks/kibana_03.png)
 1. **Index Patterns**をクリックする
-    ![kibana\_04.png](../images/minikube/kibana_04.png)
+    ![kibana\_04.png](../images/aks/kibana_04.png)
 1. **Create Index Patterns**をクリックする
-    ![kibana\_05.png](../images/minikube/kibana_05.png)
+    ![kibana\_05.png](../images/aks/kibana_05.png)
 1. **Index pattern**に"logstash-\*"と入力し、**Next Step**をクリックする
-    ![kibana\_06.png](../images/minikube/kibana_06.png)
+    ![kibana\_06.png](../images/aks/kibana_06.png)
 1. **Time Filter field name**として"@timestamp"を選択し、**Create Index pattern**をクリックする
-    ![kibana\_07.png](../images/minikube/kibana_07.png)
+    ![kibana\_07.png](../images/aks/kibana_07.png)
 1. Indexが作成される
-    ![kibana\_08.png](../images/minikube/kibana_08.png)
+    ![kibana\_08.png](../images/aks/kibana_08.png)
 1. **Discover**をクリックし、Podのログが収集されていることを確認する
-    ![kibana\_09.png](../images/minikube/kibana_09.png)
+    ![kibana\_09.png](../images/aks/kibana_09.png)
