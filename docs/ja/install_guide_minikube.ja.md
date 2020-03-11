@@ -177,8 +177,8 @@ $ pipenv install
     $ ansible-playbook -i inventories/minikube --extra-vars="ansible_python_interpreter=$(which python)" minikube.yml
     ```
 
-## grafanaの設定
-1. grafanaのServiceへPort-Forwarkを行う
+### grafanaの設定
+1. grafanaのServiceへ3000ポートをPort-Forwardする
 
     ```
     $ kubectl -n monitoring port-forward svc/po-grafana 3000:80
@@ -193,6 +193,28 @@ $ pipenv install
     ![grafana\_04.png](../images/minikube/grafana_04.png)
 1. Ctrl-Cでport-forwardingを終了する
 
-## kibanaの設定
-1. 
+### kibanaの設定
+1. kibanaのServiceへ5601ポートをPort-forwardする
 
+    ```
+    $ kubectl -n logging port-forward svc/kibana 5601:80
+    ```
+1. ブラウザでkibana ([http://localhost:5601](http://localhost:5601))にアクセス
+    ![kibana\_01.png](../images/minikube/kibana_01.png)
+1. **Explore on my own**をクリックしてホーム画面を表示する
+    ![kibana\_02.png](../images/minikube/kibana_02.png)
+1. **Management**をクリックして管理画面を表示する
+    ![kibana\_03.png](../images/minikube/kibana_03.png)
+1. **Index Patterns**をクリックする
+    ![kibana\_04.png](../images/minikube/kibana_04.png)
+1. **Create Index Patterns**をクリックする
+    ![kibana\_05.png](../images/minikube/kibana_05.png)
+1. **Index pattern**に"logstash-\*"と入力し、**Next Step**をクリックする
+    ![kibana\_06.png](../images/minikube/kibana_06.png)
+1. **Time Filter field name**として"@timestamp"を選択し、**Create Index pattern**をクリックする
+    ![kibana\_07.png](../images/minikube/kibana_07.png)
+1. Indexが作成される
+    ![kibana\_08.png](../images/minikube/kibana_08.png)
+1. **Discover**をクリックし、Podのログが収集されていることを確認する
+    ![kibana\_09.png](../images/minikube/kibana_09.png)
+1. Ctrl-Cでport-forwardingを終了する
