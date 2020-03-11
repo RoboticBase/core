@@ -1,5 +1,4 @@
 # RoboticBase-core
-
 This repository is a core components of "RoboticBase". The latest version (0.5) conforms to [FIWARE Release 7.8.1](https://github.com/FIWARE/catalogue/releases/tag/FIWARE_7.8.1).
 
 ## Description
@@ -49,11 +48,11 @@ Please see this repository [RoboticBase/uoa-poc2](https://github.com/RoboticBase
 ## Requirements
 
 * kubernetes client PC
-    * [minikube](https://github.com/kubernetes/minikube) and [Oracle VM VirtualBox](https://www.virtualbox.org/) is required when you use minikube.
-    * [azure cli](https://github.com/Azure/azure-cli) is required when you use [Azure AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/).
+    * [pyenv](https://github.com/pyenv/pyenv) and [pipenv](https://pipenv.pypa.io/en/latest/) is required to setup ansible and other libraries.
     * [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) and [helm](https://helm.sh/) is required to handle minikube and Azure AKS.
-    * [pipenv](https://pipenv.pypa.io/en/latest/) is required to setup ansible and other libraries.
     * [openssl](https://www.openssl.org/) is required to generate tls cert files.
+    * [azure cli](https://github.com/Azure/azure-cli) is required when you use [Azure AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/).
+    * [minikube](https://github.com/kubernetes/minikube) and [Oracle VM VirtualBox](https://www.virtualbox.org/) is required when you use minikube.
 
 ||version|
 |:--|:--|
@@ -71,7 +70,7 @@ Please see this repository [RoboticBase/uoa-poc2](https://github.com/RoboticBase
 |azure cli|2.1.0|when you use Azure AKS|
 
 * for minikube
-    * when you use monitoring & logging, you have to give **4 cpu & 8192 MB memories** to minikube.
+    * when you use monitoring & logging, you have to give **4 cpu & 8192 MB memories** or more to minikube.
 
 ||version|
 |:--|:--|
@@ -79,50 +78,54 @@ Please see this repository [RoboticBase/uoa-poc2](https://github.com/RoboticBase
 |minikube|1.7.3|
 
 ## getting started
-### install ansible by using pipenv
-1. install ansible and other libraries by using pipenv
-
-    ```
-    $ cd ansible
-    $ pipenv install
-    ```
-1. start pipenv shell
-
-    ```
-    $ pipenv shell
-    ```
-
 ### start RoboticBase/core on minikube
 1. change the password of `iotagent` mqtt user defined in the following yml file:
     * [group\_vars/all.yml](ansible/group_vars/all.yml)
 1. change the values defined in the following yml files if necessary:
     * [inventories/minikube/group\_vars/minikube.yml](ansible/inventories/minikube/group_vars/minikube.yml)
     * [inventories/minikube/host\_vars/localhost.yml](ansible/inventories/minikube/host_vars/localhost.yml)
+1. start pipenv shell
+
+    ```
+    $ pipenv shell
+    ```
 1. execute an ansible playbook by using following command:
 
     ```
     $ ansible-playbook -i inventories/minikube --extra-vars="ansible_python_interpreter=$(which python)" minikube.yml
     ```
+**for more detail, please see [docs/en/install\_guide\_minikube.en.md](docs/en/install_guide_minikube.en.md)**
+**詳細は[docs/ja/install\_guide\_minikube.ja.md](docs/ja/install_guide_minikube.ja.md)を参照**
 
 #### start RoboticBase/core on Azure AKS
 1. change the password of `iotagent` mqtt user defined in the following yml file:
-    * `group_vars/all.yml`
+    * [group\_vars/all.yml](ansible/group_vars/all.yml)
 1. change the `dns.domain` and `dns.email` to your own domain and email in the following yml file:
-    * `inventories/aks/group_vars/aks.yml`
+    * [inventories/aks/group\_vars/aks.yml](ansible/inventories/aks/group_vars/aks.yml)
+1. change the `resources.ssh_key_file_path` to your own public key in the following yml file:
+    * [inventories/aks/host\_vars/azure.yml](ansible/inventories/aks/host_vars/azure.yml)
 1. change the values defined in the following yml files if necessary:
-    * `group_vars/all.yml`
-    * `inventories/aks/host_vars/azure.yml`
-    * `inventories/aks/group_vars/aks.yml`
+    * [inventories/aks/group\_vars/aks.yml](ansible/inventories/aks/group_vars/aks.yml)
+    * [inventories/aks/host\_vars/azure.yml](ansible/inventories/aks/host_vars/azure.yml)
 1. execute a shell script to create azure credentials
 
     ```
-    $ ./generate_azure_credentials.sh
+    $ ./tools/generate_azure_credentials.sh
+    ```
+1. start pipenv shell
+
+    ```
+    $ pipenv shell
     ```
 1. execute an ansible playbook by using following command:
 
     ```
     $ ansible-playbook -i inventories/aks --extra-vars="ansible_python_interpreter=$(which python)" aks.yml
     ```
+
+**for more detail, please see [docs/en/install\_guide\_aks.en.md](docs/en/install_guide_aks.en.md)**
+**詳細は[docs/ja/install\_guide\_aks.ja.md](docs/ja/install_guide_aks.ja.md)を参照**
+
 ## Related Repositories
 ### FIWARE components
 * [telefonicaid/fiware-orion](https://github.com/telefonicaid/fiware-orion)

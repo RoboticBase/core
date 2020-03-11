@@ -183,7 +183,7 @@ $ pipenv install
     ```
     $ kubectl -n monitoring port-forward svc/po-grafana 3000:80
     ```
-1. ブラウザでgrafana ([http://localhost:3000](http://localhost:3000))にアクセス
+1. ブラウザでgrafana ([http://localhost:3000](http://localhost:3000))にアクセスする
     ![grafana\_01.png](../images/minikube/grafana_01.png)
 1. **email or username**に"admin"、**password**に"prom-operator"を入力し**Log In**する
     ![grafana\_02.png](../images/minikube/grafana_02.png)
@@ -199,7 +199,7 @@ $ pipenv install
     ```
     $ kubectl -n logging port-forward svc/kibana 5601:80
     ```
-1. ブラウザでkibana ([http://localhost:5601](http://localhost:5601))にアクセス
+1. ブラウザでkibana ([http://localhost:5601](http://localhost:5601))にアクセスする
     ![kibana\_01.png](../images/minikube/kibana_01.png)
 1. **Explore on my own**をクリックしてホーム画面を表示する
     ![kibana\_02.png](../images/minikube/kibana_02.png)
