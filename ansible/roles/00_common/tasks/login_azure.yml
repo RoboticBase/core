@@ -1,0 +1,10 @@
+- name: login azure
+  command: |
+    az login --service-principal -u "{{ client_id }}" -p "{{ secret }}" --tenant "{{ tenant }}"
+  vars:
+    - client_id: "{{ lookup('ini', 'client_id section=default file={{ ansible_env.HOME }}/.azure/credentials') }}"
+    - secret: "{{ lookup('ini', 'secret section=default file={{ ansible_env.HOME }}/.azure/credentials') }}"
+    - tenant: "{{ lookup('ini', 'tenant section=default file={{ ansible_env.HOME }}/.azure/credentials') }}"
+  register: azure_login_result
+- debug:
+    var: azure_login_result.stdout

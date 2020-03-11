@@ -1,0 +1,56 @@
+- name: check existing storage account
+  azure_rm_storageaccount_info:
+    resource_group: "{{ resources.resource_group }}"
+    tags:
+      - "prefix:{{ resources.storage_account_prefix }}"
+  register: storageaccount_info_result
+- debug:
+    var: storageaccount_info_result
+
+- name: get storage account name
+  set_fact:
+    storage_account_name: "{{ storageaccount_info_result.storageaccounts[0].name }}"
+  when: storageaccount_info_result.storageaccounts | length == 1
+
+- name: get randomstr for storage account
+  get_randomstr:
+    length: 12
+  register: storage_account
+  when: storageaccount_info_result.storageaccounts | length == 0
+
+- name: generate storage account name
+  set_fact:
+    storage_account_name: "{{ resources.storage_account_prefix }}{{ storage_account.randomstr | lower }}"
+  when: storageaccount_info_result.storageaccounts | length == 0
+
+- name: create storage account if does not exists
+  azure_rm_storageaccount:
+    name: "{{ storage_account_name }}"
+    resource_group: "{{ resources.resource_group }}"
+    type: Standard_LRS
+    tags:
+      prefix: "{{ resources.storage_account_prefix }}"
+  register: create_storageaccount_result
+  when: storageaccount_info_result.storageaccounts | length == 0
+- debug:
+    var: create_storageaccount_result
+  when: storageaccount_info_result.storageaccounts | length == 0
+
+- name: wait 60sec
+  wait_for:
+    timeout: 60
+  when: storageaccount_info_result.storageaccounts | length == 0
+
+- name: get storage account access key
+  command: |
+    az storage account keys list --account-name rbsaczvfiki0mj55 --resource-group rbcore --query "[0].value" --output tsv
+  register: get_storage_account_access_key_result
+- set_fact:
+    storage_account_key: "{{ get_storage_account_access_key_result.stdout }}"
+
+- name: create storage container
+  azure_rm_storageblob:
+    storage_account_name: "{{ storage_account_name }}"
+    resource_group: "{{ resources.resource_group }}"
+    container: "{{ resources.storage_container }}"
+  register: create_storage_container_result

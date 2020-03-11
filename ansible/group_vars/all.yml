@@ -69,6 +69,10 @@ containers:
       tag: 7.6.0
       host: es-elasticsearch-client
       port: 9200
+  mongodb_backup:
+    is_provisioning: true
+    image: roboticbase/mongodb-simple-backup:0.1.0
+    cron: "0 0-23/3 * * *"
 
 mqtt:
   users:
