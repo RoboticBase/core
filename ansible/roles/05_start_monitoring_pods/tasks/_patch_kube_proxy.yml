@@ -55,30 +55,20 @@
     namespace: kube-system
   with_items: "{{ kube_proxy_pods_result.resources | json_query('[*].metadata.name') }}"
 
-- name: wait 5sec
+- name: wait 60sec
   wait_for:
-    timeout: 5
+    timeout: 60
 
-- name: re-get kube-proxy pods
+- name: check kube-proxy pods
   k8s_info:
     kind: Pod
     namespace: kube-system
     label_selectors:
       - k8s-app = kube-proxy
   register: kube_proxy_pods_result
-
-- name: check kube-proxy pods
-  k8s_info:
-    kind: Pod
-    name: "{{ item }}"
-    namespace: kube-system
-    label_selectors:
-      - k8s-app = kube-proxy
-  register: kube_proxy_pod_result
   until:
-    - kube_proxy_pod_result.resources | length == 1
-    - kube_proxy_pod_result.resources[0].status.phase == 'Running'
-    - kube_proxy_pod_result.resources[0].status.containerStatuses[0].ready
+    - kube_proxy_pods_result.resources | length == 1
+    - kube_proxy_pods_result.resources[0].status.phase == 'Running'
+    - kube_proxy_pods_result.resources[0].status.containerStatuses[0].ready
   retries: 60
   delay: 10
-  with_items: "{{ kube_proxy_pods_result.resources | json_query('[*].metadata.name') }}"
