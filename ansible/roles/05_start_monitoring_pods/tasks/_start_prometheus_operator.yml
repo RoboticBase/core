@@ -16,6 +16,10 @@
     dest: "{{ prometheus_operator_values_tempfile.path }}"
   when: helm_release_list_result.stdout | from_json | json_query('[?name==`po`]') | length == 0
 
+- name: wait 30sec
+  wait_for:
+    timeout: 30
+
 - name: start prometheus-operator using heml
   command: |
     helm install --name-template po --namespace monitoring -f {{ prometheus_operator_values_tempfile.path }} stable/prometheus-operator
