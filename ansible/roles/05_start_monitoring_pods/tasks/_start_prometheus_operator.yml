@@ -16,14 +16,14 @@
     dest: "{{ prometheus_operator_values_tempfile.path }}"
   when: helm_release_list_result.stdout | from_json | json_query('[?name==`po`]') | length == 0
 
-- name: wait 30sec
-  wait_for:
-    timeout: 30
-
 - name: start prometheus-operator using heml
-  command: |
+  shell: |
+    helm uninstall po
     helm install --name-template po --namespace monitoring -f {{ prometheus_operator_values_tempfile.path }} stable/prometheus-operator
   register: prometheus_operator_result
+  until: prometheus_operator_result.rc == 0
+  retries: 60
+  delay: 10
   when: helm_release_list_result.stdout | from_json | json_query('[?name==`po`]') | length == 0
 - debug: var=prometheus_operator_result.stdout_lines
   when: helm_release_list_result.stdout | from_json | json_query('[?name==`po`]') | length == 0
