@@ -1,0 +1,5 @@
+---
+- hosts: minikube
+  connection: local
+  roles:
+    - 99_clean_minikube
