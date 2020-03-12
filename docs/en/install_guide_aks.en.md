@@ -1,6 +1,6 @@
-# RoboticBase Coreインストールガイド(Microsoft Azure AKS)
+# Installation Guide of RoboticBase Core (Microsoft Azure AKS)
 
-## 構築環境
+## Requirements
 
 ||version|
 |:--|:--|
@@ -12,9 +12,9 @@
 |openssl|2.6.5|
 |azure cli|2.1.0|
 
-## 準備
-### ツールのインストール
-<details><summary><b>pyenv</b>と<b>pipenv</b>のインストール</summary>
+## Preparation
+### Install tools
+<details><summary>Install <b>pyenv</b> and <b>pipenv</b></summary>
 <p>
 
 #### macOS
@@ -43,7 +43,7 @@ $ pip3 install pipenv
 </p>
 </details>
 
-<details><summary><b>kubectl</b>のインストール</summary>
+<details><summary>Install <b>kubectl</b></summary>
 <p>
 
 #### macOS
@@ -65,7 +65,7 @@ $ sudo mv ./kubectl /usr/local/bin/kubectl
 </p>
 </details>
 
-<details><summary><b>helm</b>のインストール</summary>
+<details><summary>Install <b>helm</b></summary>
 <p>
 
 #### macOS
@@ -87,7 +87,7 @@ $ sudo mv linux-amd64/helm /usr/local/bin/helm
 </p>
 </details>
 
-<details><summary><b>openssl</b>のインストール</summary>
+<details><summary>Install <b>openssl</b></summary>
 <p>
 
 #### macOS
@@ -105,7 +105,7 @@ $ sudo apt install -y openssl
 </p>
 </details>
 
-<details><summary><b>Azure CLI</b>のインストール</summary>
+<details><summary>Install <b>Azure CLI</b></summary>
 <p>
 
 #### macOS
@@ -123,8 +123,8 @@ $ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 </p>
 </details>
 
-### ansibleの準備
-<details><summary>RoboticBase/coreをclone</summary>
+### Prepare ansible
+<details><summary>Clone RoboticBase/core</summary>
 <p>
 
 ```
@@ -135,7 +135,7 @@ $ cd core
 </p>
 </details>
 
-<details><summary><b>ansible</b>と関連するPythonライブラリのインストール</summary>
+<details><summary>Install <b>ansible</b> and related libraries</summary>
 <p>
 
 ```
@@ -146,79 +146,79 @@ $ pipenv install
 </p>
 </details>
 
-## RoboticBase/coreのインストール
-### 変数の設定（必須）
-1. 次のYAMLファイルに定義されているMQTTユーザー（`iotagent`）のパスワードを変更する
+## Installation of RoboticBase/core
+### Set your variables (mandatory)
+1. Set the password of MQTT user (`iotagent`) in the following yaml file:
     * [group\_vars/all.yml](../../ansible/group_vars/all.yml)
-        * 対象: ```mqtt.users[?name==`iotagent`].password```
-1. 次のYAMLファイルに定義されているドメイン名を自身が所有するドメインに変更する
+        * target: ```mqtt.users[?name==`iotagent`].password```
+1. Change the domain name defined in the following yaml file to your own domain:
     * [inventories/aks/group\_vars/aks.yml](../../ansible/inventories/aks/group_vars/aks.yml)
-        * 対象: ```dns.domain```
-1. 次のYAMLファイルに定義されているEmailアドレスを自身のEmailアドレスに変更する
+        * target: ```dns.domain```
+1. Change the email address defined in the following yaml file to your own email:
     * [inventories/aks/group\_vars/aks.yml](../../ansible/inventories/aks/group_vars/aks.yml)
-        * 対象: ```dns.email```
-1. 次のYAMLファイルに定義されているSSHキーパスを自身の公開鍵のパスに変更する
+        * target: ```dns.email```
+1. Change the SSH key path defined in the following yaml file to your own public key:
     * [inventories/aks/host\_vars/azure.yml](../../ansible/inventories/aks/host_vars/azure.yml)
-        * 対象: ```resources.ssh_key_file_path```
+        * target: ```resources.ssh_key_file_path```
 
-### 変数の更新（任意）
-1. Azureに起動するworker nodeの数やVM SIZE等を変更したい場合には、次のYAMLファイルに定義されている値を変更する
+### Update your variables (optional)
+1. If necessary, update the variables in the following yaml file such as the number of worker nodes or the size of VM:
     * [inventories/aks/group\_vars/aks.yml](../../ansible/inventories/aks/group_vars/aks.yml)
-1. 起動する各コンテナのレプリカ数等を変更したい場合には、次のYAMLファイルに定義されている値を変更する
+1. If necessary, update the variables in the following yaml file such as the number of pod replicas:
     * [inventories/aks/group\_vars/aks.yml](../../ansible/inventories/aks/group_vars/aks.yml)
 
-### Azure Credentialsを生成
-1. 次のシェルスクリプトを実行し、ansibleからazureを操作する際に用いるcredentialsを生成する
+### Generate Azure Credentials
+1. Generate Azure Credentials which are used to operate Azure from ansible by executing following shell script:
 
     ```
     $ ./tools/generate_azure_credentials.sh
     ```
 
-### RoboticBase/coreを起動
-1. pipenv shellを起動する
+### Start RoboticBase/core
+1. Start "pipenv shell"
 
     ```
     $ pipenv shell
     ```
-1. ansibleを用いてRoboticBase/coreをAzure AKS上に起動する
+1. Start RoboticBase/core on Azure AKS using ansible
 
     ```
     $ ansible-playbook -i inventories/aks --extra-vars="ansible_python_interpreter=$(which python)" aks.yml
     ```
 
-### grafanaの設定
-1. ブラウザでgrafana (`https://grafana.{{ your domain }}`)にアクセスする
+### Configure grafana
+1. Access grafana (`https://grafana.{{ your domain }}`)
     ![grafana\_01.png](../images/aks/grafana_01.png)
-1. **email or username**に"admin"、**password**に"prom-operator"を入力し**Log In**する
+1. Input "admin" to **email or username** and "prom-operator" to **password**, and push **Log In**
     ![grafana\_02.png](../images/aks/grafana_02.png)
-1. 左下の**Preferences**より**Change Password**を選択し、adminのパスワードを変更する
+1. Select **Change Password** from **Preferences**, and change the password of admin
     ![grafana\_03.png](../images/aks/grafana_03.png)
-1. ホーム画面より、Azure AKSの各種リソースを監視するダッシュボードがインストールされていることを確認する
+1. Confirm the dashboards which were installed for monitoring the resources of Azure AKS
     ![grafana\_04.png](../images/aks/grafana_04.png)
 
-### kibanaの設定
-1. kibanaのユーザー名とパスワードを確認する
+### Configure kibana
+1. Confirm the username and password of kibana
 
     ```
     $ ./tools/show_kibana_credentials.py
     ```
-1. ブラウザでkibana (`https://kibana.{{ your domain }}`)にアクセスする
+1. Access kibana (`https://kibana.{{ your domain }}`)
     ![kibana\_00.png](../images/aks/kibana_00.png)
-1. kibanaのユーザー名とパスワードを入力して**ログイン**する
+1. Input the username and password of kibana, and Log in kibana
     ![kibana\_01.png](../images/aks/kibana_01.png)
-1. **Explore on my own**をクリックしてホーム画面を表示する
+1. Show *Home* view by clicking **Explore on my own**
     ![kibana\_02.png](../images/aks/kibana_02.png)
-1. **Management**をクリックして管理画面を表示する
+1. Show *Management* view by clicking **Management**
     ![kibana\_03.png](../images/aks/kibana_03.png)
-1. **Index Patterns**をクリックする
+1. Click **Index Patterns**
     ![kibana\_04.png](../images/aks/kibana_04.png)
-1. **Create Index Patterns**をクリックする
+1. Click **Create Index Patterns**
     ![kibana\_05.png](../images/aks/kibana_05.png)
-1. **Index pattern**に"logstash-\*"と入力し、**Next Step**をクリックする
+1. Input "logstash-\*" to **Index pattern**, and click **Next Step**
     ![kibana\_06.png](../images/aks/kibana_06.png)
-1. **Time Filter field name**として"@timestamp"を選択し、**Create Index pattern**をクリックする
+1. Select "@timestamp" at **Time Filter field name**, click **Create Index pattern**
     ![kibana\_07.png](../images/aks/kibana_07.png)
-1. ログメッセージ用のIndexが作成される
+1. The Index of log messages is created automatically
     ![kibana\_08.png](../images/aks/kibana_08.png)
-1. **Discover**をクリックし、Podのログメッセージが収集されていることを確認する
+1. Click **Discover**, and confirm the log messages gathered from Pods
     ![kibana\_09.png](../images/aks/kibana_09.png)

@@ -1,6 +1,6 @@
-# RoboticBase Coreインストールガイド(minikube)
+# Installation Guide of RoboticBase Core (minikube)
 
-## 構築環境
+## Requirements
 
 ||version|
 |:--|:--|
@@ -12,9 +12,9 @@
 |VirtualBox|6.1.2 r135662|
 |minikube|1.7.3|
 
-## 準備
-### ツールのインストール
-<details><summary><b>pyenv</b>と<b>pipenv</b>のインストール</summary>
+## Preparation
+### Install tools
+<details><summary>Install <b>pyenv</b> and <b>pipenv</b></summary>
 <p>
 
 #### macOS
@@ -43,7 +43,7 @@ $ pip3 install pipenv
 </p>
 </details>
 
-<details><summary><b>kubectl</b>のインストール</summary>
+<details><summary>Install <b>kubectl</b></summary>
 <p>
 
 #### macOS
@@ -65,7 +65,7 @@ $ sudo mv ./kubectl /usr/local/bin/kubectl
 </p>
 </details>
 
-<details><summary><b>helm</b>のインストール</summary>
+<details><summary>Install <b>helm</b></summary>
 <p>
 
 #### macOS
@@ -87,7 +87,7 @@ $ sudo mv linux-amd64/helm /usr/local/bin/helm
 </p>
 </details>
 
-<details><summary><b>Oracle VM VirtualBox</b>のインストール</summary>
+<details><summary>Install <b>Oracle VM VirtualBox</b></summary>
 <p>
 
 #### macOS
@@ -111,7 +111,7 @@ $ sudo apt-get install -y virtualbox-6.1
 </p>
 </details>
 
-<details><summary><b>minikube</b>のインストール</summary>
+<details><summary>Install <b>minikube</b></summary>
 <p>
 
 #### macOS
@@ -133,8 +133,8 @@ $ sudo mv ./minikube /usr/local/bin/minikube
 </p>
 </details>
 
-### ansibleの準備
-<details><summary>RoboticBase/coreをclone</summary>
+### Prepare ansible
+<details><summary>Clone RoboticBase/core</summary>
 <p>
 
 ```
@@ -145,7 +145,7 @@ $ cd core
 </p>
 </details>
 
-<details><summary><b>ansible</b>と関連するPythonライブラリのインストール</summary>
+<details><summary>Install <b>ansible</b> and related libraries</summary>
 <p>
 
 ```
@@ -156,68 +156,68 @@ $ pipenv install
 </p>
 </details>
 
-## RoboticBase/coreのインストール
-### 変数の設定（必須）
-1. 次のYAMLファイルに定義されているMQTTユーザー（`iotagent`）のパスワードを変更する
+## Installation of RoboticBase/core
+### Set your variables (mandatory)
+1. Set the password of MQTT user (`iotagent`) in the following yaml file:
     * [group\_vars/all.yml](../../ansible/group_vars/all.yml)
-        * 対象: ```mqtt.users[?name==`iotagent`].password```
+        * target: ```mqtt.users[?name==`iotagent`].password```
 
-### 変数の更新（任意）
-1. 起動する各コンテナのレプリカ数等を変更したい場合には、次のYAMLファイルに定義されている値を変更する
+### Update your variables (optional)
+1. If necessary, update the variables in the following yaml file such as the number of pod replicas:
     * [inventories/minikube/group\_vars/minikube.yml](../../ansible/inventories/minikube/group_vars/minikube.yml)
-1. minikubeに与えるCPUやメモリ等を変更したい場合には、次のYAMLファイルに定義されている値を変更する
+1. If necessary, update the variables in the following yaml file such as the number of CPUs or the size of memories which are granted to minikube:
     * [inventories/minikube/host\_vars/localhost.yml](../../ansible/inventories/minikube/host_vars/localhost.yml)
 
-### RoboticBase/coreを起動
-1. pipenv shellを起動する
+### Start RoboticBase/core
+1. Start "pipenv shell"
 
     ```
     $ pipenv shell
     ```
-1. ansibleを用いてRoboticBase/coreをminikube上に起動する
+1. Start RoboticBase/core on minikube using ansible
 
     ```
     $ ansible-playbook -i inventories/minikube --extra-vars="ansible_python_interpreter=$(which python)" minikube.yml
     ```
 
-### grafanaの設定
-1. grafanaのServiceへ3000ポートをPort-Forwardする
+### Configure grafana
+1. Forward 3000 port to grafana
 
     ```
     $ kubectl -n monitoring port-forward svc/po-grafana 3000:80
     ```
-1. ブラウザでgrafana (`http://localhost:3000`)にアクセスする
+1. Access grafana (`http://localhost:3000`)
     ![grafana\_01.png](../images/minikube/grafana_01.png)
-1. **email or username**に"admin"、**password**に"prom-operator"を入力し**Log In**する
+1. Input "admin" to **email or username** and "prom-operator" to **password**, and push **Log In**
     ![grafana\_02.png](../images/minikube/grafana_02.png)
-1. 左下の**Preferences**より**Change Password**を選択し、adminのパスワードを変更する
+1. Select **Change Password** from **Preferences**, and change the password of admin
     ![grafana\_03.png](../images/minikube/grafana_03.png)
-1. ホーム画面より、minikubeの各種リソースを監視するダッシュボードがインストールされていることを確認する
+1. Confirm the dashboards which were installed for monitoring the resources of minikube
     ![grafana\_04.png](../images/minikube/grafana_04.png)
-1. Ctrl-Cでport-forwardingを終了する
+1. Finish port-forwarding by pressing Ctrl-C
 
-### kibanaの設定
-1. kibanaのServiceへ5601ポートをPort-forwardする
+### Configure kibana
+1. Forward 5601 port to kibana
 
     ```
     $ kubectl -n logging port-forward svc/kibana 5601:80
     ```
-1. ブラウザでkibana (`http://localhost:5601`)にアクセスする
+1. Access kibana (`http://localhost:5601`)
     ![kibana\_01.png](../images/minikube/kibana_01.png)
-1. **Explore on my own**をクリックしてホーム画面を表示する
+1. Show *Home* view by clicking **Explore on my own**
     ![kibana\_02.png](../images/minikube/kibana_02.png)
-1. **Management**をクリックして管理画面を表示する
+1. Show *Management* view by clicking **Management**
     ![kibana\_03.png](../images/minikube/kibana_03.png)
-1. **Index Patterns**をクリックする
+1. Click **Index Patterns**
     ![kibana\_04.png](../images/minikube/kibana_04.png)
-1. **Create Index Patterns**をクリックする
+1. Click **Create Index Patterns**
     ![kibana\_05.png](../images/minikube/kibana_05.png)
-1. **Index pattern**に"logstash-\*"と入力し、**Next Step**をクリックする
+1. Input "logstash-\*" to **Index pattern**, and click **Next Step**
     ![kibana\_06.png](../images/minikube/kibana_06.png)
-1. **Time Filter field name**として"@timestamp"を選択し、**Create Index pattern**をクリックする
+1. Select "@timestamp" at **Time Filter field name**, click **Create Index pattern**
     ![kibana\_07.png](../images/minikube/kibana_07.png)
-1. ログメッセージ用のIndexが作成される
+1. The Index of log messages is created automatically
     ![kibana\_08.png](../images/minikube/kibana_08.png)
-1. **Discover**をクリックし、Podのログメッセージが収集されていることを確認する
+1. Click **Discover**, and confirm the log messages gathered from Pods
     ![kibana\_09.png](../images/minikube/kibana_09.png)
-1. Ctrl-Cでport-forwardingを終了する
+1. Finish port-forwarding by pressing Ctrl-C
