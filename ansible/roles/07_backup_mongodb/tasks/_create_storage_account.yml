@@ -43,7 +43,7 @@
 
 - name: get storage account access key
   command: |
-    az storage account keys list --account-name rbsaczvfiki0mj55 --resource-group rbcore --query "[0].value" --output tsv
+    az storage account keys list --account-name {{ storage_account_name }} --resource-group rbcore --query "[0].value" --output tsv
   register: get_storage_account_access_key_result
 - set_fact:
     storage_account_key: "{{ get_storage_account_access_key_result.stdout }}"
