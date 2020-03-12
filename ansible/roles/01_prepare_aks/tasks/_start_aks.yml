@@ -32,7 +32,7 @@
 
 - name: get acr info
   azure_rm_containerregistry_info:
-    name: "{{ acr.name }}"
+    name: "{{ container_registry_name }}"
     resource_group: "{{ resources.resource_group }}"
   register: container_registry_result
 

@@ -12,7 +12,7 @@ k8s:
   version: 1.14.8
 
 acr:
-  name: acrrb
+  name_prefix: acrrb
   sku: Basic
 
 dns:
