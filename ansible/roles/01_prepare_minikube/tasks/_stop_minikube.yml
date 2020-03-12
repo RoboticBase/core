@@ -3,7 +3,4 @@
     minikube stop \
     --profile {{ minikube.name }}
   register: minikube_stop_result
-  when: minikube_status.Host == "Running"
-
 - debug: var=minikube_stop_result.stdout_lines
-  when: minikube_status.Host == "Running"
