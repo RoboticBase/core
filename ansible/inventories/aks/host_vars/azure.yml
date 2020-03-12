@@ -6,3 +6,5 @@ resources:
   storage_account_prefix: rbsa
   storage_container: mongodump
   ssh_key_file_path: "{{ ansible_env.HOME }}/.ssh/azure.pub" # change to your key file path
+
+logged_in: false

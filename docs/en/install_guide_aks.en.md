@@ -185,6 +185,8 @@ $ pipenv install
     ```
     $ ansible-playbook -i inventories/aks --extra-vars="ansible_python_interpreter=$(which python)" aks.yml
     ```
+1. After starting ansible-playbook, you will be prompted to log in Azure
+    ![azure\_login\_01.png](../images/aks/azure_login_01.png)
 
 ### Configure grafana
 1. Access grafana (`https://grafana.{{ your domain }}`)

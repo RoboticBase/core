@@ -185,6 +185,8 @@ $ pipenv install
     ```
     $ ansible-playbook -i inventories/aks --extra-vars="ansible_python_interpreter=$(which python)" aks.yml
     ```
+1. ansible-playbookを起動するとAzureへのログインを促される
+    ![azure\_login\_01.png](../images/aks/azure_login_01.png)
 
 ### grafanaの設定
 1. ブラウザでgrafana (`https://grafana.{{ your domain }}`)にアクセスする

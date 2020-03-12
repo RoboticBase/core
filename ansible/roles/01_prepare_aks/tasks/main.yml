@@ -1,8 +1,8 @@
-- import_tasks: _clear_envfile.yml
-
 - import_role:
     name: 00_common
     tasks_from: login_azure.yml
+
+- import_tasks: _clear_envfile.yml
 
 - import_tasks: _create_dns_zone.yml
 
