@@ -77,54 +77,56 @@ Please see this repository [RoboticBase/uoa-poc2](https://github.com/RoboticBase
 |VirtualBox|6.1.2 r135662|
 |minikube|1.7.3|
 
-## getting started
-### start RoboticBase/core on minikube
-1. change the password of `iotagent` mqtt user defined in the following yml file:
+## Getting Started
+### Start RoboticBase/core on Azure AKS
+1. Set the password of MQTT user in the following yaml file:
     * [group\_vars/all.yml](ansible/group_vars/all.yml)
-1. change the values defined in the following yml files if necessary:
-    * [inventories/minikube/group\_vars/minikube.yml](ansible/inventories/minikube/group_vars/minikube.yml)
-    * [inventories/minikube/host\_vars/localhost.yml](ansible/inventories/minikube/host_vars/localhost.yml)
-1. start pipenv shell
-
-    ```
-    $ pipenv shell
-    ```
-1. execute an ansible playbook by using following command:
-
-    ```
-    $ ansible-playbook -i inventories/minikube --extra-vars="ansible_python_interpreter=$(which python)" minikube.yml
-    ```
-**for more detail, please see [docs/en/install\_guide\_minikube.en.md](docs/en/install_guide_minikube.en.md)**
-**詳細は[docs/ja/install\_guide\_minikube.ja.md](docs/ja/install_guide_minikube.ja.md)を参照**
-
-#### start RoboticBase/core on Azure AKS
-1. change the password of `iotagent` mqtt user defined in the following yml file:
-    * [group\_vars/all.yml](ansible/group_vars/all.yml)
-1. change the `dns.domain` and `dns.email` to your own domain and email in the following yml file:
+1. Change the domain name and email defined in the following yml file:
     * [inventories/aks/group\_vars/aks.yml](ansible/inventories/aks/group_vars/aks.yml)
-1. change the `resources.ssh_key_file_path` to your own public key in the following yml file:
+1. Change the SSH key path defined in the following yml file:
     * [inventories/aks/host\_vars/azure.yml](ansible/inventories/aks/host_vars/azure.yml)
-1. change the values defined in the following yml files if necessary:
+1. If necessary, update the values defined in the following yml files:
     * [inventories/aks/group\_vars/aks.yml](ansible/inventories/aks/group_vars/aks.yml)
-    * [inventories/aks/host\_vars/azure.yml](ansible/inventories/aks/host_vars/azure.yml)
-1. execute a shell script to create azure credentials
+1. Generate Azure Credentials by executing following shell script:
 
     ```
     $ ./tools/generate_azure_credentials.sh
     ```
-1. start pipenv shell
+1. Start "pipenv shell"
 
     ```
     $ pipenv shell
     ```
-1. execute an ansible playbook by using following command:
+1. Start RoboticBase/core on Azure AKS using ansible
 
     ```
     $ ansible-playbook -i inventories/aks --extra-vars="ansible_python_interpreter=$(which python)" aks.yml
     ```
 
-**for more detail, please see [docs/en/install\_guide\_aks.en.md](docs/en/install_guide_aks.en.md)**
-**詳細は[docs/ja/install\_guide\_aks.ja.md](docs/ja/install_guide_aks.ja.md)を参照**
+### Start RoboticBase/core on minikube
+1. Set the password of MQTT user in the following yaml file:
+    * [group\_vars/all.yml](ansible/group_vars/all.yml)
+1. If necessary, update the values defined in the following yml files:
+    * [inventories/minikube/group\_vars/minikube.yml](ansible/inventories/minikube/group_vars/minikube.yml)
+    * [inventories/minikube/host\_vars/localhost.yml](ansible/inventories/minikube/host_vars/localhost.yml)
+1. Start "pipenv shell"
+
+    ```
+    $ pipenv shell
+    ```
+1. Start RoboticBase/core on minikube using ansible
+
+    ```
+    $ ansible-playbook -i inventories/minikube --extra-vars="ansible_python_interpreter=$(which python)" minikube.yml
+    ```
+
+## Installation Guides
+### English
+* for Azure AKS: [docs/en/install\_guide\_aks.en.md](docs/en/install_guide_aks.en.md)
+* for minikube: [docs/en/install\_guide\_minikube.en.md](docs/en/install_guide_minikube.en.md)
+### Japanese
+* Azure AKS用: [docs/ja/install\_guide\_aks.ja.md](docs/ja/install_guide_aks.ja.md)
+* minikube用: [docs/ja/install\_guide\_minikube.ja.md](docs/ja/install_guide_minikube.ja.md)
 
 ## Related Repositories
 ### FIWARE components
