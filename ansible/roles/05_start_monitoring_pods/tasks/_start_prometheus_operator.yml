@@ -18,7 +18,7 @@
 
 - name: start prometheus-operator using heml
   shell: |
-    helm uninstall po
+    helm uninstall po --namespace monitoring
     helm install --name-template po --namespace monitoring -f {{ prometheus_operator_values_tempfile.path }} stable/prometheus-operator
   register: prometheus_operator_result
   until: prometheus_operator_result.rc == 0
