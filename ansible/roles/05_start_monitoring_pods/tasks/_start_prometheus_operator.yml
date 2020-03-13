@@ -1,0 +1,138 @@
+- name: get helm release list
+  command: |
+    helm list --namespace monitoring -o json
+  register: helm_release_list_result
+
+- name: generate tempfile
+  tempfile:
+    state: file
+    suffix: values.yaml
+  register: prometheus_operator_values_tempfile
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`po`]') | length == 0
+
+- name: write generated values.yaml to tempfile
+  template:
+    src: "{{ root_dir }}/monitoring/prometheus-operator-{{ ansible_play_name }}.yaml.j2"
+    dest: "{{ prometheus_operator_values_tempfile.path }}"
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`po`]') | length == 0
+
+- name: start prometheus-operator using heml
+  shell: |
+    helm uninstall po --namespace monitoring
+    helm install --name-template po --namespace monitoring -f {{ prometheus_operator_values_tempfile.path }} stable/prometheus-operator
+  register: prometheus_operator_result
+  until: prometheus_operator_result.rc == 0
+  retries: 60
+  delay: 10
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`po`]') | length == 0
+- debug: var=prometheus_operator_result.stdout_lines
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`po`]') | length == 0
+
+- name: check prometheus-operator services
+  k8s_info:
+    kind: Service
+    name: "{{ item }}"
+    namespace: monitoring
+    label_selectors:
+      - release = po
+  register: po_service_result
+  until: po_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+  with_items:
+    - "po-grafana"
+    - "po-prometheus-node-exporter"
+    - "po-prometheus-operator-alertmanager"
+    - "po-prometheus-operator-operator"
+    - "po-prometheus-operator-prometheus"
+
+- name: get node count
+  k8s_info:
+    kind: Node
+  register: node_result
+
+- name: check prometheus-operator daemonset
+  k8s_info:
+    kind: DaemonSet
+    name: "{{ item }}"
+    namespace: monitoring
+    label_selectors:
+      - release = po
+  register: po_daemonset_result
+  until:
+    - po_daemonset_result.resources | length == 1
+    - po_daemonset_result.resources[0].status is defined
+    - po_daemonset_result.resources[0].status.numberAvailable is defined
+    - po_daemonset_result.resources[0].status.numberAvailable == node_result.resources | length
+    - po_daemonset_result.resources[0].status.numberReady is defined
+    - po_daemonset_result.resources[0].status.numberReady == node_result.resources | length
+  retries: 60
+  delay: 10
+  with_items:
+    - "po-prometheus-node-exporter"
+
+- name: check alertmanager persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: monitoring
+    label_selectors:
+      - app = alertmanager
+  register: alertmanager_pvc_result
+  until:
+    - alertmanager_pvc_result.resources is defined
+    - alertmanager_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == 1
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
+- name: check prometheus persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: monitoring
+    label_selectors:
+      - app = prometheus
+  register: prometheus_pvc_result
+  until:
+    - prometheus_pvc_result.resources is defined
+    - prometheus_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == 1
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
+- name: check prometheus-operator statefulset
+  k8s_info:
+    kind: StatefulSet
+    name: "{{ item }}"
+    namespace: monitoring
+    label_selectors:
+      - release = po
+  register: po_statefulset_result
+  until:
+    - po_statefulset_result.resources | length == 1
+    - po_statefulset_result.resources[0].status is defined
+    - po_statefulset_result.resources[0].status.readyReplicas is defined
+    - po_statefulset_result.resources[0].status.readyReplicas == 1
+  retries: 60
+  delay: 10
+  with_items:
+    - "alertmanager-po-prometheus-operator-alertmanager"
+    - "prometheus-po-prometheus-operator-prometheus"
+
+- name: check prometheus-operator deployment
+  k8s_info:
+    kind: Deployment
+    name: "{{ item }}"
+    namespace: monitoring
+    label_selectors:
+      - release = po
+  register: po_deployment_result
+  until:
+    - po_deployment_result.resources | length == 1
+    - po_deployment_result.resources[0].status is defined
+    - po_deployment_result.resources[0].status.readyReplicas is defined
+    - po_deployment_result.resources[0].status.readyReplicas == 1
+  retries: 60
+  delay: 10
+  with_items:
+    - "po-grafana"
+    - "po-prometheus-operator-operator"

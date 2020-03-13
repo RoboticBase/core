@@ -1,0 +1,50 @@
+alertmanager:
+  alertmanagerSpec:
+    image:
+      repository: {{ containers.prometheus_operator.alertmanager.repository }}
+      tag: {{ containers.prometheus_operator.alertmanager.tag }}
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: {{ containers_extra.prometheus_operator.alertmanager.storage.class }}
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: {{ containers_extra.prometheus_operator.alertmanager.storage.size }}
+        selector: {}
+
+prometheus:
+  prometheusSpec:
+    image:
+      repository: {{ containers.prometheus_operator.prometheus.repository }}
+      tag: {{ containers.prometheus_operator.prometheus.tag }}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: {{ containers_extra.prometheus_operator.prometheus.storage.class }}
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: {{ containers_extra.prometheus_operator.prometheus.storage.size }}
+        selector: {}
+
+grafana:
+  image:
+    repository: {{ containers.prometheus_operator.grafana.repository }}
+    tag: {{ containers.prometheus_operator.grafana.tag }}
+  auth:
+    anonymous:
+      enabled: "false"
+
+prometheusOperator:
+  configReloaderCpu: 400m
+
+kubelet:
+  serviceMonitor:
+    https: false
+
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false

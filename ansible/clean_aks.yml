@@ -1,0 +1,5 @@
+---
+- hosts: aks
+  connection: local
+  roles:
+    - 99_clean_aks

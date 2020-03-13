@@ -1,0 +1,4 @@
+- name: remove auth-tokens.json
+  file:
+    path: "{{ root_dir }}/secrets/auth-tokens.json"
+    state: absent

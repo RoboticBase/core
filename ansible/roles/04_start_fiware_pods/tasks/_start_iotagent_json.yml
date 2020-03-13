@@ -1,0 +1,81 @@
+- name: create secret for iotagent-json
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: Opaque
+      metadata:
+        name: iotagent-json-config
+        namespace: default
+      data:
+        rb-config-json.js: "{{ encoded_rb_config }}"
+  vars:
+    mqtt_iotagent: "{{ mqtt.users | selectattr('name', 'equalto', 'iotagent') | first }}"
+    encoded_rb_config: "{{ lookup('template', '{{ root_dir }}/idas/rb-config-json.js.j2') | b64encode}}"
+
+- name: start iotagent-json service
+  k8s:
+    state: present
+    namespace: default
+    src: "{{ root_dir }}/idas/iotagent-json-{{ ansible_play_name }}-service.yaml"
+
+- name: check iotagent-json service
+  k8s_info:
+    kind: Service
+    name: iotagent-json
+    namespace: default
+    label_selectors:
+      - app = iotagent-json
+  register: iotagent_json_service_result
+  until: iotagent_json_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: start iotagent-json deployment
+  k8s:
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', '{{ root_dir }}/idas/iotagent-json-deployment.yaml.j2') }}"
+
+- name: check iotagent-json deployment
+  k8s_info:
+    kind: Deployment
+    name: iotagent-json
+    namespace: default
+  register: iotagent_json_deployment_result
+  until:
+    - iotagent_json_deployment_result.resources | length == 1
+    - iotagent_json_deployment_result.resources[0].status is defined
+    - iotagent_json_deployment_result.resources[0].status.readyReplicas is defined
+    - iotagent_json_deployment_result.resources[0].status.readyReplicas == containers_extra.iotagent_json.replicas
+  retries: 60
+  delay: 10
+
+- name: check iotagent-json pods
+  k8s_info:
+    kind: Pod
+    namespace: default
+    label_selectors:
+      - app = iotagent-json
+  register: iotagent_json_pods_result
+  until:
+    - iotagent_json_pods_result.resources | length == containers_extra.iotagent_json.replicas
+    - iotagent_json_pods_result.resources | json_query('[?status.phase==`Running`]') | length == containers_extra.iotagent_json.replicas
+    - iotagent_json_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == containers_extra.iotagent_json.replicas
+  retries: 60
+  delay: 10
+
+- name: call iotagent-json REST API
+  uri:
+    url: "{{ base_url }}/idas/json/manage/iot/services/"
+    headers:
+      Authorization: "bearer {{ token_str }}"
+      Fiware-Service: "test"
+      Fiware-Servicepath: "/*"
+    method: GET
+    status_code: 200
+  retries: 60
+  delay: 10
+  vars:
+    token_str: "{{ lookup('file', '{{ root_dir }}/secrets/auth-tokens.json') | from_json | json_query('[0].settings.bearer_tokens[0].token') }}"

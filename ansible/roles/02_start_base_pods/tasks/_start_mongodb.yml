@@ -1,0 +1,95 @@
+- name: get helm release list
+  command: |
+    helm list -o json
+  register: helm_release_list_result
+
+- name: generate tempfile
+  tempfile:
+    state: file
+    suffix: mongodb_values.yaml
+  register: mongodb_values_tempfile
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`mongodb`]') | length == 0
+
+- name: write generated values.yaml to tempfile
+  template:
+    src: "{{ root_dir }}/mongodb/mongodb-replicaset-values-{{ ansible_play_name }}.yaml.j2"
+    dest: "{{ mongodb_values_tempfile.path }}"
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`mongodb`]') | length == 0
+
+- name: start mongodb cluster using heml
+  command: |
+    helm install --name-template mongodb -f {{ mongodb_values_tempfile.path }} stable/mongodb-replicaset
+  register: mongodb_replicaset_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`mongodb`]') | length == 0
+- debug: var=mongodb_replicaset_result.stdout_lines
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`mongodb`]') | length == 0
+
+- name: check mongodb services
+  k8s_info:
+    kind: Service
+    name: mongodb
+    namespace: default
+    label_selectors:
+      - release = mongodb
+      - app = mongodb-replicaset
+  register: mongodb_service_result
+  until: mongodb_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check mongodb-client services
+  k8s_info:
+    kind: Service
+    name: mongodb-client
+    namespace: default
+    label_selectors:
+      - release = mongodb
+      - app = mongodb-replicaset
+  register: mongodb_client_service_result
+  until: mongodb_client_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check mongodb persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: default
+    label_selectors:
+      - release = mongodb
+      - app = mongodb-replicaset
+  register: mongodb_pvc_result
+  until:
+    - mongodb_pvc_result.resources is defined
+    - mongodb_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == containers_extra.mongodb.replicas
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
+- name: check mongodb statefulset
+  k8s_info:
+    kind: StatefulSet
+    name: mongodb
+    namespace: default
+    label_selectors:
+      - release = mongodb
+      - app = mongodb-replicaset
+  register: mongodb_statefulset_result
+  until:
+    - mongodb_statefulset_result.resources | length == 1
+    - mongodb_statefulset_result.resources[0].status is defined
+    - mongodb_statefulset_result.resources[0].status.readyReplicas is defined
+    - mongodb_statefulset_result.resources[0].status.readyReplicas == containers_extra.mongodb.replicas
+  retries: 60
+  delay: 10
+
+- include_tasks: __check_mongodb_pod.yml
+  with_sequence: start=0 count={{ containers_extra.mongodb.replicas }}
+
+- name: check mongodb cluster state
+  command: |
+    kubectl exec mongodb-0 -c mongodb-replicaset -- mongo --quiet --eval 'rs.status().members.map(function(e) {return {name: e.name, stateStr:e.stateStr};})'
+  register: mongodb_cluster_status_result
+  until:
+    - mongodb_cluster_status_result.stdout | from_json | length == containers_extra.mongodb.replicas
+    - mongodb_cluster_status_result.stdout | from_json | json_query('[?stateStr==`PRIMARY`]') | length == 1
+    - mongodb_cluster_status_result.stdout | from_json | json_query('[?stateStr==`SECONDARY`]') | length == containers_extra.mongodb.replicas - 1

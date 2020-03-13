@@ -1,0 +1,19 @@
+- name: create resource group of dns-zone
+  azure_rm_resourcegroup:
+    name: "{{ resources.dns_zone }}"
+    location: "{{ resources.region }}"
+
+- name: create dns-zone
+  azure_rm_dnszone:
+    resource_group: "{{ resources.dns_zone }}"
+    name: "{{ dns.domain }}"
+    state: present
+
+- name: show name servers
+  azure_rm_dnszone_info:
+    resource_group: "{{ resources.dns_zone }}"
+    name: "{{ dns.domain }}"
+  register: show_name_servers_result
+
+- debug:
+    msg: "{{ show_name_servers_result.ansible_info.azure_dnszones[0].properties.nameServers }}"

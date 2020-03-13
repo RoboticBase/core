@@ -1,0 +1,4 @@
+- import_tasks: _check_minikube_status.yml
+
+- include_tasks: _main.yml
+  when: minikube_status.Host != "Running"

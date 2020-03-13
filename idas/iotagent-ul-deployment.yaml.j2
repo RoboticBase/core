@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iotagent-ul
+spec:
+  replicas: {{ containers_extra.iotagent_ul.replicas }}
+  selector:
+    matchLabels:
+      app: iotagent-ul
+  template:
+    metadata:
+      labels:
+        app: iotagent-ul
+    spec:
+      containers:
+      - name: iotagent-ul
+        image: {{ containers.iotagent_ul.image }}
+        command: ["pm2-runtime", "bin/iotagent-ul"]
+        args: ["--", "rb-config-ul.js"]
+        ports:
+        - containerPort: 4041
+          name: manage
+        - containerPort: 7896
+          name: http
+        livenessProbe:
+          tcpSocket:
+            port: 4041
+          failureThreshold: 12
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 4041
+          failureThreshold: 12
+          periodSeconds: 10
+        env:
+        - name: IOTA_CB_NGSI_VERSION
+          value: "{{ containers.iotagent_ul.cb_ngsi_version }}"
+        - name: IOTA_AUTOCAST
+          value: "{{ containers.iotagent_ul.autocast }}"
+        volumeMounts:
+          - name: config-volume
+            mountPath: "/opt/iotaul/rb-config-ul.js"
+            subPath: "rb-config-ul.js"
+      volumes:
+        - name: config-volume
+          secret:
+            secretName: iotagent-ul-config

@@ -1,0 +1,46 @@
+- name: get helm release list
+  command: |
+    helm list --namespace logging -o json
+  register: helm_release_list_result
+
+- name: generate tempfile
+  tempfile:
+    state: file
+    suffix: fluentd_values.yaml
+  register: fluentd_values_tempfile
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`fd`]') | length == 0
+
+- name: write generated values.yaml to tempfile
+  template:
+    src: "{{ root_dir }}/logging/fluentd-values.yaml.j2"
+    dest: "{{ fluentd_values_tempfile.path }}"
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`fd`]') | length == 0
+
+- name: start fluentd using helm if does not exist
+  command: |
+    helm install --name-template fd --namespace logging -f {{ fluentd_values_tempfile.path }} kiwigrid/fluentd-elasticsearch
+  register: install_fluentd_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`fd`]') | length == 0
+- debug: var=install_fluentd_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`fd`]') | length == 0
+
+- name: get node info
+  k8s_info:
+    kind: Node
+  register: k8s_node_result
+
+- name: check fluentd daemonset
+  k8s_info:
+    kind: DaemonSet
+    name: fd-fluentd-elasticsearch
+    namespace: logging
+    label_selectors:
+      - app.kubernetes.io/instance = fd
+  register: fluentd_daemonset_result
+  until:
+    - fluentd_daemonset_result.resources | length == 1
+    - fluentd_daemonset_result.resources[0].status is defined
+    - fluentd_daemonset_result.resources[0].status.numberReady is defined
+    - fluentd_daemonset_result.resources[0].status.numberReady == k8s_node_result.resources | length
+  retries: 60
+  delay: 10

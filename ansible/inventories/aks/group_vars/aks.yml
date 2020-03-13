@@ -1,0 +1,75 @@
+---
+envfile_path: "{{ inventory_dir  }}/../../../docs/environments/azure_aks/env"
+
+aks:
+  name: aksrb
+  agent:
+    vm_size: Standard_D2s_v3
+    count: 3
+    disk_gb: 64
+
+k8s:
+  version: 1.14.8
+
+acr:
+  name_prefix: acrrb
+  sku: Basic
+
+dns:
+  domain: example.com # change to your domain
+  email: foo@example.com # change to your domain
+
+containers_extra:
+  rabbitmq:
+    replicas: 3
+  mongodb:
+    replicas: 3
+    storage:
+      class: "managed-premium"
+      size: "30Gi"
+  ambassador:
+    replicas: 3
+  auth:
+    replicas: 3
+  orion:
+    replicas: 3
+  iotagent_json:
+    replicas: 3
+  iotagent_ul:
+    replicas: 3
+  cygnus_mongo:
+    replicas: 3
+  sth_comet:
+    replicas: 3
+  cygnus_elasticsearch:
+    replicas: 3
+  prometheus_operator:
+    alertmanager:
+      storage:
+        class: "managed-premium"
+        size: "30Gi"
+    prometheus:
+      storage:
+        class: "managed-premium"
+        size: "30Gi"
+  ekf:
+    elasticsearch:
+      master:
+        replicas: 3
+        storage:
+          class: "managed-premium"
+          size: "30Gi"
+      data:
+        replicas: 3
+        storage:
+          class: "managed-premium"
+          size: "30Gi"
+      coordinating:
+        replicas: 3
+    curator:
+      is_provisioning: true
+    kibana:
+      replicas: 1
+      storage:
+        class: "managed-premium"
+        size: "10Gi"

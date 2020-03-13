@@ -1,0 +1,15 @@
+- name: get randomstr
+  get_randomstr:
+    length: 32
+  register: get_randomstr_result
+
+- name: change password of guest
+  command: |
+    kubectl exec rabbitmq-0 -- rabbitmqctl change_password guest "{{ get_randomstr_result.randomstr }}"
+  register: change_guest_password_result
+- debug: var=change_guest_password_result.stdout
+
+- include_tasks: __add_rabbitmq_user.yml
+  with_items: "{{ mqtt.users }}"
+  loop_control:
+    loop_var: user

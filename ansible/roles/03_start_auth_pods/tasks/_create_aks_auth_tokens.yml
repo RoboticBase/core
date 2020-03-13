@@ -1,0 +1,19 @@
+- name: get randomstr for api token
+  get_randomstr:
+    length: 32
+  register: api_token
+
+- name: get randomstr for kibana username
+  get_randomstr:
+    length: 8
+  register: kibana_username
+
+- name: get randomstr for kibana password
+  get_randomstr:
+    length: 16
+  register: kibana_password
+
+- name: generate secrets/auth-tokens.json
+  template:
+    src: aks_auth-tokens.json.j2
+    dest: "{{ root_dir }}/secrets/auth-tokens.json"

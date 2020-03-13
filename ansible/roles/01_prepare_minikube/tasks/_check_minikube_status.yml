@@ -1,0 +1,7 @@
+- name: check minikube status
+  command: minikube status --profile {{ minikube.name }} --output 'json'
+  register: minikube_status
+  failed_when: False
+
+- set_fact:
+    minikube_status: "{{ minikube_status.stdout }}"

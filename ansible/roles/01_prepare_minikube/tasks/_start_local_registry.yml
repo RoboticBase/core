@@ -1,0 +1,7 @@
+- name: start docker local registry
+  docker_container:
+    name: "{{ docker.registry.name }}"
+    image: "registry:{{ docker.registry.version }}"
+    state: started
+    ports:
+      - "{{ docker.registry.port }}:5000"

@@ -1,0 +1,3 @@
+- name: set base_url
+  set_fact:
+    base_url: "https://api.{{ dns.domain }}"

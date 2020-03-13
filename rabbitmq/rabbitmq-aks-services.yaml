@@ -27,7 +27,7 @@ metadata:
     app: rabbitmq
     service: mqtt
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: rabbitmq
   ports:
@@ -39,19 +39,36 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: rabbitmq-web-mqtt
+  name: rabbitmq-mqtts
   labels:
     app: rabbitmq
-    service: web-mqtt
+    service: mqtts
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: rabbitmq
   ports:
-   - name: web-mqtt
+   - name: mqtts
      protocol: TCP
-     port: 15675
-     targetPort: 15675
+     port: 8883
+     targetPort: 8883
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: rabbitmq-web-mqtts
+  labels:
+    app: rabbitmq
+    service: web-mqtts
+spec:
+  type: LoadBalancer
+  selector:
+    app: rabbitmq
+  ports:
+   - name: web-mqtts
+     protocol: TCP
+     port: 15673
+     targetPort: 15673
 ---
 kind: Service
 apiVersion: v1

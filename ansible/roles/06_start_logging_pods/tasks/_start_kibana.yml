@@ -1,0 +1,67 @@
+- name: get helm release list
+  command: |
+    helm list --namespace logging -o json
+  register: helm_release_list_result
+
+- name: generate tempfile
+  tempfile:
+    state: file
+    suffix: kibana_values.yaml
+  register: kibana_values_tempfile
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`kibana`]') | length == 0
+
+- name: write generated values.yaml to tempfile
+  template:
+    src: "{{ root_dir }}/logging/kibana-values-{{ ansible_play_name }}.yaml.j2"
+    dest: "{{ kibana_values_tempfile.path }}"
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`kibana`]') | length == 0
+
+- name: start kibana using helm if does not exist
+  command: |
+    helm install --name-template kibana --namespace logging -f {{ kibana_values_tempfile.path }} bitnami/kibana
+  register: install_kibana_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`kibana`]') | length == 0
+- debug: var=install_kibana_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`kibana`]') | length == 0
+
+- name: check kibana service
+  k8s_info:
+    kind: Service
+    name: "kibana"
+    namespace: logging
+    label_selectors:
+      - app.kubernetes.io/instance = kibana
+  register: kibana_service_result
+  until: kibana_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check kibana persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: logging
+    label_selectors:
+      - app.kubernetes.io/name = kibana
+  register: kibana_pvc_result
+  until:
+    - kibana_pvc_result.resources is defined
+    - kibana_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == containers_extra.ekf.kibana.replicas
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
+- name: check kibana deployment
+  k8s_info:
+    kind: Deployment
+    name: "kibana"
+    namespace: logging
+    label_selectors:
+      - app.kubernetes.io/instance = kibana
+  register: kibana_deployment_result
+  until:
+    - kibana_deployment_result.resources | length == 1
+    - kibana_deployment_result.resources[0].status is defined
+    - kibana_deployment_result.resources[0].status.readyReplicas is defined
+    - kibana_deployment_result.resources[0].status.readyReplicas == containers_extra.ekf.kibana.replicas
+  retries: 60
+  delay: 10

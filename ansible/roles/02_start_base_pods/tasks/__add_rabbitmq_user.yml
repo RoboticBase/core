@@ -1,0 +1,34 @@
+- name: "delete user to rabbitmq ({{ user.name }})"
+  command: |
+    kubectl exec rabbitmq-0 -- rabbitmqctl delete_user {{ user.name }}
+  register: rabbitmq_delete_user_result
+  failed_when: rabbitmq_delete_user_result.rc not in [0, 69]
+- debug: var=rabbitmq_delete_user_result.stdout
+- debug: var=rabbitmq_delete_user_result.stderr_lines
+
+- name: "add user to rabbitmq ({{ user.name }})"
+  command: |
+    kubectl exec rabbitmq-0 -- rabbitmqctl add_user {{ user.name }} {{ user.password }}
+  register: rabbitmq_add_user_result
+- debug: var=rabbitmq_add_user_result.stdout
+
+- name: "set permission to rabbitmq ({{ user.name }})"
+  command: |
+    kubectl exec rabbitmq-0 -- rabbitmqctl set_permissions -p / {{ user.name }} ".*" ".*" ".*"
+  register: rabbitmq_set_permission_result
+- debug: var=rabbitmq_set_permission_result.stdout
+
+- name: "check user of rabbitmq ({{ user.name }})"
+  command: |
+    kubectl exec rabbitmq-0 -- rabbitmqctl list_users --formatter json
+  register: rabbitmq_list_users_result
+  failed_when: rabbitmq_list_users_result.stdout | from_json | json_query(q) | length != 1
+  vars:
+    q: '[?contains(user, `{{ user.name }}`)]'
+
+- name: "set rabbitmq user to envfile ({{ user.name }})"
+  lineinfile:
+    dest: "{{ envfile_path }}"
+    regexp: "^export MQTT__{{ user.name }}="
+    insertafter: EOF
+    line: "export MQTT__{{ user.name }}=\"{{ user.password }}\"; echo \"MQTT__{{ user.name }}=${MQTT__{{ user.name }}}\""

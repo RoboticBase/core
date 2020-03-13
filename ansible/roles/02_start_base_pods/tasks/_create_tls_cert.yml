@@ -1,0 +1,74 @@
+- name: create directory to store keys
+  file:
+    path: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}"
+    state: directory
+    mode: "0700"
+
+- name: create account key
+  openssl_privatekey:
+    path: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/account.key"
+- name: create domain key
+  openssl_privatekey:
+    path: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/privkey.pem"
+- name: create csr
+  command: openssl req -new -key privkey.pem -out {{ dns.domain }}.csr -subj '/C=JP/ST=Tokyo/L=Tokyo/O=tis/CN=*.{{ dns.domain }}' chdir={{ root_dir }}/secrets/ansible/{{ dns.domain }} creates={{ dns.domain }}.csr
+
+- name: create a challenge for {{ dns.domain }}
+  acme_certificate:
+    acme_directory: https://acme-v02.api.letsencrypt.org/directory
+    acme_version: 2
+    challenge: dns-01
+    account_key_src: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/account.key"
+    account_email: "{{ dns.email }}"
+    csr: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/{{ dns.domain }}.csr"
+    dest: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/cert.pem"
+    fullchain_dest: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/fullchain.pem"
+    remaining_days: 60
+    terms_agreed: true
+  register: dns_challenge_result
+
+- debug:
+    var: dns_challenge_result
+
+- name: add a TXT record to azure dns for dns challenge
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resources.dns_zone }}"
+    zone_name: "{{ dns.domain }}"
+    relative_name: "{{ dns_challenge_result.challenge_data[wildcard_domain]['dns-01'].resource }}"
+    record_type: TXT
+    records:
+      - entry: "{{ dns_challenge_result.challenge_data[wildcard_domain]['dns-01'].resource_value }}"
+  vars:
+    wildcard_domain: "*.{{ dns.domain }}"
+  when: dns_challenge_result is changed
+
+- name: let the chaallenge be validated and retrieve the cert and intermediate certificate
+  acme_certificate:
+    acme_directory: https://acme-v02.api.letsencrypt.org/directory
+    acme_version: 2
+    challenge: dns-01
+    account_key_src: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/account.key"
+    account_email: "{{ dns.email }}"
+    csr: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/{{ dns.domain }}.csr"
+    dest: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/cert.pem"
+    fullchain_dest: "{{ root_dir }}/secrets/ansible/{{ dns.domain }}/fullchain.pem"
+    remaining_days: 60
+    terms_agreed: true
+    data: "{{ dns_challenge_result }}"
+  register: retrieve_cert_result
+  when: dns_challenge_result is changed
+
+- debug:
+    var: retrieve_cert_result
+  when: dns_challenge_result is changed
+
+- name: delete the TXT record from azure dns
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resources.dns_zone }}"
+    zone_name: "{{ dns.domain }}"
+    relative_name: "{{ dns_challenge_result.challenge_data[wildcard_domain]['dns-01'].resource }}"
+    record_type: TXT
+    state: absent
+  vars:
+    wildcard_domain: "*.{{ dns.domain }}"
+  when: dns_challenge_result is changed

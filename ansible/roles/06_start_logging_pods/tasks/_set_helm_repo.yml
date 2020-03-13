@@ -1,0 +1,26 @@
+- name: get helm repo list
+  command: |
+    helm repo list -o json
+  register: helm_repo_list_result
+
+- name: add bitnami repo if does not exist
+  command: |
+    helm repo add bitnami https://charts.bitnami.com/bitnami
+  register: helm_repo_bitnami_add_result
+  when: helm_repo_list_result.stdout | from_json | json_query('[?name==`bitnami`]') | length == 0
+- debug: var=helm_repo_bitnami_add_result.stdout_lines
+  when: helm_repo_list_result.stdout | from_json | json_query('[?name==`bitnami`]') | length == 0
+
+- name: add kiwigrid repo if does not exist
+  command: |
+    helm repo add kiwigrid https://kiwigrid.github.io
+  register: helm_repo_kiwigrid_add_result
+  when: helm_repo_list_result.stdout | from_json | json_query('[?name==`kiwigrid`]') | length == 0
+- debug: var=helm_repo_kiwigrid_add_result.stdout_lines
+  when: helm_repo_list_result.stdout | from_json | json_query('[?name==`kiwigrid`]') | length == 0
+
+- name: update helm repo
+  command: |
+    helm repo update
+  register: helm_repo_update_result
+- debug: var=helm_repo_update_result.stdout_lines

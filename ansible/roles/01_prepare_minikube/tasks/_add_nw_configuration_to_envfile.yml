@@ -1,0 +1,7 @@
+- name: set host IP addr to envfile
+  blockinfile:
+    dest: "{{ envfile_path }}"
+    marker: ""
+    block: |
+      export HOST_IPADDR="{{ host_ipaddr }}"; echo "HOST_IPADDR=${HOST_IPADDR}"
+      export REPOSITORY="{{ host_ipaddr }}:{{ docker.registry.port }}"; echo "REPOSITORY=${REPOSITORY}"

@@ -1,0 +1,137 @@
+- name: get helm release list
+  command: |
+    helm list --namespace logging -o json
+  register: helm_release_list_result
+
+- name: generate tempfile
+  tempfile:
+    state: file
+    suffix: elasticsearch_values.yaml
+  register: elasticsearch_values_tempfile
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
+
+- name: write generated values.yaml to tempfile
+  template:
+    src: "{{ root_dir }}/logging/elasticsearch-values-{{ ansible_play_name }}.yaml.j2"
+    dest: "{{ elasticsearch_values_tempfile.path }}"
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
+
+- name: start elasticsearch using helm if does not exist
+  command: |
+    helm install --name-template es --namespace logging -f {{ elasticsearch_values_tempfile.path }} bitnami/elasticsearch
+  register: install_elasticsearch_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
+- debug: var=install_elasticsearch_result
+  when: helm_release_list_result.stdout | from_json | json_query('[?name==`es`]') | length == 0
+
+- name: check elasticsearch services
+  k8s_info:
+    kind: Service
+    name: "es-elasticsearch-{{ item }}"
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+  register: elasticsearch_service_result
+  until: elasticsearch_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+  with_items:
+    - "{{ containers.ekf.elasticsearch.master.name }}"
+    - "{{ containers.ekf.elasticsearch.coordinating.name }}"
+    - "discovery"
+
+- name: check elasticsearch master persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+      - role = master
+  register: elasticsearch_master_pvc_result
+  until:
+    - elasticsearch_master_pvc_result.resources is defined
+    - elasticsearch_master_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == containers_extra.ekf.elasticsearch.master.replicas
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
+- name: check elasticsearch master statefulsets
+  k8s_info:
+    kind: StatefulSet
+    name: "es-elasticsearch-{{ containers.ekf.elasticsearch.master.name }}"
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+  register: elasticsearch_statefulset_result
+  until:
+    - elasticsearch_statefulset_result.resources | length == 1
+    - elasticsearch_statefulset_result.resources[0].status is defined
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas is defined
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == containers_extra.ekf.elasticsearch.master.replicas
+  retries: 60
+  delay: 10
+
+- name: check elasticsearch data persistent volume claims
+  k8s_info:
+    kind: PersistentVolumeClaim
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+      - role = data
+  register: elasticsearch_data_pvc_result
+  until:
+    - elasticsearch_data_pvc_result.resources is defined
+    - elasticsearch_data_pvc_result.resources | json_query('[?status.phase==`Bound`]') | length == containers_extra.ekf.elasticsearch.data.replicas
+  retries: 60
+  delay: 10
+  when: ansible_play_name == "aks"
+
+- name: check elasticsearch data statefulsets
+  k8s_info:
+    kind: StatefulSet
+    name: "es-elasticsearch-{{ containers.ekf.elasticsearch.data.name }}"
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+  register: elasticsearch_statefulset_result
+  until:
+    - elasticsearch_statefulset_result.resources | length == 1
+    - elasticsearch_statefulset_result.resources[0].status is defined
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas is defined
+    - elasticsearch_statefulset_result.resources[0].status.readyReplicas == containers_extra.ekf.elasticsearch.data.replicas
+  retries: 60
+  delay: 10
+
+- name: check elasticsearch coordinating deployment
+  k8s_info:
+    kind: Deployment
+    name: "es-elasticsearch-{{ containers.ekf.elasticsearch.coordinating.name }}"
+    namespace: logging
+    label_selectors:
+      - app = elasticsearch
+  register: elasticsearch_deployment_result
+  until:
+    - elasticsearch_deployment_result.resources | length == 1
+    - elasticsearch_deployment_result.resources[0].status is defined
+    - elasticsearch_deployment_result.resources[0].status.readyReplicas is defined
+    - elasticsearch_deployment_result.resources[0].status.readyReplicas == containers_extra.ekf.elasticsearch.coordinating.replicas
+  retries: 60
+  delay: 10
+
+- name: wait 120sec
+  wait_for:
+    timeout: 120
+
+- name: check cluster status
+  command: |
+    kubectl -n logging exec -it es-elasticsearch-{{ master_name }}-0 \
+    -- curl -sS "http://es-elasticsearch-{{ coordinating_name }}:9200/_cluster/health/?wait_for_status=green&timeout=300s"
+  vars:
+    master_name: "{{ containers.ekf.elasticsearch.master.name }}"
+    coordinating_name: "{{ containers.ekf.elasticsearch.coordinating.name }}"
+  register: elasticsearch_cluster_status_result
+  until:
+    - elasticsearch_cluster_status_result.stdout | from_json | json_query('status') == "green"
+    - elasticsearch_cluster_status_result.stdout | from_json | json_query('number_of_nodes') == containers_extra.ekf.elasticsearch.master.replicas + containers_extra.ekf.elasticsearch.data.replicas + containers_extra.ekf.elasticsearch.coordinating.replicas
+  retries: 60
+  delay: 10

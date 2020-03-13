@@ -1,0 +1,9 @@
+- name: create resource group
+  azure_rm_resourcegroup:
+    name: "{{ resources.resource_group }}"
+    location: "{{ resources.region }}"
+    state: present
+  register: resource_group_result
+
+- debug:
+    var: resource_group_result

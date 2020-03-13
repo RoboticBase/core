@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cygnus-mongo
+spec:
+  replicas: {{ containers_extra.cygnus_mongo.replicas }}
+  selector:
+    matchLabels:
+      app: cygnus-mongo
+  template:
+    metadata:
+      labels:
+        app: cygnus-mongo
+    spec:
+      containers:
+      - name: cygnus-mongo
+        image: {{ containers.cygnus_mongo.image }}
+        ports:
+        - containerPort: 5051
+          name: service
+        - containerPort: 8081
+          name: api
+        livenessProbe:
+          tcpSocket:
+            port: 8081
+          failureThreshold: 12
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8081
+          failureThreshold: 12
+          periodSeconds: 10
+        env:
+        - name: CYGNUS_API_PORT
+          value: "8081"
+        - name: CYGNUS_LOG_LEVEL
+          value: "INFO"
+        - name: CYGNUS_MONGO_HOSTS
+          value: "mongodb-client:27017"
+        - name: CYGNUS_MONGO_USER
+          value: ""
+        - name: CYGNUS_MONGO_PASS
+          value: ""
+        - name: CYGNUS_MONGO_ATTR_PERSISTENCE
+          value: "row"
+        - name: CYGNUS_MONGO_ENABLE_ENCODING
+          value: "true"
+        - name: CYGNUS_STH_ENABLE_ENCODING
+          value: "true"

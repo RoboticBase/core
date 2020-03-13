@@ -1,0 +1,72 @@
+global:
+  coordinating:
+    name: {{ containers.ekf.elasticsearch.coordinating.name }}
+  kibanaEnabled: false
+
+image:
+  registry: docker.io
+  repository: {{ containers.ekf.elasticsearch.repository }}
+  tag: {{ containers.ekf.elasticsearch.tag }}
+  pullPolicy: IfNotPresent
+
+master:
+  name: {{ containers.ekf.elasticsearch.master.name }}
+  replicas: {{ containers_extra.ekf.elasticsearch.master.replicas }}
+  persistence:
+    enabled: true
+    storageClass: {{ containers_extra.ekf.elasticsearch.master.storage.class }}
+    accessModes:
+      - ReadWriteOnce
+    size: {{ containers_extra.ekf.elasticsearch.master.storage.size }}
+
+coordinating:
+  replicas: {{ containers_extra.ekf.elasticsearch.coordinating.replicas }}
+data:
+  name: {{ containers.ekf.elasticsearch.data.name }}
+  replicas: {{ containers_extra.ekf.elasticsearch.data.replicas }}
+  persistence:
+    enabled: true
+    storageClass: {{ containers_extra.ekf.elasticsearch.data.storage.class }}
+    accessModes:
+      - ReadWriteOnce
+    size: {{ containers_extra.ekf.elasticsearch.data.storage.size }}
+
+curator:
+  enabled: {{ containers_extra.ekf.curator.is_provisioning }}
+  name: {{ containers.ekf.curator.name }}
+  image:
+    registry: docker.io
+    repository: {{ containers.ekf.curator.repository }}
+    tag: {{ containers.ekf.curator.tag }}
+    pullPolicy: IfNotPresent
+  cronjob:
+    schedule: "0 18 * * *"
+    annotations: {}
+    concurrencyPolicy: Forbid
+    failedJobsHistoryLimit: 3
+    successfulJobsHistoryLimit: 1
+    jobRestartPolicy: Never
+  configMaps:
+    # Delete indices older than {{ containers.ekf.curator.days }} days
+    action_file_yml: |-
+      ---
+      actions:
+        1:
+          action: delete_indices
+          description: "Clean up ES by deleting old indices"
+          options:
+            timeout_override:
+            continue_if_exception: False
+            disable_action: False
+            ignore_empty_list: True
+          filters:
+          - filtertype: age
+            source: name
+            direction: older
+            timestring: '%Y.%m.%d'
+            unit: days
+            unit_count: {{ containers.ekf.curator.days }}
+            field:
+            stats_result:
+            epoch:
+            exclude: False

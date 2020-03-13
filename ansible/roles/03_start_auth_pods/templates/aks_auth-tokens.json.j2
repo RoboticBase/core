@@ -1,0 +1,41 @@
+[
+  {
+    "host": "api\\..+$",
+    "settings": {
+      "bearer_tokens": [
+        {
+          "token": "{{ api_token.randomstr }}",
+          "allowed_paths": ["^/orion/.*$", "^/idas/.*$", "^/comet/.*$"]
+        }
+      ],
+      "basic_auths": [],
+      "no_auths": {}
+    }
+  },
+  {
+    "host": "kibana\\..+$",
+    "settings": {
+      "bearer_tokens": [],
+      "basic_auths": [
+        {
+          "username": "{{ kibana_username.randomstr }}",
+          "password": "{{ kibana_password.randomstr }}",
+          "allowed_paths": ["^.*$"]
+        }
+      ],
+      "no_auths": {
+        "allowed_paths": []
+      }
+    }
+  },
+  {
+    "host": "grafana\\..+$",
+    "settings": {
+      "bearer_tokens": [],
+      "basic_auths": [],
+      "no_auths": {
+        "allowed_paths": ["^.*$"]
+      }
+    }
+  }
+]

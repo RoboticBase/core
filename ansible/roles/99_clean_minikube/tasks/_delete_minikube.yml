@@ -1,0 +1,5 @@
+- name: delete minikube
+  command: minikube delete --profile {{ minikube.name }}
+  register: minikube_delete_result
+- debug:
+    var: minikube_delete_result.stdout_lines

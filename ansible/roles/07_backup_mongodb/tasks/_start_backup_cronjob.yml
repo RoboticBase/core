@@ -1,0 +1,63 @@
+- name: start backup job manually
+  k8s:
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', '{{ root_dir }}/mongodb/simple-dump-job.yaml.j2') }}"
+
+- name: check backup job
+  k8s_info:
+    kind: Job
+    api_version: batch/v1
+    name: simple-dump-job
+    namespace: default
+  register: simple_dump_job_result
+  until:
+    - simple_dump_job_result.resources[0].status is defined
+    - simple_dump_job_result.resources[0].status.succeeded is defined
+    - simple_dump_job_result.resources[0].status.succeeded == 1
+    - simple_dump_job_result.resources[0].status.conditions is defined
+    - simple_dump_job_result.resources[0].status.conditions | json_query('[?type==`Complete`]') | length == 1
+  retries: 60
+  delay: 10
+
+- name: check backup pod
+  k8s_info:
+    kind: Pod
+    namespace: default
+    label_selectors:
+      - job = simple-dump-job
+  register: simple_dump_pod_result
+  until:
+    - simple_dump_pod_result.resources[0].status is defined
+    - simple_dump_pod_result.resources[0].status.containerStatuses is defined
+    - simple_dump_pod_result.resources[0].status.containerStatuses | json_query('[?state.terminated.reason==`Completed`]') | length == 1
+  retries: 60
+  delay: 10
+
+- name: check azure storage
+  command: |
+    az storage blob list --container-name "{{ resources.storage_container }}" --account-name "{{ storage_account_name }}" --account-key "{{ storage_account_key }}" -o json
+  register: check_storage_container_result
+  failed_when: check_storage_container_result.stdout | from_json | json_query('[?deleted!=false] | [?properties.contentLength>`0`]') | length == 0
+
+- name: delete backup job
+  k8s:
+    state: absent
+    namespace: default
+    definition: "{{ lookup('template', '{{ root_dir }}/mongodb/simple-dump-job.yaml.j2') }}"
+
+- name: start backup cronjob
+  k8s:
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', '{{ root_dir }}/mongodb/simple-dump-cronjob.yaml.j2') }}"
+
+- name: check backup cronjob
+  k8s_info:
+    kind: CronJob
+    api_version: batch/v1beta1
+    name: simple-dump-cronjob
+    namespace: default
+  register: simple_dump_cronjob_result
+  until:
+    - simple_dump_cronjob_result.resources | length == 1

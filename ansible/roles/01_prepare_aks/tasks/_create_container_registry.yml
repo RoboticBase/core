@@ -1,0 +1,44 @@
+- name: check existing container registry
+  azure_rm_containerregistry_info:
+    resource_group: "{{ resources.resource_group }}"
+  register: container_registry_info_result
+- debug:
+    var: container_registry_info_result
+
+- name: get container registry name
+  set_fact:
+    container_registry_name: "{{ container_registry_info_result.registries[0].name }}"
+  when: container_registry_info_result.registries | length == 1
+
+- name: get randomstr for container registry
+  get_randomstr:
+    length: 12
+  register: container_registry
+  when: container_registry_info_result.registries | length == 0
+
+- name: generate container registry name
+  set_fact:
+    container_registry_name: "{{ acr.name_prefix }}{{ container_registry.randomstr | lower }}"
+  when: container_registry_info_result.registries | length == 0
+
+- name: create container registry
+  azure_rm_containerregistry:
+    name: "{{ container_registry_name }}"
+    location: "{{ resources.region }}"
+    resource_group: "{{ resources.resource_group }}"
+    sku: "{{ acr.sku }}"
+    state: present
+  register: container_registry_result
+  when: container_registry_info_result.registries | length == 0
+
+- debug:
+    var: container_registry_result
+  when: container_registry_info_result.registries | length == 0
+
+- name: set ${REPOSITORY} to envfile
+  blockinfile:
+    dest: "{{ envfile_path }}"
+    marker: ""
+    block: |
+      export REPOSITORY="{{ container_registry_result.login_server }}"; echo "REPOSITORY=${REPOSITORY}"
+  when: container_registry_info_result.registries | length == 0

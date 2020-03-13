@@ -1,0 +1,56 @@
+- name: create custom resource definitions of ambassador
+  k8s:
+    state: present
+    src: "{{ root_dir }}/ambassador/ambassador-crds.yaml"
+
+- name: start ambassador service
+  k8s:
+    state: present
+    namespace: default
+    src: "{{ root_dir }}/ambassador/ambassador-{{ ansible_play_name }}-service.yaml"
+
+- name: check ambassador services
+  k8s_info:
+    kind: Service
+    name: ambassador
+    namespace: default
+    label_selectors:
+      - app = ambassador
+  register: ambassador_services_result
+  until: ambassador_services_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: start ambassador deployment
+  k8s:
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', '{{ root_dir }}/ambassador/ambassador-deployment.yaml.j2') }}"
+
+- name: check ambassador deployment
+  k8s_info:
+    kind: Deployment
+    name: ambassador
+    namespace: default
+  register: ambassador_deployment_result
+  until:
+    - ambassador_deployment_result.resources | length == 1
+    - ambassador_deployment_result.resources[0].status is defined
+    - ambassador_deployment_result.resources[0].status.readyReplicas is defined
+    - ambassador_deployment_result.resources[0].status.readyReplicas == containers_extra.ambassador.replicas
+  retries: 60
+  delay: 10
+
+- name: check ambassador pods
+  k8s_info:
+    kind: Pod
+    namespace: default
+    label_selectors:
+      - app = ambassador
+  register: ambassador_pods_result
+  until:
+    - ambassador_pods_result.resources | length == containers_extra.ambassador.replicas
+    - ambassador_pods_result.resources | json_query('[?status.phase==`Running`]') | length == containers_extra.ambassador.replicas
+    - ambassador_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == containers_extra.ambassador.replicas
+  retries: 60
+  delay: 10
