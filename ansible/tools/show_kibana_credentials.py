@@ -2,7 +2,7 @@
 import json
 import jmespath
 
-path = '../secrets/auth_tokens.json'
+path = '../secrets/auth-tokens.json'
 q = '[?contains(host, `kibana`)].settings' \
     '.basic_auths[0].{username: username, password: password}'
 
