@@ -1,0 +1,116 @@
+- name: set rbac for rabbitmq
+  k8s:
+    state: present
+    src: "{{ root_dir }}/rabbitmq/rabbitmq-rbac.yaml"
+
+- name: start rabbitmq services
+  k8s:
+    state: present
+    namespace: default
+    src: "{{ root_dir }}/rabbitmq/rabbitmq-{{ ansible_play_name }}-services.yaml"
+
+- name: check rabbitmq services
+  k8s_info:
+    kind: Service
+    name: rabbitmq
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_services_result
+  until: rabbitmq_services_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check rabbitmq-amqp services
+  k8s_info:
+    kind: Service
+    name: rabbitmq-amqp
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_amqp_services_result
+  until: rabbitmq_amqp_services_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check rabbitmq-mqtt services
+  k8s_info:
+    kind: Service
+    name: rabbitmq-mqtt
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_mqtt_services_result
+  until: rabbitmq_mqtt_services_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check rabbitmq-mqtts services
+  k8s_info:
+    kind: Service
+    name: rabbitmq-mqtts
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_mqtts_services_result
+  until: rabbitmq_mqtts_services_result.resources | length == 1
+  retries: 6
+  delay: 10
+  when: ansible_play_name == "aks"
+
+- name: check rabbitmq-web-mqtt services
+  k8s_info:
+    kind: Service
+    name: rabbitmq-web-mqtt
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_web_mqtt_services_result
+  until: rabbitmq_web_mqtt_services_result.resources | length == 1
+  retries: 6
+  delay: 10
+  when: ansible_play_name == "minikube"
+
+- name: check rabbitmq-web-mqtts services
+  k8s_info:
+    kind: Service
+    name: rabbitmq-web-mqtts
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_web_mqtts_services_result
+  until: rabbitmq_web_mqtts_services_result.resources | length == 1
+  retries: 6
+  delay: 10
+  when: ansible_play_name == "aks"
+
+- name: start rabbitmq statefulset
+  k8s:
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', '{{ root_dir }}/rabbitmq/rabbitmq-{{ ansible_play_name }}-statefulset.yaml.j2') }}"
+
+- name: check rabbitmq statefulset
+  k8s_info:
+    kind: StatefulSet
+    name: rabbitmq
+    namespace: default
+  register: rabbitmq_statefulset_result
+  until:
+    - rabbitmq_statefulset_result.resources | length == 1
+    - rabbitmq_statefulset_result.resources[0].status is defined
+    - rabbitmq_statefulset_result.resources[0].status.readyReplicas is defined
+    - rabbitmq_statefulset_result.resources[0].status.readyReplicas == containers_extra.rabbitmq.replicas
+  retries: 60
+  delay: 10
+
+- include_tasks: __check_rabbitmq_pod.yml
+  with_sequence: start=0 count={{ containers_extra.rabbitmq.replicas }}
+
+- name: check rabbitmq cluster state
+  command: |
+    kubectl exec rabbitmq-0 -- rabbitmqctl cluster_status --formatter json
+  register: rabbitmq_cluster_status_result
+  until: rabbitmq_cluster_status_result.stdout | from_json | json_query('running_nodes') | length == containers_extra.rabbitmq.replicas
+  retries: 60
+  delay: 10

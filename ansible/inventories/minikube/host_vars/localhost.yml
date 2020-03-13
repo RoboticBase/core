@@ -1,0 +1,5 @@
+---
+resources:
+  cpu_core_num: 4
+  memory_mb: 8192
+  disk_size: 50000mb

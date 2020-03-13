@@ -1,0 +1,65 @@
+- name: start sth-comet service
+  k8s:
+    state: present
+    namespace: default
+    src: "{{ root_dir }}/comet/comet-{{ ansible_play_name }}-service.yaml"
+
+- name: check sth-comet service
+  k8s_info:
+    kind: Service
+    name: comet
+    namespace: default
+    label_selectors:
+      - app = comet
+  register: sth_comet_service_result
+  until: sth_comet_service_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: start sth-comet deployment
+  k8s:
+    state: present
+    namespace: default
+    definition: "{{ lookup('template', '{{ root_dir }}/comet/comet-deployment.yaml.j2') }}"
+
+- name: check sth-comet deployment
+  k8s_info:
+    kind: Deployment
+    name: comet
+    namespace: default
+  register: sth_comet_deployment_result
+  until:
+    - sth_comet_deployment_result.resources | length == 1
+    - sth_comet_deployment_result.resources[0].status is defined
+    - sth_comet_deployment_result.resources[0].status.readyReplicas is defined
+    - sth_comet_deployment_result.resources[0].status.readyReplicas == containers_extra.sth_comet.replicas
+  retries: 60
+  delay: 10
+
+- name: check sth-comet pods
+  k8s_info:
+    kind: Pod
+    namespace: default
+    label_selectors:
+      - app = comet
+  register: sth_comet_pods_result
+  until:
+    - sth_comet_pods_result.resources | length == containers_extra.sth_comet.replicas
+    - sth_comet_pods_result.resources | json_query('[?status.phase==`Running`]') | length == containers_extra.sth_comet.replicas
+    - sth_comet_pods_result.resources | json_query('[?status.containerStatuses[0].ready]') | length == containers_extra.sth_comet.replicas
+  retries: 60
+  delay: 10
+
+- name: call sth-comet REST API
+  uri:
+    url: "{{ base_url }}/comet/STH/v1/contextEntities/"
+    headers:
+      Authorization: "bearer {{ token_str }}"
+      Fiware-Service: "test"
+      Fiware-Servicepath: "/*"
+    method: GET
+    status_code: 404
+  retries: 60
+  delay: 10
+  vars:
+    token_str: "{{ lookup('file', '{{ root_dir }}/secrets/auth-tokens.json') | from_json | json_query('[0].settings.bearer_tokens[0].token') }}"

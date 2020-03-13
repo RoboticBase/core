@@ -1,0 +1,9 @@
+- name: get randomstr for api token
+  get_randomstr:
+    length: 32
+  register: api_token
+
+- name: generate secrets/auth-tokens.json
+  template:
+    src: minikube_auth-tokens.json.j2
+    dest: "{{ root_dir }}/secrets/auth-tokens.json"

@@ -1,0 +1,74 @@
+- name: create temp directory
+  tempfile:
+    state: directory
+    suffix: kube_proxy
+  register: kube_proxy_tempdir
+
+- name: restore kubeconfig.conf of kube-proxy from configmap
+  command: |
+    kubectl -n kube-system get configmap kube-proxy -o jsonpath='{.data.kubeconfig\.conf}'
+  register: kubeconfig_conf_result
+
+- name: write kubeconfig.conf to tempfile
+  template:
+    src: "kube_proxy_kubeconfig.conf.j2"
+    dest: "{{ kube_proxy_tempdir.path }}/kubeconfig.conf"
+
+- name: restore config.conf of kube-proxy from configmap
+  command: |
+    kubectl -n kube-system get configmap kube-proxy -o jsonpath='{.data.config\.conf}'
+  register: config_conf_result
+
+- name: write config.conf to tempfile
+  template:
+    src: "kube_proxy_config.conf.j2"
+    dest: "{{ kube_proxy_tempdir.path }}/config.conf"
+
+- name: edit config.conf
+  edit_config_conf_of_kube_proxy:
+    path: "{{ kube_proxy_tempdir.path }}/config.conf"
+  register: edit_config_conf_of_kube_proxy_result
+- debug:
+    var: edit_config_conf_of_kube_proxy_result
+
+- name: delete kube-proxy configmap
+  command: |
+    kubectl -n kube-system delete configmap kube-proxy
+
+- name: create kube-proxy configmap
+  command: |
+    kubectl -n kube-system create configmap kube-proxy --from-file {{ kube_proxy_tempdir.path }}/config.conf --from-file {{ kube_proxy_tempdir.path }}/kubeconfig.conf
+
+- name: get kube-proxy pods
+  k8s_info:
+    kind: Pod
+    namespace: kube-system
+    label_selectors:
+      - k8s-app = kube-proxy
+  register: kube_proxy_pods_result
+
+- name: restart kube-proxy pods
+  k8s:
+    state: absent
+    kind: Pod
+    name: "{{ item }}"
+    namespace: kube-system
+  with_items: "{{ kube_proxy_pods_result.resources | json_query('[*].metadata.name') }}"
+
+- name: wait 60sec
+  wait_for:
+    timeout: 60
+
+- name: check kube-proxy pods
+  k8s_info:
+    kind: Pod
+    namespace: kube-system
+    label_selectors:
+      - k8s-app = kube-proxy
+  register: kube_proxy_pods_result
+  until:
+    - kube_proxy_pods_result.resources | length == 1
+    - kube_proxy_pods_result.resources[0].status.phase == 'Running'
+    - kube_proxy_pods_result.resources[0].status.containerStatuses[0].ready
+  retries: 60
+  delay: 10

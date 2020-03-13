@@ -1,0 +1,11 @@
+- name: "check rabbitmq pod (rabbitmq-{{ item }})"
+  k8s_info:
+    kind: Pod
+    name: "rabbitmq-{{ item }}"
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_pod_result
+  until:
+    - rabbitmq_pod_result.resources[0].status.phase == 'Running'
+    - rabbitmq_pod_result.resources[0].status.containerStatuses[0].ready

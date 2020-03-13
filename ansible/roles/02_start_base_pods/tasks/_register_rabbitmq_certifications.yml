@@ -1,0 +1,28 @@
+- name: create rabbitmq-certifications secret
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: Opaque
+      metadata:
+        name: rabbitmq-certifications
+        namespace: default
+      data:
+        cert.pem: "{{ encoded_cert_pem }}"
+        fullchain.pem: "{{ encoded_fullchain_pem }}"
+        privkey.pem: "{{ encoded_privkey_pem }}"
+  vars:
+    encoded_cert_pem: "{{ lookup('file', '{{ root_dir }}/secrets/ansible/{{ dns.domain }}/cert.pem') | b64encode }}"
+    encoded_fullchain_pem: "{{ lookup('file', '{{ root_dir }}/secrets/ansible/{{ dns.domain }}/fullchain.pem') | b64encode }}"
+    encoded_privkey_pem: "{{ lookup('file', '{{ root_dir }}/secrets/ansible/{{ dns.domain }}/privkey.pem') | b64encode }}"
+
+- name: check rabbitmq-certifications secret
+  k8s_info:
+    kind: Secret
+    name: rabbitmq-certifications
+    namespace: default
+  register: rabbitmq_certifications_secret_result
+  until: rabbitmq_certifications_secret_result.resources | length == 1
+  retries: 6
+  delay: 10

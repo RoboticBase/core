@@ -1,0 +1,5 @@
+- import_tasks: nw_configuration_minikube.yml
+
+- name: set base_url
+  set_fact:
+    base_url: "http://{{ host_ipaddr }}:{{ nat.http }}"

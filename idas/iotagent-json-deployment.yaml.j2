@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iotagent-json
+spec:
+  replicas: {{ containers_extra.iotagent_json.replicas }}
+  selector:
+    matchLabels:
+      app: iotagent-json
+  template:
+    metadata:
+      labels:
+        app: iotagent-json
+    spec:
+      containers:
+      - name: iotagent-json
+        image: {{ containers.iotagent_json.image }}
+        command: ["pm2-runtime", "bin/iotagent-json"]
+        args: ["--", "rb-config-json.js"]
+        ports:
+        - containerPort: 4041
+          name: manage
+        - containerPort: 7896
+          name: http
+        livenessProbe:
+          tcpSocket:
+            port: 4041
+          failureThreshold: 12
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 4041
+          failureThreshold: 12
+          periodSeconds: 10
+        env:
+        - name: IOTA_CB_NGSI_VERSION
+          value: "{{ containers.iotagent_json.cb_ngsi_version }}"
+        - name: IOTA_AUTOCAST
+          value: "{{ containers.iotagent_json.autocast }}"
+        volumeMounts:
+          - name: config-volume
+            mountPath: "/opt/iotajson/rb-config-json.js"
+            subPath: "rb-config-json.js"
+      volumes:
+        - name: config-volume
+          secret:
+            secretName: iotagent-json-config

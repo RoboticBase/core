@@ -1,0 +1,10 @@
+- name: check auth-token secret
+  k8s_info:
+    kind: Secret
+    name: auth-tokens
+    namespace: default
+  register: auth_tokens_secret_result
+
+- name: set fact of auth-token secret
+  set_fact:
+    existing_auth_tokens_secret: "{{ auth_tokens_secret_result.resources | length }}"

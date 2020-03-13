@@ -1,0 +1,6 @@
+- name: stop minikube
+  command: |
+    minikube stop \
+    --profile {{ minikube.name }}
+  register: minikube_stop_result
+- debug: var=minikube_stop_result.stdout_lines

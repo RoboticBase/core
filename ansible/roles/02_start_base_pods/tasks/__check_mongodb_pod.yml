@@ -1,0 +1,12 @@
+- name: "check mongodb pod (mongodb-{{ item }})"
+  k8s_info:
+    kind: Pod
+    name: "mongodb-{{ item }}"
+    namespace: default
+    label_selectors:
+      - release = mongodb
+      - app = mongodb-replicaset
+  register: mongodb_pod_result
+  until:
+    - mongodb_pod_result.resources[0].status.phase == 'Running'
+    - mongodb_pod_result.resources[0].status.containerStatuses[0].ready

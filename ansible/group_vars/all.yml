@@ -1,0 +1,80 @@
+---
+root_dir: "{{ inventory_dir }}/../../.."
+
+containers:
+  rabbitmq:
+    image: rabbitmq:3.8.2
+  mongodb:
+    repository: mongo
+    tag: 4.2.3
+  ambassador:
+    image: quay.io/datawire/ambassador:1.1.1
+  auth:
+    image: roboticbase/fiware-ambassador-auth:0.3.0
+  orion:
+    image: fiware/orion:2.3.0
+  iotagent_json:
+    is_provisioning: true
+    image: fiware/iotagent-json:1.13.0
+    cb_ngsi_version: v1
+    autocast: true
+  iotagent_ul:
+    is_provisioning: true
+    image: fiware/iotagent-ul:1.12.0
+    cb_ngsi_version: v1
+    autocast: true
+  cygnus_mongo:
+    is_provisioning: true
+    image: fiware/cygnus-ngsi:1.17.1
+  sth_comet:
+    is_provisioning: true
+    image: fiware/sth-comet:2.7.0
+  cygnus_elasticsearch:
+    is_provisioning: true
+    image: fiware/cygnus-ngsi:1.17.1
+  prometheus_operator:
+    is_provisioning: true
+    alertmanager:
+      repository: quay.io/prometheus/alertmanager
+      tag: v0.20.0
+    prometheus:
+      repository: quay.io/prometheus/prometheus
+      tag: v2.16.0
+    grafana:
+      repository: grafana/grafana
+      tag: 6.6.1
+  ekf:
+    is_provisioning: true
+    elasticsearch:
+      repository: bitnami/elasticsearch
+      tag: 7.6.0
+      master:
+        name: master
+      data:
+        name: data
+      coordinating:
+        name: client
+    curator:
+      repository: bitnami/elasticsearch-curator
+      tag: 5.8.1
+      name: curator
+      days: 60
+    fluentd:
+      repository: quay.io/fluentd_elasticsearch/fluentd
+      tag: v2.9.0
+      host: es-elasticsearch-client
+      port: 9200
+    kibana:
+      repository: bitnami/kibana
+      tag: 7.6.0
+      host: es-elasticsearch-client
+      port: 9200
+  mongodb_backup:
+    is_provisioning: true
+    image: roboticbase/mongodb-simple-backup:0.1.0
+    cron: "0 0-23/3 * * *"
+
+mqtt:
+  users:
+    - name: iotagent
+      password: password_of_iotagent # change password of iotagent

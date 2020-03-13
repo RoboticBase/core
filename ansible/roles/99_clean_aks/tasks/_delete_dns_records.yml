@@ -1,0 +1,20 @@
+- name: get A records
+  azure_rm_dnsrecordset_info:
+    resource_group: "{{ resources.dns_zone }}"
+    zone_name: "{{ dns.domain }}"
+    record_type: A
+  register: a_records_result
+- debug:
+    var: a_records_result
+
+- name: delete A records from azure dns
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resources.dns_zone }}"
+    zone_name: "{{ dns.domain }}"
+    relative_name: "{{ item }}"
+    record_type: A
+    state: absent
+  register: delete_a_records_result
+  with_items: "{{ a_records_result.dnsrecordsets | json_query('[*].relative_name') }}"
+- debug:
+    var: delete_a_records_result

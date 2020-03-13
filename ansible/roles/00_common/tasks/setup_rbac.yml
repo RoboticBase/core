@@ -1,0 +1,22 @@
+- name: setup default rbac
+  k8s:
+    state: present
+    definition: "{{ lookup('template', '{{ root_dir }}/rbac/default-rbac.yaml') }}"
+
+- name: check ClusterRole status
+  k8s_info:
+    kind: ClusterRole
+    name: "default-read"
+  register: clusterrole_result
+  until: clusterrole_result.resources | length == 1
+  retries: 6
+  delay: 10
+
+- name: check ClusterRoleBinding status
+  k8s_info:
+    kind: ClusterRoleBinding
+    name: "default"
+  register: clusterrolebinding_result
+  until: clusterrolebinding_result.resources | length == 1
+  retries: 6
+  delay: 10

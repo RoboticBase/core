@@ -1,0 +1,9 @@
+- name: login azure
+  command: az login
+  register: azure_login_result
+  when: not logged_in
+- debug:
+    var: azure_login_result.stdout
+  when: not logged_in
+- set_fact:
+    logged_in: true

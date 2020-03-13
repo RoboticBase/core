@@ -1,0 +1,30 @@
+image:
+  registry: docker.io
+  repository: {{ containers.ekf.kibana.repository }}
+  tag: {{ containers.ekf.kibana.tag }}
+  pullPolicy: IfNotPresent
+
+replicaCount: {{ containers_extra.ekf.kibana.replicas }}
+
+persistence:
+  enabled: true
+  storageClass: {{ containers_extra.ekf.kibana.storage.class }}
+  accessMode: ReadWriteOnce
+  size: {{ containers_extra.ekf.kibana.storage.size }}
+
+service:
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  kibana-mapping
+      prefix: /
+      host: "^kibana\\..+$"
+      host_regex: true
+      service: http://kibana.logging:80
+
+elasticsearch:
+  hosts:
+    - {{ containers.ekf.kibana.host }}
+  port: {{ containers.ekf.kibana.port }}

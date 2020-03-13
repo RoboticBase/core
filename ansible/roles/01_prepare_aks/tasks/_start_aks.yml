@@ -1,0 +1,45 @@
+- name: get client_id
+  set_fact:
+    client_id: "{{ lookup('ini', 'client_id section=default file={{ ansible_env.HOME }}/.azure/credentials') }}"
+
+- name: start aks
+  azure_rm_aks:
+    name: "{{ aks.name }}"
+    location: "{{ resources.region }}"
+    resource_group: "{{ resources.resource_group }}"
+    dns_prefix: "{{ aks.name }}"
+    kubernetes_version: "{{ k8s.version }}"
+    linux_profile:
+      admin_username: azureuser
+      ssh_key: "{{ lookup('file', resources.ssh_key_file_path) }}"
+    service_principal:
+      client_id: "{{ client_id }}"
+      client_secret: "{{ lookup('ini', 'secret section=default file={{ ansible_env.HOME }}/.azure/credentials') }}"
+    agent_pool_profiles:
+      - name: default
+        count: "{{ aks.agent.count | int }}"
+        vm_size: "{{ aks.agent.vm_size }}"
+        os_disk_size_gb: "{{ aks.agent.disk_gb | int }}"
+    state: present
+  register: start_aks_result
+
+- debug:
+    var: start_aks_result
+
+- name: set aks credentials for kubectl
+  command: |
+    az aks get-credentials --resource-group "{{ resources.resource_group }}" --name "{{ aks.name }}"  --overwrite-existing
+
+- name: get acr info
+  azure_rm_containerregistry_info:
+    name: "{{ container_registry_name }}"
+    resource_group: "{{ resources.resource_group }}"
+  register: container_registry_result
+
+- name: assign Reader role of acr to aks
+  command: |
+    az role assignment create --assignee "{{ client_id }}" --role Reader --scope "{{ container_registry_result.registries[0].id }}"
+  register: role_assignment_result
+
+- debug:
+    msg: "{{ role_assignment_result.stdout | from_json }}"

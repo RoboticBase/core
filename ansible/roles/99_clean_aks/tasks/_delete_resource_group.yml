@@ -1,0 +1,9 @@
+- name: delete resource group
+  azure_rm_resourcegroup:
+    name: "{{ resources.resource_group }}"
+    location: "{{ resources.region }}"
+    force_delete_nonempty: yes
+    state: absent
+  register: delete_resource_group_result
+- debug:
+    var: delete_resource_group_result

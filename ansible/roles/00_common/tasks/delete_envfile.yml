@@ -1,0 +1,4 @@
+- name: remove envfile
+  file:
+    path: "{{ envfile_path }}"
+    state: absent

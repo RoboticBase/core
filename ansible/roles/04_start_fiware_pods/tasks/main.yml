@@ -1,0 +1,17 @@
+- include_role:
+    name: 00_common
+    tasks_from: set_baseurl_{{ ansible_play_name }}.yml
+
+- import_tasks: _start_orion.yml
+
+- import_tasks: _start_iotagent_json.yml
+  when: containers.iotagent_json.is_provisioning
+
+- import_tasks: _start_iotagent_ul.yml
+  when: containers.iotagent_ul.is_provisioning
+
+- import_tasks: _start_cygnus_mongo.yml
+  when: containers.cygnus_mongo.is_provisioning
+
+- import_tasks: _start_sth_comet.yml
+  when: containers.sth_comet.is_provisioning

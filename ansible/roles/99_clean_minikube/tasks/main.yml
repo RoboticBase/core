@@ -1,0 +1,9 @@
+- import_tasks: _delete_minikube.yml
+
+- import_role:
+    name: 00_common
+    tasks_from: delete_auth_tokens.yml
+
+- import_role:
+    name: 00_common
+    tasks_from: delete_envfile.yml

@@ -1,0 +1,43 @@
+- name: get external ip of rabbitmq-mqtts
+  k8s_info:
+    kind: Service
+    name: rabbitmq-mqtts
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_mqtts_services_result
+
+- name: add an A record to azure dns for rabbitmq-mqtts
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resources.dns_zone }}"
+    zone_name: "{{ dns.domain }}"
+    relative_name: mqtt
+    record_type: A
+    records:
+      - entry: "{{ rabbitmq_mqtts_services_result.resources[0].status.loadBalancer.ingress[0].ip }}"
+  register: add_a_record_rabbitmq_mqtts_result
+
+- debug:
+    var: add_a_record_rabbitmq_mqtts_result
+
+- name: get external ip of rabbitmq-web-mqtts
+  k8s_info:
+    kind: Service
+    name: rabbitmq-web-mqtts
+    namespace: default
+    label_selectors:
+      - app = rabbitmq
+  register: rabbitmq_web_mqtts_services_result
+
+- name: add an A record to azure dns for rabbitmq-web-mqtts
+  azure_rm_dnsrecordset:
+    resource_group: "{{ resources.dns_zone }}"
+    zone_name: "{{ dns.domain }}"
+    relative_name: web-mqtt
+    record_type: A
+    records:
+      - entry: "{{ rabbitmq_web_mqtts_services_result.resources[0].status.loadBalancer.ingress[0].ip }}"
+  register: add_a_record_rabbitmq_web_mqtts_result
+
+- debug:
+    var: add_a_record_rabbitmq_web_mqtts_result

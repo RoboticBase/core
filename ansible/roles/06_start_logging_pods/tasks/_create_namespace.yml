@@ -1,0 +1,8 @@
+- name: create namespace for logging
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: logging

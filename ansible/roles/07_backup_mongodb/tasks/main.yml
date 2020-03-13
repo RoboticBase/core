@@ -1,0 +1,10 @@
+- import_role:
+    name: 00_common
+    tasks_from: login_azure.yml
+  when: containers.mongodb_backup.is_provisioning and ansible_play_name == "aks"
+
+- import_tasks: _create_storage_account.yml
+  when: containers.mongodb_backup.is_provisioning and ansible_play_name == "aks"
+
+- import_tasks: _start_backup_cronjob.yml
+  when: containers.mongodb_backup.is_provisioning and ansible_play_name == "aks"

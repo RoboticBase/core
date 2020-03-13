@@ -1,0 +1,52 @@
+---
+envfile_path: "{{ inventory_dir  }}/../../../docs/environments/minikube/env"
+
+minikube:
+  name: minikube-rb
+  vm_driver: virtualbox
+
+k8s:
+  version: 1.17.0
+
+docker:
+  registry:
+    version: 2.7.1
+    name: registry
+    port: 5000
+
+nat:
+  mqtt: 1883
+  web_mqtt: 15675
+  http: 8080
+
+containers_extra:
+  rabbitmq:
+    replicas: 2
+  mongodb:
+    replicas: 2
+  ambassador:
+    replicas: 1
+  auth:
+    replicas: 1
+  orion:
+    replicas: 1
+  iotagent_json:
+    replicas: 1
+  iotagent_ul:
+    replicas: 1
+  cygnus_mongo:
+    replicas: 1
+  sth_comet:
+    replicas: 1
+  cygnus_elasticsearch:
+    replicas: 1
+  ekf:
+    elasticsearch:
+      master:
+        replicas: 3
+      data:
+        replicas: 3
+      coordinating:
+        replicas: 1
+    kibana:
+      replicas: 1

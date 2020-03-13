@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comet
+spec:
+  replicas: {{ containers_extra.sth_comet.replicas }}
+  selector:
+    matchLabels:
+      app: comet
+  template:
+    metadata:
+      labels:
+        app: comet
+    spec:
+      containers:
+      - name: comet
+        image: {{ containers.sth_comet.image }}
+        env:
+        - name: STH_HOST
+          value: "0.0.0.0"
+        - name: DB_URI
+          value: "mongodb-client:27017"
+        - name: REPLICA_SET
+          value: "rs0"
+        - name: MAX_PAGE_SIZE
+          value: "128"
+        - name: LOGOPS_LEVEL
+          value: "INFO"
+        - name: NAME_ENCODING
+          value: "true"
+        ports:
+        - containerPort: 8666
+          name: comet
+        livenessProbe:
+          tcpSocket:
+            port: 8666
+          failureThreshold: 12
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8666
+          failureThreshold: 12
+          periodSeconds: 10

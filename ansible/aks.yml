@@ -1,0 +1,11 @@
+---
+- hosts: aks
+  connection: local
+  roles:
+    - 01_prepare_aks
+    - 02_start_base_pods
+    - 03_start_auth_pods
+    - 04_start_fiware_pods
+    - 05_start_monitoring_pods
+    - 06_start_logging_pods
+    - 07_backup_mongodb
