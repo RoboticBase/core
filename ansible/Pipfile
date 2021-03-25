@@ -11,7 +11,7 @@ ansible = "~=2.9"
 jmespath = "~=0.9"
 netifaces = "~=0.10"
 docker = "~=4.2"
-pyyaml = "~=5.3"
+pyyaml = "~=5.4"
 openshift = "~=0.10"
 
 [requires]
