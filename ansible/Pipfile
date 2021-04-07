@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-ansible = "~=2.9"
+ansible = "~=2.10"
 "ansible[azure]" = "~=2.0"
 jmespath = "~=0.9"
 netifaces = "~=0.10"
